@@ -20,32 +20,66 @@ from .profiler import profile_dataframe
 
 
 def _canonicalize_mapping(values) -> dict:
-    """Build a {raw_lower -> canonical} mapping for a categorical column.
+    """Build a {raw -> canonical} mapping for a categorical column.
 
-    MOCK strategy: collapse by built-in country dict, else by case/whitespace to
-    the most common surface form. The model will instead reason semantically
-    ('NYC' == 'New York', typos, abbreviations) — this only catches the obvious.
+    Collapses by (1) the built-in country dict, (2) case/whitespace to the most
+    common surface, and (3) a CONSERVATIVE typo-cluster pass: a rare surface that is
+    one edit away from a clearly-dominant one is folded into it (OpenRefine-style
+    key-collision, e.g. 'birminghxm' -> 'birmingham'). The model does this far better;
+    this catches the obvious near-duplicates.
     """
     from collections import Counter
 
-    surface: dict[str, Counter] = {}
+    groups: dict[str, Counter] = {}
     for v in values:
         if detect.is_missing(v):
             continue
         raw = str(v).strip()
         key = detect.COUNTRY_CANON.get(raw.lower(), raw.lower())
-        surface.setdefault(key, Counter())[raw] += 1
+        groups.setdefault(key, Counter())[raw] += 1
+
+    # canonical surface + total frequency per key
+    info = {}
+    for key, counter in groups.items():
+        canonical = key if key in detect.COUNTRY_CANON.values() \
+            else counter.most_common(1)[0][0]
+        info[key] = (canonical, sum(counter.values()))
+
+    # conservative typo merge: rare key -> near dominant key
+    merge = {}
+    keys = list(info)
+    for k in keys:
+        _, fk = info[k]
+        if len(k) < 5:
+            continue
+        best = None
+        for d in keys:
+            if d == k:
+                continue
+            _, fd = info[d]
+            if fd >= 2 and fd >= 2 * fk and _within_one_edit(k, d):
+                if best is None or info[d][1] > info[best][1]:
+                    best = d
+        if best:
+            merge[k] = best
 
     mapping = {}
-    for key, counter in surface.items():
-        if key in detect.COUNTRY_CANON.values():
-            canonical = key  # already a canonical country name
-        else:
-            canonical = counter.most_common(1)[0][0]  # most frequent surface form
+    for key, counter in groups.items():
+        canonical = info[merge.get(key, key)][0]
         for raw in counter:
             if raw != canonical:
                 mapping[raw] = canonical
     return mapping
+
+
+def _within_one_edit(a: str, b: str) -> bool:
+    """True if `a` and `b` differ by exactly one substitution/insertion/deletion."""
+    if a == b or abs(len(a) - len(b)) > 1:
+        return False
+    if len(a) == len(b):
+        return sum(x != y for x, y in zip(a, b)) == 1
+    lo, hi = (a, b) if len(a) < len(b) else (b, a)
+    return any(hi[:i] + hi[i + 1:] == lo for i in range(len(hi)))
 
 
 def _column_operations(col_profile: dict, series: pd.Series) -> list[dict]:
@@ -84,18 +118,18 @@ def _column_operations(col_profile: dict, series: pd.Series) -> list[dict]:
     elif stype == "email":
         ops.append({"op": "normalize_email",
                     "rationale": "Lowercased and trimmed email addresses."})
-    elif stype in {"categorical", "country"}:
-        if "casing" in issues and not any(o["op"] == "canonicalize_categories" for o in ops):
-            pass  # casing folded into canonicalization below
-        if "inconsistent_categories" in issues or stype == "country":
-            mapping = _canonicalize_mapping(series.tolist())
-            if mapping:
-                ops.append({
-                    "op": "canonicalize_categories",
-                    "mapping": mapping,
-                    "rationale": f"Unified {len(mapping)} inconsistent spellings "
-                                 f"into canonical labels.",
-                })
+    elif stype in {"categorical", "country", "city", "state"}:
+        # Always attempt canonicalization (case folding, country dict, typo clusters);
+        # emit only if it actually merges something. Catches case variants the old
+        # issue-gate missed and typo clusters in real data.
+        mapping = _canonicalize_mapping(series.tolist())
+        if mapping:
+            ops.append({
+                "op": "canonicalize_categories",
+                "mapping": mapping,
+                "rationale": f"Unified {len(mapping)} inconsistent spellings "
+                             f"into canonical labels.",
+            })
     return ops
 
 

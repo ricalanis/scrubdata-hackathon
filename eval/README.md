@@ -25,27 +25,30 @@ Two reference systems frame every run:
 - **ORACLE** = the gold plan → the ceiling.
 - **HEURISTIC** (`scrubdata.mock_plan`) = the rule-based baseline the model must beat.
 
-Measured on 300 held-out examples (seed 4242):
+Measured on the frozen 300-example gold set (`eval/gold.jsonl`):
 
 | system | json_valid | op_f1 | canon_f1 | canon_r | recovery |
 |---|---|---|---|---|---|
 | ORACLE (gold) | 1.000 | 1.000 | 1.000 | 1.000 | **1.000** |
-| HEURISTIC (baseline) | 1.000 | 0.845 | **0.002** | 0.001 | **0.665** |
+| HEURISTIC (baseline) | 1.000 | 0.967 | **0.165** | 0.115 | **0.663** |
 
-**Reading:** the heuristic leaves ~1/3 of cells wrong and is ~blind to
-canonicalization. That 0.665 → 1.000 recovery gap is exactly the value a fine-tuned
-model must deliver.
+**Reading:** after adding case-folding + typo-clustering the heuristic does the *easy*
+canonicalization (collapse to most-frequent surface), but it's still ~blind to
+**alias/semantic** canonicalization (`USA`→`United States`, `NYC`→`New York`) — canon_f1
+0.165 vs the oracle's 1.0, and it leaves ~1/3 of cells in non-canonical form. That gap is
+the fine-tuned model's job.
 
 ### 🎯 Goalpost for the fine-tuned Qwen3-4B
 | metric | baseline | **target** | ceiling |
 |---|---|---|---|
 | json_valid | 1.000 | **≥ 0.99** | 1.000 |
-| op_f1 | 0.845 | **≥ 0.95** | 1.000 |
-| canon_f1 | 0.002 | **≥ 0.85** | 1.000 |
-| recovery | 0.665 | **≥ 0.95** | 1.000 |
+| op_f1 | 0.967 | **≥ 0.98** | 1.000 |
+| canon_f1 | 0.165 | **≥ 0.85** | 1.000 |
+| recovery | 0.663 | **≥ 0.95** | 1.000 |
 
-A fine-tune that hits these clearly beats the free heuristic and approaches the oracle
-— the headline being **canon_f1 0.002 → ≥0.85** and **recovery 0.665 → ≥0.95**.
+A fine-tune that hits these clearly beats the (now stronger) heuristic and approaches the
+oracle — the headline being **canon_f1 0.165 → ≥0.85** (alias-level canonicalization) and
+**recovery 0.663 → ≥0.95**.
 
 ## Plugging in the model
 `evaluate(planner, gold)` takes any `planner(dirty_df, gold_plan) -> plan dict`. For
@@ -62,7 +65,10 @@ protocol (the right metric when data is already mostly correct):
 | system | recovery | repair_recall | repair_prec | broken |
 |---|---|---|---|---|
 | NO-OP (dirty as-is) | 0.975 | 0.000 | 0.000 | 0 |
-| HEURISTIC (baseline) | 0.874 | 0.000 | 0.000 | **2021** |
+| HEURISTIC (baseline) | 0.880 | **0.293** | 0.065 | 2041 |
+
+(Typo-clustering now fixes ~29% of the real char-substitution errors — up from 0. The
+model should push repair_recall higher and improve repair_prec.)
 
 **Reading (honest + important):** the rule heuristic fixes **0** typos. Its 2021 changed
 cells are **convention divergence, not errors** — our tool parses `100%`→`1.0` and
