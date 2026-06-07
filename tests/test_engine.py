@@ -110,3 +110,14 @@ def test_phone_conservatism():
 def test_detect_types():
     assert detect.detect_semantic_type("email", ["a@b.com", "c@d.com"]) == "email"
     assert detect.detect_semantic_type("x", ["Yes", "No", "Y"]) == "boolean"
+
+
+def test_cli(tmp_path):
+    from scrubdata.cli import main
+    out = tmp_path / "clean.csv"
+    plan = tmp_path / "plan.json"
+    rc = main(["samples/dirty_contacts.csv", "-o", str(out), "--plan", str(plan), "--quiet"])
+    assert rc == 0
+    assert out.exists() and plan.exists()
+    cleaned = pd.read_csv(out)
+    assert "notes2" not in cleaned.columns and len(cleaned) == 13
