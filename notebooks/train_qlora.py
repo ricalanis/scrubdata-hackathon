@@ -29,7 +29,8 @@ def main() -> None:
     ap.add_argument("--data-file", default="train.jsonl")
     ap.add_argument("--out-repo", default=None, help="HF repo to push adapter + GGUF")
     ap.add_argument("--epochs", type=float, default=2.0)
-    ap.add_argument("--max-seq", type=int, default=2048)
+    ap.add_argument("--max-seq", type=int, default=6144,
+                    help="v3 examples reach ~5.5k tokens; keep ≥6144 to avoid truncation")
     args = ap.parse_args()
 
     import torch
@@ -65,8 +66,9 @@ def main() -> None:
         model=model, tokenizer=tokenizer, train_dataset=ds,
         args=SFTConfig(
             dataset_text_field="text", max_seq_length=args.max_seq,
-            per_device_train_batch_size=8 if big else 2,
-            gradient_accumulation_steps=2 if big else 8,
+            # smaller batch since sequences are long now (~6k); effective batch stays 16
+            per_device_train_batch_size=4 if big else 1,
+            gradient_accumulation_steps=4 if big else 16,
             warmup_steps=5, num_train_epochs=args.epochs, learning_rate=2e-4,
             logging_steps=10, optim="adamw_8bit", weight_decay=0.001,
             lr_scheduler_type="linear", seed=0, bf16=big, fp16=not big,
