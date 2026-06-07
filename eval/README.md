@@ -99,3 +99,16 @@ The model plugs into `_score(dirty, clean, model_output)` exactly like the heuri
 
 > Data auto-fetched to `data/real/hospital/` (gitignored). Add Flights/Beers/CleanML the
 > same way for breadth.
+
+## Scale: aggregation + agentic batching (validated)
+
+Cleaning *large* tables doesn't mean bigger prompts — it means reasoning over **patterns**:
+- **Aggregation** — the profiler sends per-column `value_counts` (`[value, frequency]`), so
+  the prompt size depends on DISTINCT values, not rows. Rare typos sit at the tail next to
+  their dominant canonical (`birminghxm`:1 vs `birmingham`:312) — visible at any scale.
+- **Column batching** — `scrubdata.model_planner.make_batched_planner` plans a wide table
+  in small column-batches, so a 20-column table never blows one prompt.
+
+**Validated** on the real Raha hospital table (1000×20) with a *vanilla* model (no retrain):
+**repair_recall 0.509** (fixed 259/509 typos), vs **0.000** for the old one-shot+sample-rows
+approach. The v4 fine-tune trains on this `value_counts` format.
