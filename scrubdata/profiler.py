@@ -51,27 +51,36 @@ def _canonical_cardinality(lowered: list[str]) -> int:
     return len(canon)
 
 
+# Distinct values to surface per column. Bounded → the profile (and prompt) size is
+# invariant to ROW count, so a 1M-row table profiles like a 100-row one. This is what
+# lets the planner canonicalize at any scale: it reasons over the value distribution,
+# not raw rows. (Columns with more distinct values than this are the high-cardinality
+# tail handled by deterministic cluster candidates — see detect.cluster_candidates.)
+VALUE_COUNTS_CAP = 80
+
+
 def profile_column(series: pd.Series) -> dict:
+    from collections import Counter
+
     values = series.tolist()
-    non_missing = [v for v in values if not detect.is_missing(v)]
+    non_missing = [str(v).strip() for v in values if not detect.is_missing(v)]
     semantic_type = detect.detect_semantic_type(str(series.name), values)
-    # up to 8 distinct sample values, as strings
-    seen, samples = set(), []
-    for v in non_missing:
-        s = str(v).strip()
-        if s not in seen:
-            seen.add(s)
-            samples.append(s)
-        if len(samples) >= 15:
-            break
+    counts = Counter(non_missing)
+    # High-cardinality columns (IDs / free text — almost all values unique) aren't
+    # canonicalizable, so just show a few; categorical-ish columns get the full
+    # distribution (up to the cap) so the model sees every variant + its frequency.
+    high_card = len(non_missing) >= 12 and len(counts) > 0.8 * len(non_missing)
+    k = 8 if high_card else VALUE_COUNTS_CAP
+    value_counts = [[val, cnt] for val, cnt in counts.most_common(k)]
     return {
         "name": str(series.name),
         "pandas_dtype": str(series.dtype),
         "detected_semantic_type": semantic_type,
         "n_total": len(values),
         "n_missing": sum(1 for v in values if detect.is_missing(v)),
-        "n_unique": len({str(v).strip() for v in non_missing}),
-        "sample_values": samples,
+        "n_unique": len(counts),
+        "value_counts": value_counts,
+        "truncated_values": max(0, len(counts) - VALUE_COUNTS_CAP),
         "issues": _column_issues(series, semantic_type),
     }
 

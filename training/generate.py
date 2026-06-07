@@ -33,13 +33,14 @@ def _pick_columns(rng: random.Random, k: int):
 
 
 def make_example(rng: random.Random) -> dict:
-    # Mix small and LARGE/WIDE tables so the model handles real-world scale (the v1
-    # model degenerated on a 1000×20 table — it had only ever seen tiny ones).
+    # With aggregation profiling the prompt size is bounded by DISTINCT values, not rows,
+    # so scale-invariance is free — we vary row counts only to teach varied frequency
+    # magnitudes (dominant vs rare), not to enlarge prompts.
     if rng.random() < 0.4:
-        n_rows = rng.randint(30, 90)
-        n_cols = rng.randint(6, 9)
+        n_rows = rng.randint(25, 60)
+        n_cols = rng.randint(5, 8)
     else:
-        n_rows = rng.randint(8, 22)
+        n_rows = rng.randint(10, 25)
         n_cols = rng.randint(3, 6)
     cols = _pick_columns(rng, n_cols)
 

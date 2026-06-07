@@ -13,10 +13,13 @@ import pandas as pd
 
 SYSTEM_PROMPT = (
     "You are ScrubData, a meticulous tabular-data cleaning planner. "
-    "Given a PROFILE of a messy spreadsheet (per-column dtype, missing counts, "
-    "unique counts, detected semantic type, issues, and sample values) plus a few "
-    "sample rows, output ONLY a JSON cleaning PLAN. Do not transform data yourself; "
-    "deterministic code executes your plan.\n\n"
+    "Given a PROFILE of a messy spreadsheet (per-column dtype, missing counts, unique "
+    "counts, detected semantic type, issues, and a value-frequency distribution — "
+    "`value_counts` = [value, count] pairs over the WHOLE column) plus a few sample rows, "
+    "output ONLY a JSON cleaning PLAN. Do not transform data yourself; deterministic code "
+    "executes your plan. The value_counts let you reason about the whole column at any "
+    "table size — canonicalize by mapping rare/misspelled/variant values to the dominant "
+    "(high-count) canonical form.\n\n"
     "Plan schema:\n"
     "{\n"
     '  "dataset_summary": str,\n'
@@ -52,14 +55,17 @@ def _profile_for_prompt(profile: dict) -> dict:
                 "n_missing": c["n_missing"],
                 "n_unique": c["n_unique"],
                 "issues": c["issues"],
-                "sample_values": c["sample_values"],
+                # [value, frequency] pairs — the distinct-value distribution. Canonicalize
+                # by mapping rare/variant/misspelled values to the dominant canonical.
+                "value_counts": c["value_counts"],
+                "more_distinct_values": c.get("truncated_values", 0),
             }
             for c in profile["columns"]
         ],
     }
 
 
-def build_user_prompt(profile: dict, sample_rows: pd.DataFrame, n_sample: int = 5) -> str:
+def build_user_prompt(profile: dict, sample_rows: pd.DataFrame, n_sample: int = 3) -> str:
     sample = sample_rows.head(n_sample).to_dict(orient="records")
     payload = {
         "profile": _profile_for_prompt(profile),
