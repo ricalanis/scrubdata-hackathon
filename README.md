@@ -10,17 +10,29 @@ pinned: false
 license: mit
 ---
 
-# hackaton-small
+# ScrubData — hands-off data cleaning
 
-Entry for the **Build Small Hackathon** (Gradio · Hugging Face).
+Entry for the **Build Small Hackathon** (Gradio · Hugging Face), 🏡 Backyard AI track.
 
-> Small models, big adventure. Total model params ≤ 32B, built on Gradio,
-> hosted as a Hugging Face Space under the `build-small-hackathon` org.
+> **Upload your dirty spreadsheet. Get clean data back. No config.**
+>
+> For the office/ops person trying to do their job while their data is a mess.
 
-## Status
+## How it works
 
-Scaffold. Idea + track not yet locked. See project memory for hackathon
-guidelines (tracks, constraints, bonus quests, prizes).
+The small model is the **planner**, not a row-by-row workhorse:
+
+1. **Profile** the data deterministically in pandas (dtypes, nulls, duplicates,
+   whitespace, cardinality, sample values).
+2. **Plan** — the model reads the profile + a sample and emits a structured
+   cleaning plan: semantic column types, ID/date/categorical detection, and the
+   fuzzy work rules can't do — canonicalizing messy categories
+   (`USA` / `U.S.A` / `united states` → `United States`), anomalies, formats.
+3. **Execute** the plan deterministically in pandas (reliable, fast, auditable).
+4. **Narrate** a plain-English "what was wrong / what I fixed" report.
+
+**Model:** Qwen3-4B (≤4B → Tiny Titan), run locally via llama.cpp (GGUF).
+**Targeting all six bonus quests.** See project memory for full guidelines.
 
 ## Develop
 
