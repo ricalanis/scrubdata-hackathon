@@ -15,6 +15,7 @@ import gradio as gr
 import pandas as pd
 
 from scrubdata import apply_plan, mock_plan, profile_dataframe, render_report
+from scrubdata.trace import log_run
 
 SAMPLE = Path(__file__).parent / "samples" / "dirty_contacts.csv"
 
@@ -40,6 +41,11 @@ def clean(file_path: str):
 
     out = Path(tempfile.gettempdir()) / "scrubbed.csv"
     cleaned.to_csv(out, index=False)
+
+    try:  # best-effort agent-trace capture (Open trace bonus quest)
+        log_run(before, raw, plan, log, model=plan.get("_generated_by", "mock_planner"))
+    except Exception:
+        pass
 
     return raw, cleaned, report, str(out)
 

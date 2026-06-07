@@ -235,6 +235,13 @@ def clean_data(file_path: str) -> dict:
     after_profile = profile_dataframe(cleaned)
     report_md = render_report(plan, change_log, before_profile, after_profile)
 
+    try:  # best-effort agent-trace capture (Open trace bonus quest)
+        from scrubdata.trace import log_run
+        log_run(before_profile, raw, plan, change_log,
+                model=plan.get("_generated_by", "mock_planner"))
+    except Exception:
+        pass
+
     buf = io.StringIO()
     cleaned.to_csv(buf, index=False)
     csv_text = buf.getvalue()
