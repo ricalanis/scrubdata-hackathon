@@ -20,6 +20,8 @@ image = (
 )
 
 app = modal.App("scrubdata-eval", image=image)
+# Persist results so a DETACHED run survives a dropped (cellular) client connection.
+results = modal.Dict.from_name("scrubdata-eval-results", create_if_missing=True)
 
 
 @app.function(gpu="L4", timeout=1800)
@@ -47,15 +49,23 @@ def run_eval(n_synth: int = 20):
         base_id, torch_dtype=torch.bfloat16, device_map="cuda")
     model = PeftModel.from_pretrained(base, adapter_id).eval()
 
+    im_end = tok.convert_tokens_to_ids("<|im_end|>")
+    eos_ids = [tok.eos_token_id, im_end] if im_end is not None else tok.eos_token_id
+
     def base_planner(df, *_):
         msgs = [{"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": build_user_prompt(profile_dataframe(df), df)}]
-        ids = tok.apply_chat_template(msgs, add_generation_prompt=True,
-                                      return_tensors="pt").to("cuda")
+        enc = tok.apply_chat_template(msgs, add_generation_prompt=True,
+                                      return_tensors="pt", return_dict=True)
+        input_ids = enc["input_ids"].to(model.device)
+        attn = enc["attention_mask"].to(model.device)
         with torch.no_grad():
-            out = model.generate(ids, max_new_tokens=2000, do_sample=False,
-                                 pad_token_id=tok.eos_token_id)
-        text = tok.decode(out[0][ids.shape[1]:], skip_special_tokens=True)
+            # stop at <|im_end|> so we don't run to max_new_tokens every call (was the
+            # 50s/call slowdown that blew the timeout); attn mask silences the warning.
+            out = model.generate(input_ids=input_ids, attention_mask=attn,
+                                 max_new_tokens=1200, do_sample=False,
+                                 eos_token_id=eos_ids, pad_token_id=tok.eos_token_id)
+        text = tok.decode(out[0][input_ids.shape[1]:], skip_special_tokens=True)
         plan = _extract_json(text)
         if plan is None:
             return {"__error__": "no_json"}
@@ -79,20 +89,30 @@ def run_eval(n_synth: int = 20):
     cleaned, _ = apply_plan(dirty, ft_plan)
     out["layer2_ft"] = _score(dirty, clean, cleaned)
     out["layer2_noop"] = _score(dirty, clean, dirty)
+
+    table = _format(out)
+    print(table)                       # goes to Modal logs
+    results["latest"] = {"out": out, "table": table}   # survives client disconnect
     return out
+
+
+def _format(r) -> str:
+    lines = ["\n=== Layer 1 (synthetic) ==="]
+    cols = ["json_valid", "op_f1", "canon_f1", "canon_r", "recovery"]
+    lines.append(f"{'system':<12}" + "".join(f"{c:>11}" for c in cols))
+    for name, m in r["layer1"].items():
+        lines.append(f"{name:<12}" + "".join(f"{m[c]:>11.3f}" for c in cols))
+    lines.append("\n=== Layer 2 (real hospital) ===")
+    for k in ("layer2_noop", "layer2_ft"):
+        m = r[k]
+        lines.append(f"{k:<12} repair_recall={m['repair_recall']:.3f} "
+                     f"repair_prec={m['repair_prec']:.3f} recovery={m['recovery']:.3f} "
+                     f"fixed={m['_fixed']}/{m['_errors']}")
+    return "\n".join(lines)
 
 
 @app.local_entrypoint()
 def main(n: int = 20):
-    r = run_eval.remote(n_synth=n)
-    print("\n=== Layer 1 (synthetic) ===")
-    cols = ["json_valid", "op_f1", "canon_f1", "canon_r", "recovery"]
-    print(f"{'system':<12}" + "".join(f"{c:>11}" for c in cols))
-    for name, m in r["layer1"].items():
-        print(f"{name:<12}" + "".join(f"{m[c]:>11.3f}" for c in cols))
-    print("\n=== Layer 2 (real hospital) ===")
-    for k in ("layer2_noop", "layer2_ft"):
-        m = r[k]
-        print(f"{k:<12} repair_recall={m['repair_recall']:.3f} "
-              f"repair_prec={m['repair_prec']:.3f} recovery={m['recovery']:.3f} "
-              f"fixed={m['_fixed']}/{m['_errors']}")
+    # Attached: block for the result and print it. (For flaky connections, the function
+    # also persists to the `results` Dict, so `--detach` + Dict-fetch still works.)
+    print(_format(run_eval.remote(n_synth=n)))
