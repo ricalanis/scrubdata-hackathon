@@ -33,8 +33,14 @@ def _pick_columns(rng: random.Random, k: int):
 
 
 def make_example(rng: random.Random) -> dict:
-    n_rows = rng.randint(8, 18)
-    n_cols = rng.randint(3, 6)
+    # Mix small and LARGE/WIDE tables so the model handles real-world scale (the v1
+    # model degenerated on a 1000×20 table — it had only ever seen tiny ones).
+    if rng.random() < 0.4:
+        n_rows = rng.randint(30, 90)
+        n_cols = rng.randint(6, 9)
+    else:
+        n_rows = rng.randint(8, 22)
+        n_cols = rng.randint(3, 6)
     cols = _pick_columns(rng, n_cols)
 
     clean_data: dict[str, list] = {}
