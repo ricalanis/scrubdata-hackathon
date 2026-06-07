@@ -1,0 +1,20 @@
+# Non-thinking Modelfile for the fine-tuned planner.
+#
+# The published GGUF (ricalanis/scrubdata-qwen3-4b-gguf) ships Qwen3's full
+# thinking+tools template, which makes Ollama burn the token budget "thinking" and
+# return empty/garbage for our task. We fine-tuned the NON-thinking Instruct model to
+# emit the JSON plan directly, so override the template to match training.
+#
+#   ollama pull hf.co/ricalanis/scrubdata-qwen3-4b-gguf:Q4_K_M
+#   ollama create scrubdata-ft -f notebooks/Modelfile
+#   uv run eval/run_finetuned.py --model scrubdata-ft --n 40
+
+FROM hf.co/ricalanis/scrubdata-qwen3-4b-gguf:Q4_K_M
+TEMPLATE """{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{- range .Messages }}<|im_start|>{{ .Role }}
+{{ .Content }}<|im_end|>
+{{ end }}<|im_start|>assistant
+"""
+PARAMETER stop "<|im_end|>"
+PARAMETER temperature 0

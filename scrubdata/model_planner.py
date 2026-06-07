@@ -62,11 +62,13 @@ def make_local_ollama_planner(model: str, host: str = "http://localhost:11434",
     def planner(dirty_df, *_):
         profile = profile_dataframe(dirty_df)
         user = build_user_prompt(profile, dirty_df)
+        # No format=json: Qwen3-Instruct emits an empty <think></think> prefix that a
+        # strict JSON constraint rejects. _extract_json pulls the plan out of the text.
         payload = {
-            "model": model, "stream": False, "format": "json",
+            "model": model, "stream": False,
             "messages": [{"role": "system", "content": SYSTEM_PROMPT},
                          {"role": "user", "content": user}],
-            "options": {"temperature": 0, "num_predict": 4000},
+            "options": {"temperature": 0, "num_predict": 2000},
         }
         req = urllib.request.Request(
             host + "/api/chat", data=json.dumps(payload).encode(),
