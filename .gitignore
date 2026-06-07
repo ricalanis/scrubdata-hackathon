@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# uv
+.uv/
+
+# Gradio
+.gradio/
+flagged/
+
+# Models / data (keep large artifacts out of git; push to the Hub instead)
+*.gguf
+*.bin
+*.safetensors
+models/
+data/
+
+# Env / secrets
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

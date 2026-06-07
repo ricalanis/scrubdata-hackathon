@@ -1,0 +1,3 @@
+# Hugging Face Spaces installs from this file.
+# Keep in sync with pyproject.toml.
+gradio>=6.16.0
