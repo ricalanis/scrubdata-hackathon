@@ -87,14 +87,14 @@ def main() -> None:
     trainer.train()
 
     out = "scrubdata-qwen3-4b"
-    model.save_pretrained_gguf(out, tokenizer, quantization_method="q4_k_m")
+    model.save_pretrained_gguf(out, tokenizer, quantization_method="q8_0")
     print(f"Saved GGUF under ./{out}")
 
     if args.out_repo and hf_token:
         model.push_to_hub(args.out_repo, token=hf_token)
         tokenizer.push_to_hub(args.out_repo, token=hf_token)
         model.push_to_hub_gguf(f"{args.out_repo}-gguf", tokenizer,
-                               quantization_method="q4_k_m", token=hf_token)
+                               quantization_method="q8_0", token=hf_token)
         print(f"Pushed adapter → {args.out_repo} and GGUF → {args.out_repo}-gguf")
     else:
         print("Set --out-repo and HF_TOKEN to push artifacts to the Hub.")
