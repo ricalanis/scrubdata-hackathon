@@ -30,7 +30,13 @@ Measured on the frozen 300-example gold set (`eval/gold.jsonl`):
 | system | json_valid | op_f1 | canon_f1 | canon_r | recovery |
 |---|---|---|---|---|---|
 | ORACLE (gold) | 1.000 | 1.000 | 1.000 | 1.000 | **1.000** |
+| VANILLA glm-5.1 (big-model ref, n=15) | 1.000 | 0.891 | 0.452 | 0.482 | 0.747 |
 | HEURISTIC (baseline) | 1.000 | 0.961 | **0.133** | 0.090 | **0.627** |
+
+The **vanilla big model** beats the heuristic on the fuzzy skill (canon_f1 0.45 vs 0.13)
+but is still far from the oracle — it uses its *own* canonical conventions, not our
+executor's. Closing 0.45→0.85 (convention alignment + reliability) is precisely the
+fine-tune's job, and the case for a small *aligned* model over a big generic one.
 
 **Reading:** after adding case-folding + typo-clustering the heuristic does the *easy*
 canonicalization (collapse to most-frequent surface), but it's still ~blind to
