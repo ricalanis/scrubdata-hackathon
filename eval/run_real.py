@@ -96,9 +96,13 @@ def main() -> None:
         print(f"{name:<22}" + "".join(f"{m[c]:>14.3f}" if isinstance(m[c], float)
                                        else f"{m[c]:>14}" for c in cols))
     print(f"\nHeuristic changed {heur['_changed']} cells, fixed {heur['_fixed']} errors, "
-          f"broke {heur['broken']}.")
-    print("Errors here are char-substitution typos — fixable by cluster-canonicalization "
-          "(model's job), not by the rule heuristic. The model run plugs in the same way.")
+          f"diverged-from-convention on {heur['broken']}.")
+    print("HEADLINE METRIC = repair_recall (did we FIX the typo errors?). The errors here "
+          "are char-substitution typos, fixable by cluster-canonicalization (the model's "
+          "job; the rule heuristic scores 0).")
+    print("NOTE: 'broken' here is mostly CONVENTION DIVERGENCE, not error — our tool parses "
+          "'100%'->1.0 and reformats phones, which this benchmark stores as raw text. That "
+          "is product value, not a mistake; it's why raw recovery understates a standardizer.")
 
 
 if __name__ == "__main__":

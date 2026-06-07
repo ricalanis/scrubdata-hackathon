@@ -76,8 +76,11 @@ def _column_operations(col_profile: dict, series: pd.Series) -> list[dict]:
         ops.append({"op": "standardize_boolean",
                     "rationale": "Mapped Yes/Y/1/TRUE → true, No/N/0/FALSE → false."})
     elif stype == "phone":
-        ops.append({"op": "standardize_phone",
-                    "rationale": "Standardized phone formatting."})
+        # Conservative: only reformat when the column has mixed phone formats — don't
+        # impose our format on a column that's already internally consistent.
+        if "inconsistent_formats" in issues:
+            ops.append({"op": "standardize_phone",
+                        "rationale": "Unified inconsistent phone formats."})
     elif stype == "email":
         ops.append({"op": "normalize_email",
                     "rationale": "Lowercased and trimmed email addresses."})

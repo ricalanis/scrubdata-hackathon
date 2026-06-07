@@ -114,6 +114,17 @@ def _looks_like_date(s: str) -> bool:
     return False
 
 
+def phone_shape(s) -> str:
+    """Structural shape of a phone string (digits→D), e.g. '(DDD) DDD-DDDD'."""
+    return re.sub(r"\d", "D", str(s).strip())
+
+
+def phone_formats_consistent(values) -> bool:
+    """True if all non-missing phone values already share one format (don't reformat)."""
+    shapes = {phone_shape(v) for v in values if not is_missing(v)}
+    return len(shapes) <= 1
+
+
 def has_whitespace_issues(values) -> bool:
     for v in values:
         if is_missing(v):

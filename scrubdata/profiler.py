@@ -26,6 +26,8 @@ def _column_issues(series: pd.Series, semantic_type: str) -> list[str]:
         issues.append("numeric_stored_as_text")
     if semantic_type == "date":
         issues.append("mixed_date_formats")
+    if semantic_type == "phone" and not detect.phone_formats_consistent(values):
+        issues.append("inconsistent_formats")
     if semantic_type in {"categorical", "country"}:
         non_null = [str(v).strip().lower() for v in values if not detect.is_missing(v)]
         if len(set(non_null)) > _canonical_cardinality(non_null):

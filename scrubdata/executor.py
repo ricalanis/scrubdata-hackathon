@@ -115,6 +115,19 @@ def _normalize_email(v):
     return str(v).strip().lower()
 
 
+_CASE_FNS = {
+    "title": str.title, "upper": str.upper, "lower": str.lower,
+    "sentence": lambda s: s.capitalize(),
+}
+
+
+def _standardize_case(v, case):
+    if detect.is_missing(v):
+        return v
+    fn = _CASE_FNS.get(case, str.title)
+    return fn(str(v).strip())
+
+
 # ---- operation dispatch -----------------------------------------------------
 
 def _apply_column_op(series: pd.Series, op: dict) -> pd.Series:
@@ -137,6 +150,9 @@ def _apply_column_op(series: pd.Series, op: dict) -> pd.Series:
         return series.map(_standardize_phone)
     if name == "normalize_email":
         return series.map(_normalize_email)
+    if name == "standardize_case":
+        case = op.get("case", "title")
+        return series.map(lambda v: _standardize_case(v, case))
     if name == "canonicalize_categories":
         mapping = op.get("mapping", {})
         return series.map(lambda v: mapping.get(str(v).strip(), v) if not detect.is_missing(v) else v)
