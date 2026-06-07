@@ -135,18 +135,26 @@ class VocabField(Field):
         return [rng.choice(self._chosen) for _ in range(n)]
 
     def corrupt(self, rng, clean):
-        dirty, mapping = [], {}
+        dirty, mapping, ws = [], {}, False
         for c in clean:
             s = V.make_surface(rng, c, self.entries.get(c, []))
-            dirty.append(s)
             if s != c:
-                mapping[s] = c
-        ops = []
+                mapping[s] = c           # key = pre-whitespace surface
+            cell = s
+            if rng.random() < 0.25:      # combined whitespace + canonicalization
+                cell = _add_whitespace(rng, s)
+                ws = True
+            dirty.append(cell)
+        ops, issues = [], ["inconsistent_categories", "casing"]
+        if ws:  # strip first so canonicalize sees the bare surface (executor order)
+            ops.append({"op": "strip_whitespace",
+                        "rationale": "Trimmed surrounding/doubled spaces."})
+            issues.append("whitespace")
         if mapping:
             ops.append({"op": "canonicalize_categories", "mapping": mapping,
                         "rationale": f"Unified {len(mapping)} variant spelling(s) "
                                      f"into canonical labels."})
-        return dirty, clean, ops, ["inconsistent_categories", "casing"]
+        return dirty, clean, ops, issues
 
 
 class StatusField(VocabField):
@@ -278,8 +286,22 @@ class PhoneField(Field):
         return dirty, clean, ops, ["inconsistent_formats"]
 
 
+class PercentField(Field):
+    semantic_type = "percent"
+    names = ["rate", "discount", "completion", "margin", "growth", "conversion"]
+
+    def gen_clean(self, rng, n):
+        self._pct = [round(rng.uniform(0, 100), 1) for _ in range(n)]
+        return [p / 100 for p in self._pct]
+
+    def corrupt(self, rng, clean):
+        dirty = [f"{p}%" for p in self._pct]
+        ops = [{"op": "parse_percent", "rationale": "Parsed percent text to a fraction."}]
+        return dirty, clean, ops, ["numeric_stored_as_text"]
+
+
 ARCHETYPES: list[Field] = [
-    NameField(), CompanyField(), EmailField(),
+    NameField(), CompanyField(), EmailField(), PercentField(),
     VocabField(["country", "nation", "country_name"], "country", V.country_vocab(), max_card=5),
     VocabField(["state", "province", "region"], "state", V.state_vocab(), max_card=5),
     VocabField(["currency", "currency_code", "ccy"], "categorical", V.currency_vocab(), max_card=4),
