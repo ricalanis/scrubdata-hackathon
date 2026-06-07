@@ -9,12 +9,11 @@ The held-out seed differs from the training seed so gold instances are unseen.
 from __future__ import annotations
 
 import argparse
-import random
 
 from scrubdata.planner import mock_plan
-from training.generate import make_example
 
 from . import metrics
+from .gold import load_gold
 
 
 def _micro_f1(items, extract) -> dict:
@@ -45,13 +44,7 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=4242)
     args = ap.parse_args()
 
-    rng = random.Random(args.seed)
-    # Held-out gold: keep only oracle-solvable examples so the ceiling is a clean ~1.0.
-    gold = []
-    while len(gold) < args.n:
-        ex = make_example(rng)
-        if metrics.recovery(ex["clean_df"], ex["dirty_df"], ex["plan"]) >= 0.999:
-            gold.append(ex)
+    gold = load_gold()[:args.n]  # frozen, committed test set (eval/gold.jsonl)
 
     systems = {
         "ORACLE (gold plan)": lambda df, gold_plan: gold_plan,
@@ -60,7 +53,7 @@ def main() -> None:
     rows = {name: evaluate(fn, gold) for name, fn in systems.items()}
 
     cols = ["json_valid", "op_f1", "op_r", "canon_f1", "canon_r", "recovery"]
-    print(f"\nEval on {args.n} held-out synthetic examples (seed {args.seed})\n")
+    print(f"\nEval on {len(gold)} frozen held-out gold examples (eval/gold.jsonl)\n")
     print(f"{'system':<22}" + "".join(f"{c:>11}" for c in cols))
     print("-" * (22 + 11 * len(cols)))
     for name, m in rows.items():

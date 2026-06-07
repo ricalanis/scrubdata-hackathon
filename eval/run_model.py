@@ -9,13 +9,11 @@ can see whether a fine-tune is needed and how big the gap is.
 from __future__ import annotations
 
 import argparse
-import random
 
 from scrubdata.model_planner import make_ollama_planner
 from scrubdata.planner import mock_plan
-from training.generate import make_example
 
-from . import metrics
+from .gold import load_gold
 from .run_eval import evaluate
 
 
@@ -26,12 +24,7 @@ def main() -> None:
     ap.add_argument("--model", type=str, default="glm-5.1")
     args = ap.parse_args()
 
-    rng = random.Random(args.seed)
-    gold = []
-    while len(gold) < args.n:
-        ex = make_example(rng)
-        if metrics.recovery(ex["clean_df"], ex["dirty_df"], ex["plan"]) >= 0.999:
-            gold.append(ex)
+    gold = load_gold()[:args.n]
 
     systems = {
         "ORACLE (gold)": lambda df, gp: gp,
