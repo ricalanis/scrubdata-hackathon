@@ -53,7 +53,34 @@ the model, wrap inference (build prompt via `scrubdata.prompt`, parse JSON) and 
 in alongside the two reference systems. Track the table every fine-tune iteration; the
 per-metric delta vs baseline is the cheap regression signal.
 
-## Next (Layer 2, real data)
-Add a real dirty→clean slice (HoloClean Hospital/Flights, CleanML) scored with the same
-`recovery` metric — the out-of-distribution check that the model generalizes beyond our
-synthetic distribution.
+## Layer 2 — real out-of-distribution data (`uv run eval/run_real.py`)
+
+Raha `hospital` (1000×20, row-aligned dirty/clean). Errors are char-substitution typos
+(`birminghxm`→`birmingham`) — only ~2.5% of cells. Scored with the Raha **repair**
+protocol (the right metric when data is already mostly correct):
+
+| system | recovery | repair_recall | repair_prec | broken |
+|---|---|---|---|---|
+| NO-OP (dirty as-is) | 0.975 | 0.000 | 0.000 | 0 |
+| HEURISTIC (baseline) | 0.874 | 0.000 | 0.000 | **2021** |
+
+**Reading (honest + important):** the rule heuristic fixes **0** typos and **breaks 2021
+good cells** by over-standardizing — ~1000 reformatting phones (the dataset's clean
+convention keeps raw digits) and ~1000 collapsing distinct-but-valid categories. Two
+takeaways:
+1. **Model headroom on OOD is large** — it should *exceed* NO-OP by clustering typos
+   (`birminghxm`→`birmingham`) while NOT reformatting/over-collapsing.
+2. **Product requirement surfaced:** be conservative — only canonicalize genuine variants;
+   make aggressive format standardization opt-in (matches PRODUCT.md's trust contract).
+
+### 🎯 Real-data goalpost (fine-tuned model)
+| metric | NO-OP | HEURISTIC | **target** |
+|---|---|---|---|
+| recovery | 0.975 | 0.874 | **≥ 0.985** (beat NO-OP by fixing typos) |
+| repair_recall | 0.000 | 0.000 | **≥ 0.30** (fix real typos via clustering) |
+| broken | 0 | 2021 | **≤ 50** (don't over-standardize) |
+
+The model plugs into `_score(dirty, clean, model_output)` exactly like the heuristic.
+
+> Data auto-fetched to `data/real/hospital/` (gitignored). Add Flights/Beers/CleanML the
+> same way for breadth.
