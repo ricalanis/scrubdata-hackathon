@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ScrubData — clean data you can trust</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --ink: #1c2330;
+    --ink-soft: #5b6573;
+    --ink-faint: #8c95a3;
+    --line: #e7eaef;
+    --line-soft: #f0f2f5;
+    --accent: #2f6df0;
+    --accent-soft: #eaf1fe;
+    --accent-ink: #1b4fc0;
+    --good: #16a06a;
+    --good-soft: #e7f6ef;
+    --warn: #c4791d;
+    --warn-soft: #fbf1e2;
+    --danger: #d24b54;
+    --danger-soft: #fbecee;
+    --radius: 14px;
+    --radius-sm: 9px;
+    --shadow: 0 1px 2px rgba(20,30,50,.04), 0 8px 24px rgba(20,30,50,.05);
+    --shadow-lift: 0 2px 6px rgba(20,30,50,.06), 0 18px 50px rgba(20,30,50,.10);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- Header ---------- */
+  header.top {
+    border-bottom: 1px solid var(--line);
+    background: rgba(255,255,255,.72);
+    backdrop-filter: saturate(160%) blur(10px);
+    position: sticky; top: 0; z-index: 20;
+  }
+  .top-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 11px; font-weight: 650; letter-spacing: -.01em; font-size: 17px; }
+  .logo {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(150deg, #3b78f5, #2f6df0 60%, #2456c9);
+    display: grid; place-items: center; box-shadow: 0 4px 12px rgba(47,109,240,.35);
+  }
+  .logo svg { width: 17px; height: 17px; }
+  .brand .sub { color: var(--ink-faint); font-weight: 450; font-size: 13px; margin-left: 2px; }
+  .top-tag {
+    font-size: 12.5px; color: var(--ink-soft); display: inline-flex; align-items: center; gap: 7px;
+    padding: 6px 11px; border: 1px solid var(--line); border-radius: 999px; background: #fff;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 3px var(--good-soft); }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 54px 0 30px; }
+  .hero h1 {
+    font-size: 38px; line-height: 1.12; letter-spacing: -.025em; margin: 0 0 14px;
+    font-weight: 680; max-width: 16ch;
+  }
+  .hero p.lede { font-size: 17px; color: var(--ink-soft); max-width: 56ch; margin: 0 0 26px; }
+
+  .trust-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .trust-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--ink); background: var(--panel);
+    border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; box-shadow: var(--shadow);
+  }
+  .trust-chip svg { width: 15px; height: 15px; color: var(--accent); }
+
+  /* ---------- Uploader ---------- */
+  .uploader {
+    margin-top: 30px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .drop {
+    padding: 38px 32px;
+    display: flex; align-items: center; gap: 26px; flex-wrap: wrap;
+    border: 2px dashed transparent;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .drop.drag { background: var(--accent-soft); border-color: var(--accent); border-style: dashed; }
+  .drop-icon {
+    width: 58px; height: 58px; border-radius: 15px; flex: none;
+    background: var(--accent-soft); color: var(--accent);
+    display: grid; place-items: center;
+  }
+  .drop-icon svg { width: 27px; height: 27px; }
+  .drop-text { flex: 1; min-width: 220px; }
+  .drop-text h3 { margin: 0 0 4px; font-size: 16px; font-weight: 620; letter-spacing: -.01em; }
+  .drop-text p { margin: 0; color: var(--ink-soft); font-size: 13.5px; }
+  .drop-text .picked { color: var(--accent-ink); font-weight: 600; }
+  .drop-actions { display: flex; flex-direction: column; gap: 9px; align-items: stretch; }
+
+  .btn {
+    font-family: inherit; font-size: 14.5px; font-weight: 600; letter-spacing: -.01em;
+    border-radius: var(--radius-sm); padding: 11px 20px; cursor: pointer;
+    border: 1px solid transparent; transition: transform .06s ease, background .15s ease, box-shadow .15s ease;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 6px 16px rgba(47,109,240,.30); }
+  .btn-primary:hover { background: #2a63dd; }
+  .btn-primary:disabled { background: #aeb8c8; box-shadow: none; cursor: not-allowed; }
+  .btn-ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+  .btn-ghost:hover { background: var(--line-soft); }
+  .btn svg { width: 16px; height: 16px; }
+
+  .sample-hint {
+    border-top: 1px solid var(--line-soft); padding: 13px 32px;
+    font-size: 13px; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    background: #fcfcfd;
+  }
+  .sample-hint b { color: var(--ink); font-weight: 600; }
+  .link-btn {
+    background: none; border: none; color: var(--accent); font: inherit; font-weight: 600;
+    cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 2px;
+  }
+  .link-btn:hover { color: var(--accent-ink); }
+  code.path { font-family: var(--mono); font-size: 12px; background: var(--line-soft); padding: 2px 7px; border-radius: 6px; color: var(--ink-soft); }
+
+  /* ---------- States ---------- */
+  .state { margin-top: 22px; }
+  .banner {
+    border-radius: var(--radius); padding: 16px 20px; font-size: 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .banner.err { background: var(--danger-soft); border: 1px solid #f3ccd0; color: #8e2a31; }
+  .banner.err svg { width: 18px; height: 18px; flex: none; }
+
+  .loading { display: none; align-items: center; gap: 16px; padding: 26px 24px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .loading.show { display: flex; }
+  .spinner {
+    width: 26px; height: 26px; border-radius: 50%; flex: none;
+    border: 3px solid var(--accent-soft); border-top-color: var(--accent);
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading .ltxt h4 { margin: 0 0 2px; font-size: 14.5px; font-weight: 620; }
+  .loading .ltxt p { margin: 0; font-size: 13px; color: var(--ink-soft); }
+
+  /* ---------- Results ---------- */
+  #results { display: none; margin-top: 30px; }
+  #results.show { display: block; animation: rise .35s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  .summary-card {
+    background: linear-gradient(180deg, #ffffff, #fbfcfe);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 22px 24px; margin-bottom: 22px;
+    display: flex; gap: 22px; align-items: flex-start; flex-wrap: wrap;
+  }
+  .summary-card .check {
+    width: 40px; height: 40px; border-radius: 11px; flex: none;
+    background: var(--good-soft); color: var(--good); display: grid; place-items: center;
+  }
+  .summary-card .check svg { width: 22px; height: 22px; }
+  .summary-card .stext { flex: 1; min-width: 240px; }
+  .summary-card h2 { margin: 0 0 4px; font-size: 17px; letter-spacing: -.01em; }
+  .summary-card .stext p { margin: 0; color: var(--ink-soft); font-size: 14px; }
+  .stats { display: flex; gap: 26px; flex-wrap: wrap; }
+  .stat { text-align: right; }
+  .stat .n { font-size: 22px; font-weight: 680; letter-spacing: -.02em; }
+  .stat .l { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); margin-top: 2px; }
+  .stat .n.minus { color: var(--danger); }
+  .stat .n.plus { color: var(--good); }
+
+  .section-label {
+    display: flex; align-items: center; gap: 10px; margin: 0 0 13px;
+    font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-faint); font-weight: 650;
+  }
+  .section-label::after { content: ""; height: 1px; background: var(--line); flex: 1; }
+
+  /* Split view */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column;
+  }
+  .panel-head {
+    padding: 13px 18px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .panel-head .ph-l { display: flex; align-items: center; gap: 9px; }
+  .pill { font-size: 11px; font-weight: 650; padding: 3px 9px; border-radius: 999px; letter-spacing: .02em; }
+  .pill.before { background: var(--danger-soft); color: #9a3a41; }
+  .pill.after { background: var(--good-soft); color: #11704c; }
+  .panel-head h3 { margin: 0; font-size: 14px; font-weight: 600; }
+  .panel-head .meta { font-size: 12px; color: var(--ink-faint); }
+
+  .table-scroll { overflow: auto; max-height: 440px; }
+  table.data { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  table.data th, table.data td {
+    text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line-soft);
+    white-space: nowrap; max-width: 220px; overflow: hidden; text-overflow: ellipsis;
+  }
+  table.data thead th {
+    position: sticky; top: 0; background: #fbfcfe; z-index: 1;
+    font-weight: 620; color: var(--ink-soft); border-bottom: 1px solid var(--line);
+    font-size: 11.5px; text-transform: none;
+  }
+  table.data tbody tr:hover { background: var(--line-soft); }
+  table.data td { color: var(--ink); }
+  table.data .empty { color: var(--ink-faint); font-style: italic; }
+  .panel.before .table-scroll { background: #fffdfd; }
+  .panel.after .table-scroll { background: #fcfffd; }
+  .table-foot { padding: 9px 16px; border-top: 1px solid var(--line-soft); font-size: 11.5px; color: var(--ink-faint); }
+
+  /* Report */
+  .report-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: 20px; margin-top: 26px; align-items: start; }
+  .report {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .report .panel-head { background: linear-gradient(90deg, var(--accent-soft), #fff); }
+  .report-body { padding: 20px 24px 26px; font-size: 14px; color: var(--ink); }
+  .report-body h1 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 12px; }
+  .report-body h2 { font-size: 15px; margin: 22px 0 8px; letter-spacing: -.01em; }
+  .report-body h3 { font-size: 13.5px; margin: 16px 0 6px; color: var(--ink-soft); }
+  .report-body p { margin: 0 0 10px; color: var(--ink-soft); }
+  .report-body ul { margin: 0 0 12px; padding-left: 20px; }
+  .report-body li { margin: 4px 0; }
+  .report-body strong { color: var(--ink); font-weight: 620; }
+  .report-body code {
+    font-family: var(--mono); font-size: 12.5px; background: var(--line-soft);
+    padding: 1.5px 6px; border-radius: 5px; color: var(--accent-ink);
+  }
+  .report-body hr { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
+  .report-body table { border-collapse: collapse; width: 100%; font-size: 12.5px; margin: 8px 0 14px; }
+  .report-body th, .report-body td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; }
+  .report-body th { background: #fbfcfe; font-weight: 620; }
+
+  /* Download / trust aside */
+  .aside { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 18px; }
+  .download-card {
+    background: linear-gradient(165deg, #1f2c44, #16203360 0%, #182338);
+    background: linear-gradient(165deg, #223150, #1a2740);
+    color: #fff; border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-lift);
+  }
+  .download-card h3 { margin: 0 0 6px; font-size: 16px; letter-spacing: -.01em; }
+  .download-card p { margin: 0 0 18px; font-size: 13px; color: #c0c9da; }
+  .download-card .btn-dl {
+    width: 100%; background: #fff; color: #1a2740; font-weight: 650;
+    box-shadow: 0 8px 20px rgba(0,0,0,.25);
+  }
+  .download-card .btn-dl:hover { background: #eef2f8; }
+  .download-card .fname { font-family: var(--mono); font-size: 11.5px; color: #99a6bd; margin-top: 12px; text-align: center; }
+
+  .contract {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 20px 22px;
+  }
+  .contract h4 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); }
+  .contract ul { list-style: none; margin: 0; padding: 0; }
+  .contract li { display: flex; gap: 11px; align-items: flex-start; padding: 8px 0; font-size: 13px; }
+  .contract li svg { width: 16px; height: 16px; color: var(--good); flex: none; margin-top: 1px; }
+  .contract li b { font-weight: 620; }
+  .contract li span { color: var(--ink-soft); }
+
+  footer { padding: 40px 0 56px; color: var(--ink-faint); font-size: 12.5px; text-align: center; }
+
+  @media (max-width: 920px) {
+    .split { grid-template-columns: 1fr; }
+    .report-grid { grid-template-columns: 1fr; }
+    .aside { position: static; }
+    .hero h1 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand">
+      <span class="logo">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l2.5 2.5L11 12m3 7c4 0 6-2.5 6-6.5C20 6 16 3 12 3 7 3 4 6.5 4 11" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      ScrubData <span class="sub">trustworthy data cleaning</span>
+    </div>
+    <span class="top-tag"><span class="dot"></span> Original file never modified</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Drop in a messy spreadsheet. Get clean data you can vouch for.</h1>
+    <p class="lede">
+      ScrubData fixes the silent killers — stray whitespace, mixed date formats, currency stored as text,
+      inconsistent labels — then shows you a plain-English report of <em>exactly</em> what changed. No config. No guessing.
+    </p>
+    <div class="trust-row">
+      <span class="trust-chip"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg> Visible &amp; explained</span>
+      <span class="trust-chip"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 1 1 2.3 5.6M4 12v5m0-5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Reversible by default</span>
+      <span class="trust-chip"><svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M5 12h14M5 17h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Conservative changes only</span>
+    </div>
+
+    <div class="uploader">
+      <div class="drop" id="drop">
+        <div class="drop-icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L8 8m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="drop-text">
+          <h3 id="dropTitle">Drag a file here, or browse</h3>
+          <p id="dropSub">Accepts <b>.csv</b>, <b>.xlsx</b>, <b>.xls</b> — read as raw text, types inferred during cleaning.</p>
+        </div>
+        <div class="drop-actions">
+          <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" hidden />
+          <button class="btn btn-ghost" id="browseBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 7a2 2 0 012-2h4l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            Choose file
+          </button>
+          <button class="btn btn-primary" id="cleanBtn" type="button" disabled>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l2.5 2.5L11 12m3 7c4 0 6-2.5 6-6.5C20 6 16 3 12 3 7 3 4 6.5 4 11" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Clean it
+          </button>
+        </div>
+      </div>
+      <div class="sample-hint">
+        <span>New here? Try the deliberately ugly export —</span>
+        <button class="link-btn" id="sampleBtn" type="button">load the messy sample</button>
+        <code class="path">samples/dirty_contacts.csv</code>
+      </div>
+    </div>
+
+    <div class="state">
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div class="ltxt">
+          <h4>Profiling &amp; cleaning your data…</h4>
+          <p>Detecting issues, proposing safe fixes, and building your change report.</p>
+        </div>
+      </div>
+      <div id="errorBox"></div>
+    </div>
+  </section>
+
+  <section id="results">
+    <div class="summary-card">
+      <div class="check">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="stext">
+        <h2>Your data is clean.</h2>
+        <p id="summaryText">—</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="n" id="statRowsBefore">—</div><div class="l">Rows before</div></div>
+        <div class="stat"><div class="n" id="statRowsAfter">—</div><div class="l">Rows after</div></div>
+        <div class="stat"><div class="n" id="statCols">—</div><div class="l">Columns</div></div>
+      </div>
+    </div>
+
+    <div class="section-label">Before &amp; after</div>
+    <div class="split">
+      <div class="panel before">
+        <div class="panel-head">
+          <div class="ph-l"><span class="pill before">BEFORE</span><h3>Original (untouched)</h3></div>
+          <span class="meta" id="beforeMeta"></span>
+        </div>
+        <div class="table-scroll" id="beforeTable"></div>
+        <div class="table-foot" id="beforeFoot"></div>
+      </div>
+      <div class="panel after">
+        <div class="panel-head">
+          <div class="ph-l"><span class="pill after">AFTER</span><h3>Scrubbed result</h3></div>
+          <span class="meta" id="afterMeta"></span>
+        </div>
+        <div class="table-scroll" id="afterTable"></div>
+        <div class="table-foot" id="afterFoot"></div>
+      </div>
+    </div>
+
+    <div class="report-grid">
+      <div class="report">
+        <div class="panel-head">
+          <div class="ph-l">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" style="color:var(--accent)"><path d="M8 6h11M8 12h11M8 18h7M3.5 6h.01M3.5 12h.01M3.5 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <h3>What changed &amp; why</h3>
+          </div>
+          <span class="meta">plain-English report</span>
+        </div>
+        <div class="report-body" id="reportBody"></div>
+      </div>
+
+      <aside class="aside">
+        <div class="download-card">
+          <h3>Take your clean file</h3>
+          <p>A brand-new file — your original is never touched. Replays exactly what the report describes.</p>
+          <button class="btn btn-dl" id="downloadBtn" type="button">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M12 4v10m0 0l-4-4m4 4l4-4M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download scrubbed.csv
+          </button>
+          <div class="fname">scrubbed.csv · ready</div>
+        </div>
+        <div class="contract">
+          <h4>The trust contract</h4>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Visible.</b> <span>Every change is in the diff above.</span></div></li>
+            <li><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Explained.</b> <span>Each fix has a reason in plain words.</span></div></li>
+            <li><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Conservative.</b> <span>Risky edits are flagged, not silently applied.</span></div></li>
+            <li><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Reversible.</b> <span>Original stays put; output is a new file.</span></div></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  ScrubData · hands-off tabular cleaning. Trust is the product.
+</footer>
+
+<script type="module">
+  import { Client, handle_file } from "https://cdn.jsdelivr.net/npm/@gradio/client";
+
+  const $ = (id) => document.getElementById(id);
+  const fileInput = $("fileInput");
+  const drop = $("drop");
+  const cleanBtn = $("cleanBtn");
+  let pickedFile = null;
+  let lastCsvText = "";
+
+  /* ---------- File selection ---------- */
+  function setPicked(file) {
+    pickedFile = file;
+    if (file) {
+      $("dropTitle").innerHTML = 'Ready: <span class="picked">' + escapeHtml(file.name) + '</span>';
+      $("dropSub").textContent = (file.size ? (Math.max(1, Math.round(file.size / 102.4) / 10) + " KB · ") : "") + "click “Clean it” to run.";
+      cleanBtn.disabled = false;
+    } else {
+      $("dropTitle").textContent = "Drag a file here, or browse";
+      cleanBtn.disabled = true;
+    }
+  }
+
+  $("browseBtn").addEventListener("click", () => fileInput.click());
+  drop.addEventListener("click", (e) => {
+    if (e.target.closest("button")) return;
+    fileInput.click();
+  });
+  fileInput.addEventListener("change", () => { if (fileInput.files[0]) setPicked(fileInput.files[0]); });
+
+  ["dragenter", "dragover"].forEach(ev =>
+    drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("drag"); }));
+  ["dragleave", "drop"].forEach(ev =>
+    drop.addEventListener(ev, (e) => { e.preventDefault(); if (ev === "dragleave" && drop.contains(e.relatedTarget)) return; drop.classList.remove("drag"); }));
+  drop.addEventListener("drop", (e) => {
+    const f = e.dataTransfer.files[0];
+    if (f) setPicked(f);
+  });
+
+  /* ---------- Sample loader ---------- */
+  $("sampleBtn").addEventListener("click", async () => {
+    showError("");
+    try {
+      const res = await fetch("samples/dirty_contacts.csv");
+      if (!res.ok) throw new Error("Sample not reachable at samples/dirty_contacts.csv (HTTP " + res.status + ")");
+      const blob = await res.blob();
+      const f = new File([blob], "dirty_contacts.csv", { type: "text/csv" });
+      const dt = new DataTransfer();
+      dt.items.add(f);
+      fileInput.files = dt.files;
+      setPicked(f);
+    } catch (err) {
+      showError("Could not load the sample. You can still upload your own file. (" + err.message + ")");
+    }
+  });
+
+  /* ---------- Clean action ---------- */
+  cleanBtn.addEventListener("click", runClean);
+
+  async function runClean() {
+    if (!pickedFile) return;
+    showError("");
+    setLoading(true);
+    $("results").classList.remove("show");
+    try {
+      const client = await Client.connect(window.location.origin);
+      const result = await client.predict("/clean_data", { file_path: handle_file(pickedFile) });
+      const data = Array.isArray(result.data) ? result.data[0] : result.data;
+      if (!data) throw new Error("Empty response from the cleaning service.");
+      render(data);
+    } catch (err) {
+      console.error(err);
+      showError("Cleaning failed: " + (err && err.message ? err.message : String(err)) + ". Make sure the ScrubData server is running and the file is a valid CSV/Excel.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function setLoading(on) {
+    $("loading").classList.toggle("show", on);
+    cleanBtn.disabled = on || !pickedFile;
+  }
+
+  function showError(msg) {
+    const box = $("errorBox");
+    if (!msg) { box.innerHTML = ""; return; }
+    box.innerHTML =
+      '<div class="banner err"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8v5m0 3h.01M10.3 3.9L2.6 17.6A2 2 0 004.3 20.6h15.4a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>'
+      + escapeHtml(msg) + '</span></div>';
+  }
+
+  /* ---------- Render results ---------- */
+  function render(d) {
+    const before = normalizeRecords(d.before);
+    const after = normalizeRecords(d.after);
+    lastCsvText = d.csv_text || toCsv(after.cols, after.rows);
+
+    // Summary + stats
+    $("summaryText").textContent = d.summary || "Cleaning complete. Review the changes below before you trust the result.";
+    setStat("statRowsBefore", before.rows.length);
+    setStat("statRowsAfter", after.rows.length, before.rows.length);
+    setStat("statCols", after.cols.length || before.cols.length);
+
+    // Tables
+    renderTable("beforeTable", before.cols, before.rows);
+    renderTable("afterTable", after.cols, after.rows);
+    $("beforeMeta").textContent = before.rows.length + " rows × " + before.cols.length + " cols";
+    $("afterMeta").textContent = after.rows.length + " rows × " + after.cols.length + " cols";
+    $("beforeFoot").textContent = footNote(before.rows.length, before.total);
+    $("afterFoot").textContent = footNote(after.rows.length, after.total);
+
+    // Report
+    $("reportBody").innerHTML = renderMarkdown(d.report_md || "_No report was returned._");
+
+    $("results").classList.add("show");
+    $("results").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function setStat(id, val, compareTo) {
+    const el = $(id);
+    el.textContent = (val ?? "—");
+    el.classList.remove("minus", "plus");
+    if (compareTo != null && val != null) {
+      if (val < compareTo) el.classList.add("minus");
+      else if (val > compareTo) el.classList.add("plus");
+    }
+  }
+
+  function footNote(shown, total) {
+    if (total != null && total > shown) return "Showing first " + shown + " of " + total + " rows";
+    return shown + " row" + (shown === 1 ? "" : "s");
+  }
+
+  /* Accepts: array of record objects, OR {data, headers}, OR array-of-arrays */
+  function normalizeRecords(input) {
+    if (!input) return { cols: [], rows: [], total: 0 };
+    // {headers:[...], data:[[...]]}
+    if (!Array.isArray(input) && input.headers && input.data) {
+      return { cols: input.headers.map(String), rows: input.data.map(r => r.map(cell)), total: input.data.length };
+    }
+    if (!Array.isArray(input)) return { cols: [], rows: [], total: 0 };
+    if (input.length === 0) return { cols: [], rows: [], total: 0 };
+    // array of arrays
+    if (Array.isArray(input[0])) {
+      const cols = input[0].map(String);
+      return { cols, rows: input.slice(1).map(r => r.map(cell)), total: input.length - 1 };
+    }
+    // array of record objects
+    const cols = Object.keys(input[0]);
+    const rows = input.map(rec => cols.map(c => cell(rec[c])));
+    return { cols, rows, total: input.length };
+  }
+
+  function cell(v) {
+    if (v === null || v === undefined || v === "") return "";
+    return String(v);
+  }
+
+  function renderTable(id, cols, rows, cap = 200) {
+    const el = $(id);
+    if (!cols.length) { el.innerHTML = '<div style="padding:24px;color:var(--ink-faint);font-size:13px">No data.</div>'; return; }
+    const shown = rows.slice(0, cap);
+    let html = '<table class="data"><thead><tr>';
+    for (const c of cols) html += "<th>" + escapeHtml(c) + "</th>";
+    html += "</tr></thead><tbody>";
+    for (const r of shown) {
+      html += "<tr>";
+      for (const v of r) {
+        html += v === "" ? '<td class="empty">∅</td>' : "<td>" + escapeHtml(v) + "</td>";
+      }
+      html += "</tr>";
+    }
+    html += "</tbody></table>";
+    el.innerHTML = html;
+  }
+
+  /* ---------- Download ---------- */
+  $("downloadBtn").addEventListener("click", () => {
+    if (!lastCsvText) return;
+    const blob = new Blob([lastCsvText], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "scrubbed.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  });
+
+  function toCsv(cols, rows) {
+    const esc = (s) => /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    const lines = [cols.map(esc).join(",")];
+    for (const r of rows) lines.push(r.map(esc).join(","));
+    return lines.join("\n");
+  }
+
+  /* ---------- Minimal, safe Markdown renderer ---------- */
+  function renderMarkdown(md) {
+    const lines = String(md).replace(/\r\n/g, "\n").split("\n");
+    let html = "", inList = false, inTable = false, tableRows = [];
+
+    const flushList = () => { if (inList) { html += "</ul>"; inList = false; } };
+    const flushTable = () => {
+      if (!inTable) return;
+      html += "<table>";
+      tableRows.forEach((cells, i) => {
+        if (i === 1 && cells.every(c => /^:?-+:?$/.test(c.trim()))) return; // separator
+        const tag = i === 0 ? "th" : "td";
+        html += "<tr>" + cells.map(c => "<" + tag + ">" + inline(c.trim()) + "</" + tag + ">").join("") + "</tr>";
+      });
+      html += "</table>";
+      inTable = false; tableRows = [];
+    };
+
+    for (const raw of lines) {
+      const line = raw.replace(/\s+$/, "");
+      if (/^\s*\|.*\|\s*$/.test(line)) {
+        flushList();
+        inTable = true;
+        tableRows.push(line.trim().replace(/^\||\|$/g, "").split("|"));
+        continue;
+      } else { flushTable(); }
+
+      if (/^#{1,6}\s/.test(line)) {
+        flushList();
+        const level = line.match(/^#+/)[0].length;
+        html += "<h" + level + ">" + inline(line.replace(/^#+\s/, "")) + "</h" + level + ">";
+      } else if (/^\s*[-*]\s+/.test(line)) {
+        if (!inList) { html += "<ul>"; inList = true; }
+        html += "<li>" + inline(line.replace(/^\s*[-*]\s+/, "")) + "</li>";
+      } else if (/^\s*---+\s*$/.test(line)) {
+        flushList(); html += "<hr>";
+      } else if (line.trim() === "") {
+        flushList();
+      } else {
+        flushList();
+        html += "<p>" + inline(line) + "</p>";
+      }
+    }
+    flushList(); flushTable();
+    return html;
+  }
+
+  function inline(s) {
+    s = escapeHtml(s);
+    s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+    s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    s = s.replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>");
+    s = s.replace(/\b_([^_]+)_\b/g, "<em>$1</em>");
+    return s;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+</script>
+</body>
+</html>
