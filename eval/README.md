@@ -30,7 +30,7 @@ Measured on the frozen 300-example gold set (`eval/gold.jsonl`):
 | system | json_valid | op_f1 | canon_f1 | canon_r | recovery |
 |---|---|---|---|---|---|
 | ORACLE (gold) | 1.000 | 1.000 | 1.000 | 1.000 | **1.000** |
-| HEURISTIC (baseline) | 1.000 | 0.967 | **0.165** | 0.115 | **0.663** |
+| HEURISTIC (baseline) | 1.000 | 0.961 | **0.133** | 0.090 | **0.627** |
 
 **Reading:** after adding case-folding + typo-clustering the heuristic does the *easy*
 canonicalization (collapse to most-frequent surface), but it's still ~blind to
@@ -42,13 +42,13 @@ the fine-tuned model's job.
 | metric | baseline | **target** | ceiling |
 |---|---|---|---|
 | json_valid | 1.000 | **≥ 0.99** | 1.000 |
-| op_f1 | 0.967 | **≥ 0.98** | 1.000 |
-| canon_f1 | 0.165 | **≥ 0.85** | 1.000 |
-| recovery | 0.663 | **≥ 0.95** | 1.000 |
+| op_f1 | 0.961 | **≥ 0.98** | 1.000 |
+| canon_f1 | 0.133 | **≥ 0.85** | 1.000 |
+| recovery | 0.627 | **≥ 0.95** | 1.000 |
 
 A fine-tune that hits these clearly beats the (now stronger) heuristic and approaches the
-oracle — the headline being **canon_f1 0.165 → ≥0.85** (alias-level canonicalization) and
-**recovery 0.663 → ≥0.95**.
+oracle — the headline being **canon_f1 0.133 → ≥0.85** (alias-level canonicalization) and
+**recovery 0.627 → ≥0.95**.
 
 ## Plugging in the model
 `evaluate(planner, gold)` takes any `planner(dirty_df, gold_plan) -> plan dict`. For
