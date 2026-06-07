@@ -112,6 +112,25 @@ def test_detect_types():
     assert detect.detect_semantic_type("x", ["Yes", "No", "Y"]) == "boolean"
 
 
+def test_batched_planner():
+    # agentic column-batching wrapper merges per-batch plans + deterministic table ops
+    from scrubdata.model_planner import make_batched_planner
+    from scrubdata.planner import mock_plan
+    df = pd.read_csv("samples/dirty_contacts.csv", dtype=str, keep_default_na=False)
+    plan = make_batched_planner(mock_plan, batch_size=3)(df)
+    names = {c["name"] for c in plan["columns"]}
+    assert {"country", "amount"} <= names                       # all columns covered
+    assert any(o["op"] == "drop_empty_columns" for o in plan["table_operations"])
+    assert is_valid(plan)
+
+
+def test_value_counts_profile():
+    df = pd.DataFrame({"country": ["USA", "USA", "usa", "Canada"]})
+    prof = profile_dataframe(df)
+    vc = dict((v, n) for v, n in prof["columns"][0]["value_counts"])
+    assert vc["USA"] == 2 and "value_counts" in prof["columns"][0]
+
+
 def test_cli(tmp_path):
     from scrubdata.cli import main
     out = tmp_path / "clean.csv"

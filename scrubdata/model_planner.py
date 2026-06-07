@@ -90,6 +90,45 @@ def make_local_ollama_planner(model: str, host: str = "http://localhost:11434",
     return planner
 
 
+def make_batched_planner(base_planner, batch_size: int = 6):
+    """Agentic wrapper: plan a WIDE table column-batch by column-batch.
+
+    Aggregation (value_counts) makes the prompt invariant to ROW count; batching makes
+    it invariant to COLUMN count. Each model call sees only `batch_size` columns (a small
+    profile), so the planner scales to arbitrarily large/wide tables. Table-level ops
+    (dedup, drop empty) are deterministic. `base_planner` is any callable(df)->plan.
+    """
+    from .profiler import profile_dataframe
+
+    def planner(dirty_df, *_):
+        prof = profile_dataframe(dirty_df)
+        empty_cols = prof["empty_columns"]
+        table_ops = []
+        if prof["n_empty_rows"]:
+            table_ops.append({"op": "drop_empty_rows", "rationale": "Fully-empty row(s)."})
+        if empty_cols:
+            table_ops.append({"op": "drop_empty_columns", "columns": empty_cols,
+                              "rationale": "Column(s) with no data."})
+        if prof["n_exact_duplicate_rows"]:
+            table_ops.append({"op": "drop_exact_duplicates",
+                              "rationale": "Exact duplicate row(s)."})
+
+        work = [c for c in dirty_df.columns if c not in empty_cols]
+        columns, flags = [], []
+        for i in range(0, len(work), batch_size):
+            sub = dirty_df[work[i:i + batch_size]]
+            p = base_planner(sub)
+            if isinstance(p, dict):
+                columns.extend(p.get("columns", []))
+                flags.extend(p.get("flags", []))
+        return {
+            "dataset_summary": f"{prof['n_rows']} rows × {prof['n_cols']} columns "
+                               f"(planned in {((len(work) - 1) // batch_size) + 1} batches).",
+            "table_operations": table_ops, "columns": columns, "flags": flags,
+        }
+    return planner
+
+
 if __name__ == "__main__":  # one-example smoke test
     import random
     from training.generate import make_example
