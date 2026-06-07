@@ -25,32 +25,28 @@ Two reference systems frame every run:
 - **ORACLE** = the gold plan → the ceiling.
 - **HEURISTIC** (`scrubdata.mock_plan`) = the rule-based baseline the model must beat.
 
-Measured on the frozen 300-example gold set (`eval/gold.jsonl`):
+Measured on the frozen 300-example gold set (`eval/gold.jsonl`, **value_counts/aggregation
+format**):
 
 | system | json_valid | op_f1 | canon_f1 | canon_r | recovery |
 |---|---|---|---|---|---|
 | ORACLE (gold) | 1.000 | 1.000 | 1.000 | 1.000 | **1.000** |
-| VANILLA glm-5.1 (big-model ref, n=15) | 1.000 | 0.891 | 0.452 | 0.482 | 0.747 |
-| HEURISTIC (baseline) | 1.000 | 0.961 | **0.133** | 0.090 | **0.627** |
+| HEURISTIC (baseline) | 1.000 | 0.932 | **0.189** | 0.129 | **0.637** |
 
-The **vanilla big model** beats the heuristic on the fuzzy skill (canon_f1 0.45 vs 0.13)
-but is still far from the oracle — it uses its *own* canonical conventions, not our
-executor's. Closing 0.45→0.85 (convention alignment + reliability) is precisely the
-fine-tune's job, and the case for a small *aligned* model over a big generic one.
-
-**Reading:** after adding case-folding + typo-clustering the heuristic does the *easy*
+**Reading:** with case-folding + typo-clustering the heuristic does the *easy*
 canonicalization (collapse to most-frequent surface), but it's still ~blind to
 **alias/semantic** canonicalization (`USA`→`United States`, `NYC`→`New York`) — canon_f1
-0.165 vs the oracle's 1.0, and it leaves ~1/3 of cells in non-canonical form. That gap is
-the fine-tuned model's job.
+0.19 vs the oracle's 1.0. That gap is the fine-tuned model's job. (Earlier, on the old
+sample-rows format, a fine-tune reached canon_f1 0.86 vs a big vanilla model's 0.45 —
+proving small-aligned > big-generic; the v4 retrain re-establishes this on the new format.)
 
 ### 🎯 Goalpost for the fine-tuned Qwen3-4B
 | metric | baseline | **target** | ceiling |
 |---|---|---|---|
 | json_valid | 1.000 | **≥ 0.99** | 1.000 |
-| op_f1 | 0.961 | **≥ 0.98** | 1.000 |
-| canon_f1 | 0.133 | **≥ 0.85** | 1.000 |
-| recovery | 0.627 | **≥ 0.95** | 1.000 |
+| op_f1 | 0.932 | **≥ 0.98** | 1.000 |
+| canon_f1 | 0.189 | **≥ 0.85** | 1.000 |
+| recovery | 0.637 | **≥ 0.95** | 1.000 |
 
 A fine-tune that hits these clearly beats the (now stronger) heuristic and approaches the
 oracle — the headline being **canon_f1 0.133 → ≥0.85** (alias-level canonicalization) and
