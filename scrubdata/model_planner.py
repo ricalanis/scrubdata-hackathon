@@ -27,8 +27,8 @@ def _extract_json(text: str) -> dict | None:
         return None
 
 
-def make_ollama_planner(model: str = "glm-5.1", max_tokens: int = 4000,
-                        timeout: int = 240):
+def make_ollama_planner(model: str = "glm-5.1", max_tokens: int = 8000,
+                        timeout: int = 300):
     """Return a planner(dirty_df, *_ ) -> plan dict backed by an Ollama Cloud model."""
     def planner(dirty_df, *_):
         profile = profile_dataframe(dirty_df)
