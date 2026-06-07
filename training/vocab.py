@@ -36,11 +36,15 @@ def _one_typo(rng: random.Random, s: str) -> str:
         return s
     i = rng.randrange(1, len(s) - 1)
     mode = rng.random()
-    if mode < 0.34:                      # drop a char
+    if mode < 0.28:                      # drop a char
         return s[:i] + s[i + 1:]
-    if mode < 0.67:                      # swap adjacent
+    if mode < 0.52:                      # swap adjacent
         return s[:i] + s[i + 1] + s[i] + s[i + 2:]
-    return s[:i] + s[i] + s[i:]          # duplicate a char
+    if mode < 0.72:                      # duplicate a char
+        return s[:i] + s[i] + s[i:]
+    # substitute a char (the classic 'birminghxm' corruption)
+    repl = rng.choice(string.ascii_uppercase if s[i].isupper() else string.ascii_lowercase)
+    return s[:i] + repl + s[i + 1:]
 
 
 def make_surface(rng: random.Random, canonical: str, aliases: list[str]) -> str:
@@ -55,7 +59,7 @@ def make_surface(rng: random.Random, canonical: str, aliases: list[str]) -> str:
         s = s.title()
     if rng.random() < 0.15:
         s = _strip_punct(s)
-    if rng.random() < 0.08:
+    if rng.random() < 0.13:
         s = _one_typo(rng, s)
     return s.strip()
 
@@ -203,6 +207,42 @@ def department_vocab() -> dict[str, list[str]]:
 
 def job_title_vocab() -> dict[str, list[str]]:
     return _cached("job_title", _job_title_entries)
+
+
+def _industry_entries() -> dict[str, list[str]]:
+    return {
+        "Technology": ["Tech", "IT", "Software", "tech"],
+        "Healthcare": ["Health Care", "Medical", "Health"],
+        "Financial Services": ["Finance", "FinServ", "Banking", "Fintech"],
+        "Retail": ["E-commerce", "Retail & E-commerce", "retail"],
+        "Manufacturing": ["Mfg", "Industrial"],
+        "Education": ["EdTech", "Ed", "education"],
+        "Real Estate": ["RealEstate", "Property", "PropTech"],
+        "Hospitality": ["Hotels & Travel", "Travel", "Tourism"],
+        "Energy": ["Oil & Gas", "Utilities", "energy"],
+        "Telecommunications": ["Telecom", "Telco", "Comms"],
+    }
+
+
+def _unit_entries() -> dict[str, list[str]]:
+    return {
+        "kg": ["kilogram", "kilograms", "Kg", "KG"],
+        "lb": ["lbs", "pound", "pounds", "Lb"],
+        "cm": ["centimeter", "centimeters", "Cm"],
+        "in": ["inch", "inches", "\""],
+        "L": ["liter", "litre", "liters", "l"],
+        "mL": ["milliliter", "ml", "mls"],
+        "km": ["kilometer", "kilometers", "Km"],
+        "mi": ["mile", "miles", "Mi"],
+    }
+
+
+def industry_vocab() -> dict[str, list[str]]:
+    return _cached("industry", _industry_entries)
+
+
+def unit_vocab() -> dict[str, list[str]]:
+    return _cached("unit", _unit_entries)
 
 
 # Status / categorical value sets (canonical -> messy variants).

@@ -308,6 +308,8 @@ ARCHETYPES: list[Field] = [
     VocabField(["city", "location", "hq_city"], "city", V.city_vocab(), max_card=5),
     VocabField(["department", "dept", "team"], "categorical", V.department_vocab(), max_card=4),
     VocabField(["job_title", "title", "role", "position"], "categorical", V.job_title_vocab(), max_card=4),
+    VocabField(["industry", "sector", "vertical"], "categorical", V.industry_vocab(), max_card=4),
+    VocabField(["unit", "uom", "measure_unit"], "categorical", V.unit_vocab(), max_card=4),
     StatusField(),
     CurrencyField(), DateField(), BooleanField(), PhoneField(),
 ]
