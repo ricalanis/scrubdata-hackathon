@@ -50,6 +50,42 @@ def make_ollama_planner(model: str = "glm-5.1", max_tokens: int = 8000,
     return planner
 
 
+def make_local_ollama_planner(model: str, host: str = "http://localhost:11434",
+                              timeout: int = 300):
+    """Planner backed by a LOCAL Ollama model (e.g. the fine-tuned GGUF pulled from HF).
+
+    Uses the /api/chat endpoint with format=json so output is always syntactically
+    valid JSON — we then score schema/op/canon/recovery to measure the fine-tune.
+    """
+    import urllib.request
+
+    def planner(dirty_df, *_):
+        profile = profile_dataframe(dirty_df)
+        user = build_user_prompt(profile, dirty_df)
+        payload = {
+            "model": model, "stream": False, "format": "json",
+            "messages": [{"role": "system", "content": SYSTEM_PROMPT},
+                         {"role": "user", "content": user}],
+            "options": {"temperature": 0, "num_predict": 4000},
+        }
+        req = urllib.request.Request(
+            host + "/api/chat", data=json.dumps(payload).encode(),
+            headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                out = json.loads(r.read())["message"]["content"]
+        except Exception as e:
+            return {"__error__": str(e)[:120]}
+        plan = _extract_json(out)
+        if plan is None:
+            return {"__error__": "no_json", "raw": out[:200]}
+        plan.setdefault("table_operations", [])
+        plan.setdefault("columns", [])
+        plan.setdefault("flags", [])
+        return plan
+    return planner
+
+
 if __name__ == "__main__":  # one-example smoke test
     import random
     from training.generate import make_example
