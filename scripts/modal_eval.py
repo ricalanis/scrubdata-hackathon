@@ -63,7 +63,7 @@ def run_eval(n_synth: int = 20):
             # stop at <|im_end|> so we don't run to max_new_tokens every call (was the
             # 50s/call slowdown that blew the timeout); attn mask silences the warning.
             out = model.generate(input_ids=input_ids, attention_mask=attn,
-                                 max_new_tokens=1200, do_sample=False,
+                                 max_new_tokens=4000, do_sample=False,
                                  eos_token_id=eos_ids, pad_token_id=tok.eos_token_id)
         text = tok.decode(out[0][input_ids.shape[1]:], skip_special_tokens=True)
         plan = _extract_json(text)
@@ -85,7 +85,7 @@ def run_eval(n_synth: int = 20):
     # Layer 2 — real hospital (batched)
     _ensure_data()
     dirty, clean = _load()
-    ft_plan = make_batched_planner(base_planner, batch_size=6)(dirty)
+    ft_plan = make_batched_planner(base_planner, batch_size=4)(dirty)
     cleaned, _ = apply_plan(dirty, ft_plan)
     out["layer2_ft"] = _score(dirty, clean, cleaned)
     out["layer2_noop"] = _score(dirty, clean, dirty)
