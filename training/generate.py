@@ -60,6 +60,22 @@ def make_example(rng: random.Random) -> dict:
     n_rows = len(clean_df)
     dirty_df = pd.DataFrame({c: v[:n_rows] for c, v in dirty_data.items()})
 
+    # --- anomaly flags (flag-only: value is KEPT, not changed) ---
+    # Teaches the model to surface implausible values without silently editing them.
+    flags: list[dict] = []
+    numeric_cols = [c["name"] for c in plan_columns
+                    if any(o["op"] in ("parse_currency", "parse_number")
+                           for o in c["operations"])]
+    if numeric_cols and n_rows >= 3 and rng.random() < 0.4:
+        col = rng.choice(numeric_cols)
+        i = rng.randrange(n_rows)
+        anomaly = rng.choice([9_999_999, -100, 0])
+        dirty_df.at[i, col] = str(anomaly)
+        clean_df.at[i, col] = float(anomaly)   # unchanged by flag-only execution
+        flags.append({"column": col, "issue": "out_of_range", "action": "flag_only",
+                      "rationale": f"Value {anomaly} is implausible for '{col}'; "
+                                   f"flagged for human review, not auto-changed."})
+
     table_ops: list[dict] = []
 
     # --- table-level corruptions ---
@@ -95,6 +111,6 @@ def make_example(rng: random.Random) -> dict:
                            f"{len(table_ops)} table-level fix(es).",
         "table_operations": table_ops,
         "columns": plan_columns,
-        "flags": [],
+        "flags": flags,
     }
     return {"clean_df": clean_df, "dirty_df": dirty_df, "plan": plan, "profile": profile}
