@@ -60,7 +60,7 @@ def profile_column(series: pd.Series) -> dict:
         if s not in seen:
             seen.add(s)
             samples.append(s)
-        if len(samples) >= 8:
+        if len(samples) >= 15:
             break
     return {
         "name": str(series.name),

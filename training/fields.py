@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import random
 
+from . import vocab as V
+
 # ---- shared corruption helpers ----------------------------------------------
 
 DISGUISED = ["N/A", "na", "-", "--", "null", "None", "?", "#N/A", "TBD"]
@@ -110,63 +112,56 @@ class EmailField(Field):
         return dirty, clean, ops, ["casing", "whitespace"]
 
 
-class CountryField(Field):
-    semantic_type = "country"
-    names = ["country", "nation", "country_name"]
-    VARIANTS = {
-        "United States": ["USA", "U.S.A.", "us", "united states", "U.S.", "United States"],
-        "United Kingdom": ["UK", "U.K.", "united kingdom", "Great Britain"],
-        "Canada": ["Canada", "canada", "CA"],
-        "Germany": ["Germany", "germany", "DE", "Deutschland"],
-    }
+class VocabField(Field):
+    """Categorical column backed by a real vocabulary (canonical -> aliases).
+
+    Draws a FEW canonicals per column (low cardinality so every surface shows in the
+    sample), corrupts each via vocab.make_surface, and records surface->canonical so
+    canonicalize_categories recovers the clean value (self-verified)."""
+
+    def __init__(self, names, semantic_type, entries, max_card=5):
+        self.names = names
+        self.semantic_type = semantic_type
+        self.entries = entries
+        self._canonicals = list(entries)
+        self.max_card = max_card
+
+    def _choose(self, rng):
+        k = rng.randint(2, min(self.max_card, len(self._canonicals)))
+        return rng.sample(self._canonicals, k)
 
     def gen_clean(self, rng, n):
-        canon = list(self.VARIANTS)
-        return [rng.choice(canon) for _ in range(n)]
+        self._chosen = self._choose(rng)
+        return [rng.choice(self._chosen) for _ in range(n)]
 
     def corrupt(self, rng, clean):
         dirty, mapping = [], {}
         for c in clean:
-            surface = rng.choice(self.VARIANTS[c])
-            dirty.append(surface)
-            if surface.strip() != c:
-                mapping[surface.strip()] = c
+            s = V.make_surface(rng, c, self.entries.get(c, []))
+            dirty.append(s)
+            if s != c:
+                mapping[s] = c
         ops = []
         if mapping:
             ops.append({"op": "canonicalize_categories", "mapping": mapping,
-                        "rationale": f"Unified {len(mapping)} spellings into canonical names."})
+                        "rationale": f"Unified {len(mapping)} variant spelling(s) "
+                                     f"into canonical labels."})
         return dirty, clean, ops, ["inconsistent_categories", "casing"]
 
 
-class CategoricalField(Field):
-    semantic_type = "categorical"
-    names = ["status", "priority", "stage", "tier", "segment"]
-    SETS = [
-        {"Won": ["Won", "won", "WON"], "Lost": ["Lost", "lost"],
-         "In Progress": ["In Progress", "in progress", "in-progress"]},
-        {"High": ["High", "high", "HIGH"], "Medium": ["Medium", "medium", "med"],
-         "Low": ["Low", "low"]},
-        {"Active": ["Active", "active"], "Churned": ["Churned", "churned"],
-         "Trial": ["Trial", "trial", "TRIAL"]},
-    ]
+class StatusField(VocabField):
+    """Like VocabField but picks a fresh status/category value-set each example."""
+
+    def __init__(self):
+        super().__init__(
+            names=["status", "stage", "tier", "segment", "state", "payment_status"],
+            semantic_type="categorical", entries={}, max_card=4)
 
     def gen_clean(self, rng, n):
-        self._set = rng.choice(self.SETS)
-        canon = list(self._set)
-        return [rng.choice(canon) for _ in range(n)]
-
-    def corrupt(self, rng, clean):
-        mapping, dirty = {}, []
-        for c in clean:
-            surface = rng.choice(self._set[c])
-            dirty.append(surface)
-            if surface.strip() != c:
-                mapping[surface.strip()] = c
-        ops = []
-        if mapping:
-            ops.append({"op": "canonicalize_categories", "mapping": mapping,
-                        "rationale": f"Unified {len(mapping)} label variants."})
-        return dirty, clean, ops, ["inconsistent_categories", "casing"]
+        self.entries = rng.choice(V._STATUS_SETS)
+        self._canonicals = list(self.entries)
+        self._chosen = self._choose(rng)
+        return [rng.choice(self._chosen) for _ in range(n)]
 
 
 class CurrencyField(Field):
@@ -284,6 +279,13 @@ class PhoneField(Field):
 
 
 ARCHETYPES: list[Field] = [
-    NameField(), CompanyField(), EmailField(), CountryField(), CategoricalField(),
+    NameField(), CompanyField(), EmailField(),
+    VocabField(["country", "nation", "country_name"], "country", V.country_vocab(), max_card=5),
+    VocabField(["state", "province", "region"], "state", V.state_vocab(), max_card=5),
+    VocabField(["currency", "currency_code", "ccy"], "categorical", V.currency_vocab(), max_card=4),
+    VocabField(["city", "location", "hq_city"], "city", V.city_vocab(), max_card=5),
+    VocabField(["department", "dept", "team"], "categorical", V.department_vocab(), max_card=4),
+    VocabField(["job_title", "title", "role", "position"], "categorical", V.job_title_vocab(), max_card=4),
+    StatusField(),
     CurrencyField(), DateField(), BooleanField(), PhoneField(),
 ]
