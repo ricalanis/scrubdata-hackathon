@@ -29,7 +29,7 @@ def main() -> None:
     ap.add_argument("--data-file", default="train.jsonl")
     ap.add_argument("--out-repo", default=None, help="HF repo to push adapter + GGUF")
     ap.add_argument("--epochs", type=float, default=2.0)
-    ap.add_argument("--max-seq", type=int, default=6144,
+    ap.add_argument("--max-seq", type=int, default=8192,
                     help="v3 examples reach ~5.5k tokens; keep ≥6144 to avoid truncation")
     args = ap.parse_args()
 
