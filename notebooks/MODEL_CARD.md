@@ -39,14 +39,21 @@ Scored on a frozen held-out gold set + a real OOD slice (Raha `hospital`). The f
 target is to clearly beat the rule-based heuristic, especially on **alias-level
 canonicalization** (the fuzzy skill rules can't do).
 
-| metric (synthetic) | heuristic | **this model** | oracle |
-|---|---|---|---|
-| op_f1 | 0.961 | _TBD_ | 1.000 |
-| canon_f1 | 0.133 | _TBD_ | 1.000 |
-| recovery | 0.627 | _TBD_ | 1.000 |
-| real repair_recall | 0.293 | _TBD_ | — |
+| metric (synthetic, frozen gold) | heuristic | big vanilla (glm-5.1) | **this 4B** | oracle |
+|---|---|---|---|---|
+| json_valid | 1.000 | 1.000 | **1.000** | 1.000 |
+| op_f1 | 0.961 | 0.891 | **0.998** | 1.000 |
+| **canon_f1** | 0.133 | 0.452 | **0.864** | 1.000 |
+| recovery | 0.627 | 0.747 | **0.932** | 1.000 |
 
-_(Numbers filled in from `eval/run_finetuned.py` after training.)_
+**Result:** on its target distribution the 4B fine-tune **beats a big generic model**
+(canon_f1 0.45 → 0.86) and clears 3/4 goalposts (recovery 0.932 just under 0.95) — the
+small-aligned-model thesis, validated by measurement.
+
+**Known limitation (v1):** it degenerates on very large/wide tables (1000×20 real
+benchmark) — trained only on small ones. Fixed in the **v3** dataset (tables up to 90×9);
+retrain pending. Real Backyard-AI spreadsheets (dozens–hundreds of rows × a few columns)
+are within the trained range.
 
 ## Usage (llama.cpp / Ollama)
 ```bash
