@@ -68,7 +68,9 @@ def make_local_ollama_planner(model: str, host: str = "http://localhost:11434",
             "model": model, "stream": False,
             "messages": [{"role": "system", "content": SYSTEM_PROMPT},
                          {"role": "user", "content": user}],
-            "options": {"temperature": 0, "num_predict": 2000},
+            # num_ctx must hold the (large) real-data profile + output; Ollama defaults
+            # to ~4k which 400s on wide tables.
+            "options": {"temperature": 0, "num_predict": 2000, "num_ctx": 16384},
         }
         req = urllib.request.Request(
             host + "/api/chat", data=json.dumps(payload).encode(),
