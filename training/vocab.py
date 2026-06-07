@@ -182,8 +182,19 @@ def currency_vocab() -> dict[str, list[str]]:
     return _cached("currency", lambda: _currency_entries(60))
 
 
+def _city_entries() -> dict[str, list[str]]:
+    # Curated cities carry valuable aliases (NYC->New York); the fetched open-data
+    # list (training/cities.txt) adds breadth as canonical-only entries.
+    from pathlib import Path
+    cities = list(CITIES)
+    extra = Path(__file__).parent / "cities.txt"
+    if extra.exists():
+        cities += [c.strip() for c in extra.read_text(encoding="utf-8").splitlines() if c.strip()]
+    return {c: list(_CITY_ALIASES.get(c, [])) for c in dict.fromkeys(cities)}
+
+
 def city_vocab() -> dict[str, list[str]]:
-    return _cached("city", lambda: {c: list(_CITY_ALIASES.get(c, [])) for c in CITIES})
+    return _cached("city", _city_entries)
 
 
 def department_vocab() -> dict[str, list[str]]:

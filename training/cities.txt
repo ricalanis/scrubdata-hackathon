@@ -1,0 +1,400 @@
+Acacias
+Ad-Damazin
+Adana
+Adelaide
+Afif
+Aix-en-Provence
+Akouda
+Al Khurmah
+Aldaia
+Alfafar
+Ali Mendjeli
+Almelo
+Altamira
+Amberg
+Amparafaravola
+An Muileann gCearr
+An Nimas
+Anand
+Anfu
+Anloga
+Aonla
+Appleton
+Arai
+Arbutus
+Argun
+Arheilgen
+Asilah
+Assi Bou Nif
+Assis Chateaubriand
+Aston
+Atascadero
+Atotonilco el Alto
+Ayamonte
+Baarn
+Bacchus Marsh
+Badarganj
+Badessa
+Balod
+Balqash
+Bartoszyce
+Bath Beach
+Belize City
+Bellmore
+Belogorsk
+Ben Arous
+Bentley
+Berehove
+Birigui
+Bitam
+Bloemhof
+Boromo
+Bueng Kum
+Bukit Panjang New Town
+Bukit Tambun
+Bullhead City
+Bunkyo
+Calasiao
+Calle Blancos
+Caojie
+Capesterre-Belle-Eau
+Capua
+Casa Blanca
+Castro-Urdiales
+Centretown
+Chaiyaphum
+Changshu
+Changyi
+Chatan
+Chelamartam
+Chiclayo
+Chitrakoot Dham
+Choi Wan
+Chorley
+Church-Yonge Corridor
+Cisterna di Latina
+Ciudad Victoria
+Civitanova Marche
+Cojutepeque
+Colne
+Crespo
+Daanbantayan
+Dajal
+Damoh
+Dangila
+Danjiangkou
+Danshui
+Darnytskyi Masyv
+Dayal
+De Meern
+Delft
+Depew
+Dessau
+Douar Tindja
+Draguignan
+Drochia
+Dugda
+Dukli
+East Molesey
+Edenvale
+Eppendorf
+Erebuni
+Es Senia
+Eschborn
+Esparza
+Fair Oaks
+Famagusta
+Fasano
+Fatehganj West
+Foothill Farms
+Fort Lee
+Fort McMurray
+Fort-de-France
+Fortress Hill
+Fossano
+Fouchana
+French Rocks
+Friendswood
+Fudong
+Funza
+Fuorigrotta
+Fylde
+Gampengrejo
+Gelang Patah
+General Mosconi
+Germiston
+Geseke
+Gimpo-si
+Greeley
+Guadalupe Victoria
+Gujar Khan
+Guxi
+Hagen
+Harlingen
+Haveli Lakha
+Hede
+Heiligenhaus
+Hemmingen
+Hespeler
+Highton
+Hilton Head Island
+Hohoe
+Huangmei
+Huddinge
+Hurricane
+Ifrane
+Ile-Ife
+Ile-des-Soeurs
+Ingelheim am Rhein
+Inglewood-Finn Hill
+Irosin
+Iseyin
+Itajobi
+Itaocara
+Jakomini
+Jeddah
+Jeju City
+Johannisthal
+Kabompo
+Kalisz
+Kampong Dungun
+Kampung Cheng
+Kannapuram
+Kasungu
+Kendari
+Khandwa
+Khanty-Mansiysk
+Khimki
+Kidderminster
+Kindrativskyi
+Kinshasa
+Kirguli
+Kishaba
+Koblenz
+Koduvayur
+Kokrajhar
+Kom Ombo
+Koryazhma
+Kothanallur
+Koungou
+Kudappanakkunnu
+Kwinana
+Lander
+Langfang
+Lankwitz
+Larkana
+Leifeng
+Leland
+Lianhe
+Likino-Dulevo
+Lins
+Liutuan
+Lobamba
+Loei
+Losino-Petrovskiy
+Maba
+Mabopane
+Machadinho d'Oeste
+Macon
+Maduraivayal
+Maebashi
+Maitland
+Malambo
+Malanje
+Malema
+Managua
+Manibaug Pasig
+Mankayan
+Manzini
+Mao
+Maple Ridge
+Maragogi
+Marbach am Neckar
+Marsala
+Maspalomas
+Mastung
+Mauldin
+Mbinga
+Merkezefendi
+Metro
+Middelkerke
+Minna
+Miracema do Tocantins
+Mojokerto
+Monterotondo
+Monterrey
+Moose Jaw
+Moraga
+Mostaganem
+Mosul
+Moyale
+Mugina
+Muncie
+N'zeto
+Nahorkatiya
+Nakrekal
+Nanyamba
+Naranjal
+Nasugbu
+Neiva
+Ner
+Neuilly-sur-Seine
+New Delhi
+New Taipei City
+Nezlobnaya
+Nova Andradina
+Nova Milanese
+Novena
+Nowshera Kalan
+Nsoatre
+Nunspeet
+Nuuk
+Nyala
+Ocean Springs
+Oral
+Ormoc
+Padangsidempuan
+Paidha
+Palos Hills
+Pameungpeuk
+Panalanoy
+Panjakent
+Paraty
+Parnarama
+Pasinler
+Peicheng
+Pekin
+Pengerang
+Penticton
+Perugia
+Pesaro
+Phetchabun
+Phitsanulok
+Piendamo
+Pijijiapan
+Pitt Meadows
+Pleiku
+Pokachi
+Polonne
+Ponte Vedra Beach
+Povorino
+Puerto Ayacucho
+Puerto Cabello
+Puerto del Rosario
+Pulivendla
+Punggol
+Putte
+Quarto
+Qujing
+Razgrad
+Rees
+Rendsburg
+Reston
+Rio Bonito
+Ripollet
+Riverside
+Riyadh
+Rossendale
+Rostov-on-Don
+Rudow
+Saint-Constant
+Saint-Henri
+Sale
+Salmon Creek
+Samal
+San Antonio Oeste
+San Mauro Torinese
+San Pedro de Jujuy
+San Rafael de Onoto
+Santa Catarina
+Santa Teresa
+Sanxi
+Satun
+Saugor
+Schoten
+Sekondi-Takoradi
+Semporna
+Severomorsk
+Sewon
+Shahecheng
+Shahrisabz
+Shanwang
+Sheoganj
+Sherpur
+Shreveport
+Siderno
+Siena
+Siocon
+Skokie
+Slidell
+Smyrna
+Sogamoso
+Sokal
+Solingen
+Sovetskiy
+Soyapango
+Soyo
+Srandakan
+Stallings
+Stargard
+Stephenville
+Summerville
+Sundbyberg
+Sundern
+Sungai Lalang
+Sungai Udang
+Susner
+Svendborg
+Tacloban
+Tage'erqi
+Takatsukadai
+Tam Giang
+Tamura
+Tanggu
+Tapejara
+Taquari
+Tasbuget
+Tatarka
+Te Atatu South
+Temara
+Tenkodogo
+Thiruvananthapuram
+Timashyovsk
+Tin Shui Wai
+Tizi-n-Tleta
+Tolga
+Trenque Lauquen
+Trentola-Ducenta
+Triprangod
+Tshikapa
+Tuckahoe
+Tuomuwusitang
+Turaru
+Uarini
+Utrera
+Valdebernardo
+Valparai
+Vila Leopoldina
+Villasis
+Vladimir
+Waldkirch
+Wanaraja
+Wersten
+White Settlement
+Willemstad
+Wiset Chaichan
+Xianfeng
+Xianlong
+Xinhua
+Yanacancha
+Yaring
+Yautepec
+Yeosu
+Yicheng
+Yingge
+Ylivieska
+Yulong
+Zawiercie
+Zekeriya
+Zhaodun
+Zwevegem
