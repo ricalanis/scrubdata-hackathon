@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 
 from scrubdata.executor import apply_plan
-from scrubdata.model_planner import make_local_ollama_planner
+from scrubdata.model_planner import make_batched_planner, make_local_ollama_planner
 from scrubdata.planner import mock_plan
 
 from .gold import load_gold
@@ -51,10 +51,10 @@ def main() -> None:
         ok = "✅" if ftm[k] >= t else "❌"
         print(f"  {ok} {k}: {ftm[k]:.3f} (target ≥{t})")
 
-    # ---- Layer 2: real OOD (Raha hospital) ----
+    # ---- Layer 2: real OOD (Raha hospital, 20 cols → batched planner) ----
     _ensure_data()
     dirty, clean = _load()
-    ft_plan = ft(dirty)
+    ft_plan = make_batched_planner(ft, batch_size=6)(dirty)
     cleaned, _ = apply_plan(dirty, ft_plan)
     noop = _score(dirty, clean, dirty)
     ftr = _score(dirty, clean, cleaned)
