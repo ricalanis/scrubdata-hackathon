@@ -14,7 +14,8 @@ from . import vocab as V
 
 # ---- shared corruption helpers ----------------------------------------------
 
-DISGUISED = ["N/A", "na", "-", "--", "null", "None", "?", "#N/A", "TBD"]
+DISGUISED = ["N/A", "na", "-", "--", "null", "None", "?", "#N/A", "TBD",
+             "empty", "(empty)", "n/a", "NULL", "none", "unknown"]
 
 
 def _add_whitespace(rng: random.Random, s: str) -> str:
@@ -115,36 +116,108 @@ class EmailField(Field):
 class VocabField(Field):
     """Categorical column backed by a real vocabulary (canonical -> aliases).
 
-    Draws a FEW canonicals per column (low cardinality so every surface shows in the
-    sample), corrupts each via vocab.make_surface, and records surface->canonical so
-    canonicalize_categories recovers the clean value (self-verified)."""
+    LOW-card mode (default): draws a FEW canonicals (every surface shows in the
+    sample). HIGH-card mode (high_card=True): draws MANY (min_card..max_card, e.g.
+    30..80) real canonicals with a DOMINANT-canonical long-tailed row distribution
+    and single-char-substitution typos in the tail — replicating the hospital
+    birmingham(75) + birminghxm(1) regime. Both corrupt() and record surface->
+    canonical so canonicalize_categories recovers the clean value (self-verified)."""
 
-    def __init__(self, names, semantic_type, entries, max_card=5):
+    def __init__(self, names, semantic_type, entries, max_card=5, min_card=2,
+                 high_card=False, typo_p=0.13):
         self.names = names
         self.semantic_type = semantic_type
         self.entries = entries
         self._canonicals = list(entries)
         self.max_card = max_card
+        self.min_card = min_card
+        self.high_card = high_card
+        self.typo_p = typo_p
 
     def _choose(self, rng):
-        k = rng.randint(2, min(self.max_card, len(self._canonicals)))
+        lo = max(2, min(self.min_card, len(self._canonicals)))
+        hi = min(self.max_card, len(self._canonicals))
+        k = rng.randint(min(lo, hi), hi)
         return rng.sample(self._canonicals, k)
+
+    def _gen_rows(self, rng, n):
+        """Long-tailed row draw: a few dominant canonicals carry most of the mass,
+        the rest form a sparse tail (where typo surfaces land as rare singletons).
+        Falls back to uniform for low-card columns."""
+        chosen = self._chosen
+        if not self.high_card or len(chosen) < 6:
+            return [rng.choice(chosen) for _ in range(n)]
+        # Zipf-like weights: a couple of dominant values, steeply decaying tail.
+        order = list(chosen)
+        rng.shuffle(order)
+        weights = [1.0 / ((i + 1) ** 1.6) for i in range(len(order))]
+        # Boost the single top canonical so a clear dominant emerges (birmingham 75).
+        weights[0] *= 3.0
+        return rng.choices(order, weights=weights, k=n)
 
     def gen_clean(self, rng, n):
         self._chosen = self._choose(rng)
-        return [rng.choice(self._chosen) for _ in range(n)]
+        return self._gen_rows(rng, n)
+
+    def _surface_for(self, rng, c, force_typo):
+        """One dirty surface for canonical c. force_typo guarantees a single-char
+        substitution typo (rare-tail birminghxm regime)."""
+        aliases = self.entries.get(c, [])
+        if force_typo:
+            s = V.make_substitution_typo(rng, c)
+            return s
+        return V.make_surface(rng, c, aliases, typo_p=self.typo_p)
 
     def corrupt(self, rng, clean):
-        dirty, mapping, ws = [], {}, False
-        for c in clean:
-            s = V.make_surface(rng, c, self.entries.get(c, []))
-            if s != c:
-                mapping[s] = c           # key = pre-whitespace surface
+        # Decide which canonicals get a guaranteed single-char typo surface (high-card
+        # only): a controlled fraction of the present canonicals, applied to ONE of
+        # their occurrences so it lands as a rare tail singleton.
+        present = list(dict.fromkeys(clean))
+        forced_typo_canon = set()
+        if self.high_card:
+            frac = rng.uniform(0.3, 0.6)
+            k = max(1, int(len(present) * frac))
+            forced_typo_canon = set(rng.sample(present, min(k, len(present))))
+        # Reserve, per forced canonical, exactly one row index to carry the typo.
+        forced_slot = {}
+        if forced_typo_canon:
+            for canon in forced_typo_canon:
+                idxs = [i for i, c in enumerate(clean) if c == canon]
+                if idxs:
+                    forced_slot[rng.choice(idxs)] = canon
+
+        # Build mapping collision-safely: a surface may only map to ONE canonical, and
+        # a surface that equals some canonical's clean form must not be remapped.
+        # Reserve all clean canonical strings as "do not remap" keys.
+        reserved = {str(c).strip() for c in present}
+        mapping = {}
+        dirty, ws = [], False
+        for i, c in enumerate(clean):
+            force = i in forced_slot
+            for _attempt in range(4):
+                s = self._surface_for(rng, c, force_typo=force)
+                key = str(s).strip()
+                if key == str(c).strip():
+                    break  # already canonical surface, no mapping needed
+                # Skip surfaces that collide with another canonical, or that some
+                # other canonical already claims (would make the mapping ambiguous).
+                if key in reserved:
+                    s = c       # ambiguous -> fall back to clean (still verifies)
+                    break
+                if key in mapping and mapping[key] != c:
+                    s = c       # collision with a different canonical's surface
+                    break
+                break
+            key = str(s).strip()
+            if key != str(c).strip() and key not in reserved:
+                mapping[key] = c
             cell = s
-            if rng.random() < 0.25:      # combined whitespace + canonicalization
+            # whitespace noise (less often on high-card to keep the tail clean)
+            if rng.random() < (0.12 if self.high_card else 0.25):
                 cell = _add_whitespace(rng, s)
                 ws = True
             dirty.append(cell)
+
         ops, issues = [], ["inconsistent_categories", "casing"]
         if ws:  # strip first so canonicalize sees the bare surface (executor order)
             ops.append({"op": "strip_whitespace",
@@ -169,7 +242,7 @@ class StatusField(VocabField):
         self.entries = rng.choice(V._STATUS_SETS)
         self._canonicals = list(self.entries)
         self._chosen = self._choose(rng)
-        return [rng.choice(self._chosen) for _ in range(n)]
+        return self._gen_rows(rng, n)
 
 
 class CurrencyField(Field):

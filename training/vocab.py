@@ -47,8 +47,14 @@ def _one_typo(rng: random.Random, s: str) -> str:
     return s[:i] + repl + s[i + 1:]
 
 
-def make_surface(rng: random.Random, canonical: str, aliases: list[str]) -> str:
-    """Produce one realistic dirty surface for a canonical value."""
+def make_surface(rng: random.Random, canonical: str, aliases: list[str],
+                 typo_p: float = 0.13) -> str:
+    """Produce one realistic dirty surface for a canonical value.
+
+    `typo_p` is the per-cell probability of injecting a single-char typo. The
+    high-cardinality path raises this (column-level parameter) so a column reliably
+    carries a long tail of single-char typos rather than a thin sprinkle.
+    """
     s = rng.choice([canonical, *aliases]) if aliases else canonical
     r = rng.random()
     if r < 0.28:
@@ -59,9 +65,31 @@ def make_surface(rng: random.Random, canonical: str, aliases: list[str]) -> str:
         s = s.title()
     if rng.random() < 0.15:
         s = _strip_punct(s)
-    if rng.random() < 0.13:
+    if rng.random() < typo_p:
         s = _one_typo(rng, s)
     return s.strip()
+
+
+def make_substitution_typo(rng: random.Random, canonical: str) -> str:
+    """Guaranteed single-char SUBSTITUTION typo of the canonical (birminghxm regime).
+
+    Returns the canonical unchanged only when too short to safely corrupt; callers
+    that require a real typo should check `surface != canonical`.
+    """
+    if len(canonical) < 4:
+        return canonical
+    i = rng.randrange(1, len(canonical) - 1)
+    ch = canonical[i]
+    if not ch.isalpha():
+        # find any interior alpha char to substitute, else give up
+        alpha_idx = [j for j in range(1, len(canonical) - 1) if canonical[j].isalpha()]
+        if not alpha_idx:
+            return canonical
+        i = rng.choice(alpha_idx)
+        ch = canonical[i]
+    pool = string.ascii_uppercase if ch.isupper() else string.ascii_lowercase
+    repl = rng.choice([c for c in pool if c != ch.lower() and c != ch.upper()])
+    return canonical[:i] + repl + canonical[i + 1:]
 
 
 # --- vocabularies (canonical -> aliases) ------------------------------------

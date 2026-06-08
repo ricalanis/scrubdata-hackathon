@@ -13,6 +13,8 @@ import re
 DISGUISED_NULLS = {
     "", "n/a", "na", "n.a.", "-", "--", "—", "null", "none", "nan",
     "#n/a", "tbd", "?", "unknown", "missing",
+    # literal-string nulls seen in real tables (e.g. Raha hospital uses "empty")
+    "empty", "(empty)",
 }
 
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
