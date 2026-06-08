@@ -15,7 +15,10 @@ import gradio as gr
 import pandas as pd
 
 from scrubdata import apply_plan, mock_plan, profile_dataframe, render_report
+from scrubdata.active import get_planner
 from scrubdata.trace import log_run
+
+PLANNER = get_planner()   # fine-tuned model if SCRUBDATA_MODEL is set, else heuristic
 
 SAMPLE = Path(__file__).parent / "samples" / "dirty_contacts.csv"
 
@@ -34,7 +37,7 @@ def clean(file_path: str):
 
     raw = _read_any(file_path)
     before = profile_dataframe(raw)
-    plan = mock_plan(raw, before)
+    plan = PLANNER(raw)
     cleaned, log = apply_plan(raw, plan)
     after = profile_dataframe(cleaned)
     report = render_report(plan, log, before, after)

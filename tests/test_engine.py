@@ -124,6 +124,13 @@ def test_batched_planner():
     assert is_valid(plan)
 
 
+def test_active_planner_defaults_to_heuristic(monkeypatch):
+    monkeypatch.delenv("SCRUBDATA_MODEL", raising=False)
+    from scrubdata.active import get_planner
+    from scrubdata.planner import mock_plan
+    assert get_planner() is mock_plan
+
+
 def test_value_counts_profile():
     df = pd.DataFrame({"country": ["USA", "USA", "usa", "Canada"]})
     prof = profile_dataframe(df)

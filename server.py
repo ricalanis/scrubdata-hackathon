@@ -22,6 +22,9 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from scrubdata import apply_plan, mock_plan, profile_dataframe, render_report
+from scrubdata.active import get_planner
+
+PLANNER = get_planner()   # fine-tuned model if SCRUBDATA_MODEL is set, else heuristic
 
 HERE = Path(__file__).parent
 FRONTEND_INDEX = HERE / "frontend" / "index.html"
@@ -230,7 +233,7 @@ def clean_data(file_path: str) -> dict:
 
     raw = _read_any(file_path)
     before_profile = profile_dataframe(raw)
-    plan = mock_plan(raw, before_profile)
+    plan = PLANNER(raw)
     cleaned, change_log = apply_plan(raw, plan)
     after_profile = profile_dataframe(cleaned)
     report_md = render_report(plan, change_log, before_profile, after_profile)

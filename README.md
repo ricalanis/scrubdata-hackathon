@@ -38,11 +38,21 @@ llama.cpp (GGUF). The deterministic `scrubdata.executor` applies the plan.
 
 ```bash
 uv sync                                            # install deps
-uv run app.py                                      # default Gradio app
-uv run server.py                                   # gr.Server + custom UI (Off-Brand)
+uv run server.py                                   # gr.Server + custom UI (heuristic planner)
+
+# use the fine-tuned model as the planner (needs Ollama + the GGUF, see notebooks/Modelfile):
+ollama pull hf.co/ricalanis/scrubdata-qwen3-4b-v4-q8:Q8_0
+ollama create scrubdata-ft -f notebooks/Modelfile
+SCRUBDATA_MODEL=scrubdata-ft uv run server.py      # model planner, heuristic fallback
+
 uv run python -m scrubdata.cli messy.csv -o clean.csv --plan plan.json   # CLI
-uv run pytest tests/                               # engine tests (15)
+uv run pytest tests/                               # engine tests (18)
 ```
+
+The planner is pluggable (`scrubdata/active.py`): set `SCRUBDATA_MODEL` to a local Ollama
+model id to use the fine-tune (alias-level canonicalization), else it runs the deterministic
+heuristic. Per column-batch it falls back to the heuristic if the model errors, so the app
+never breaks.
 
 ## Repo map
 - `scrubdata/` — the engine: `profiler` · `planner` (heuristic; swaps for the model) ·
