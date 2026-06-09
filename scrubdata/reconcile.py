@@ -46,28 +46,32 @@ class ReferenceIndex:
         return ctype in self._buckets
 
     def best(self, value, ctype: str):
-        """Nearest reference canonical to `value` (canonical, score) regardless of
-        threshold, or None. Exact/alias scores 1.0. First-char bucketing keeps 30k+
-        refs fast (most typos preserve the leading char)."""
+        """Nearest reference canonical (canonical, score, margin) or None. `margin` =
+        score - second-best score; a small margin means an AMBIGUOUS match (e.g. boxz
+        ~ Box and ~ Boaz) that should abstain. Exact/alias = (canon, 1.0, 1.0)."""
         nv = _norm(value)
         if not nv or ctype not in self._buckets:
             return None
         hit = self._exact.get(ctype, {}).get(nv)
         if hit is not None:
-            return (hit, 1.0)
-        best, best_r = None, 0.0
+            return (hit, 1.0, 1.0)
+        best, best_r, second_r = None, 0.0, 0.0
         for canonical, nc in self._buckets[ctype].get(nv[0], []):
             if abs(len(nc) - len(nv)) > 1 + len(nv) // 3:        # length prefilter
                 continue
             r = difflib.SequenceMatcher(None, nv, nc).ratio()
             if r > best_r:
-                best, best_r = canonical, r
-        return (best, round(best_r, 3)) if best is not None else None
+                best, best_r, second_r = canonical, r, best_r
+            elif r > second_r:
+                second_r = r
+        if best is None:
+            return None
+        return (best, round(best_r, 3), round(best_r - second_r, 3))
 
     def reconcile(self, value, ctype: str, threshold: float = 0.84):
         """Return (canonical, confidence) or None (ABSTAIN) — `best` gated by threshold."""
         b = self.best(value, ctype)
-        return b if (b is not None and b[1] >= threshold) else None
+        return (b[0], b[1]) if (b is not None and b[1] >= threshold) else None
 
 
 def infer_reference_type(values, idx: ReferenceIndex | None = None,
@@ -90,29 +94,49 @@ def infer_reference_type(values, idx: ReferenceIndex | None = None,
     return best_type if best_cov >= min_coverage else None
 
 
+def _column_case(values) -> str:
+    from collections import Counter
+    styles: Counter = Counter()
+    for v in values:
+        s = str(v).strip()
+        if not s or not s[:1].isalpha():
+            continue
+        styles["lower" if s.islower() else "upper" if s.isupper()
+               else "title" if s.istitle() else "other"] += 1
+    top = styles.most_common(1)
+    return top[0][0] if top and top[0][0] != "other" else "title"
+
+
+def _apply_case(s: str, style: str) -> str:
+    return s.lower() if style == "lower" else s.upper() if style == "upper" else s
+
+
 def grounded_mapping(values, ctype: str, idx: ReferenceIndex | None = None,
-                     threshold: float = 0.84, review_floor: float = 0.70):
+                     threshold: float = 0.84, review_floor: float = 0.70,
+                     min_margin: float = 0.03):
     """Ground a column's canonicalization in the type's reference taxonomy.
 
     Returns (mapping, abstained): `mapping` only contains dirty->canonical where the
-    dirty value confidently reconciles to a REAL reference entity (the structural fix
-    for wrong-merges). `abstained` are near-miss values (likely typos that didn't clear
-    threshold) surfaced for human review — the auditable-hands-off contract."""
+    dirty value confidently AND UNAMBIGUOUSLY reconciles to a REAL reference entity (the
+    structural fix for wrong-merges); the canonical is cast to the column's case
+    convention. `abstained` = near-miss / ambiguous values surfaced for human review."""
     idx = idx or default_index()
     if not idx.has_type(ctype):
         return {}, []
+    style = _column_case(values)
     mapping: dict[str, str] = {}
     abstained: list[str] = []
     for v in dict.fromkeys(str(x).strip() for x in values if str(x).strip()):
         b = idx.best(v, ctype)
         if b is None:
             continue
-        canon, score = b
-        if score >= threshold:
-            if canon != v:
-                mapping[v] = canon
-        elif score >= review_floor:
-            abstained.append(v)        # near-miss -> ABSTAIN, flag for review
+        canon, score, margin = b
+        if score >= threshold and margin >= min_margin:
+            cased = _apply_case(canon, style)
+            if cased != v:
+                mapping[v] = cased
+        elif score >= review_floor:        # near-miss or ambiguous -> ABSTAIN for review
+            abstained.append(v)
     return mapping, abstained
 
 
