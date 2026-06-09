@@ -64,7 +64,13 @@ def _fetch(name: str):
 
 
 def score(dirty: pd.DataFrame, clean: pd.DataFrame, out: pd.DataFrame) -> dict:
-    """Precision/recall/F1 (convention-normalized) + damage rate + abstain count."""
+    """Precision/recall/F1 (convention-normalized) + damage rate.
+
+    Churn-neutral: a rewrite that is sem-equal to the INPUT but does not restore the
+    gold (pure case/whitespace churn) counts as NOTHING — not a change, not a fix, not
+    damage. Otherwise bulk convention-rewrites of clean columns inflate precision (the
+    '-case match' ablation artifact). Fixing an error also requires actually ACTING:
+    a case-injected error left untouched is sem-equal to gold but is NOT a fix."""
     n = min(len(dirty), len(out), len(clean))
     errors = fixed = changed = good_changes = clean_cells = damage = errors_abstained = 0
     for j, col in enumerate(dirty.columns):
@@ -72,13 +78,16 @@ def score(dirty: pd.DataFrame, clean: pd.DataFrame, out: pd.DataFrame) -> dict:
         for i in range(n):
             dv, cv = dirty.iat[i, j], clean.iat[i, j]
             ov = out.iloc[i][col] if present else dv
-            err = not _cell_equal(dv, cv)               # benchmark error (raw)
+            err = not _cell_equal(dv, cv)                # benchmark error (raw)
             chg = present and not _cell_equal(ov, dv)    # we changed it
-            sem_ok = _sem_equal(ov, cv)                  # got the right value (semantic)
+            raw_ok = present and _cell_equal(ov, cv)     # exactly restored gold
+            sem_ok = _sem_equal(ov, cv)                  # right value (convention-tolerant)
+            if chg and _sem_equal(ov, dv) and not raw_ok:
+                chg = False                              # churn: ignore entirely
             if err:
                 errors += 1
-                if sem_ok:
-                    fixed += 1
+                if raw_ok or (sem_ok and chg):
+                    fixed += 1                           # real restoration or semantic fix
                 elif not chg:
                     errors_abstained += 1                # left an error untouched
             else:
@@ -109,7 +118,10 @@ def abstain_slice(planner, seed: int = 3) -> dict:
     typos = {"Chcago": "Chicago", "Bostton": "Boston", "Houston": "Houston"}
     for t, g in typos.items():                           # real typos -> must FIX
         col.append(t); gold.append(g); kind.append("typo")
-    traps = ["Boazz", "Sprngfield", "Xqzzyville", "Carmel"]  # not-a-present-typo -> must LEAVE
+    # traps must NOT be single-edit variants of any reference entity (else mapping them
+    # is arguably CORRECT and the trap mis-scores grounding): garbage strings + one real
+    # rare city (must stay; catches freq-cluster over-merge into the dominant values).
+    traps = ["Xqzzyville", "Qwortelby", "Zzanthor Flats", "Carmel"]
     for t in traps:
         col.append(t); gold.append(t); kind.append("trap")
     idx = list(range(len(col))); rng.shuffle(idx)
@@ -156,9 +168,13 @@ def _injected_pair(path, error_type, seed):
 
 
 def build_suite(seed: int = 7):
-    """List of specs: {name, domain, error_type, load() -> (dirty, clean) | None}."""
+    """List of specs: {name, domain, error_type, source, load() -> (dirty, clean) | None}.
+    source 'real' = curated real-error benchmarks; 'injected' = seeded synthetic errors on
+    harvested clean domains. Report both slices — injected typos are in-distribution for
+    frequency clustering (canonical always present+dominant by construction), so the
+    grounding claim lives in the REAL slice."""
     from pathlib import Path
-    specs = [{"name": n, "domain": d, "error_type": "mixed",
+    specs = [{"name": n, "domain": d, "error_type": "mixed", "source": "real",
               "load": (lambda n=n: _raha_pair(n))} for n, d in RAHA]
     import json
     src = {s["name"]: s["domain"] for s in
@@ -172,6 +188,7 @@ def build_suite(seed: int = 7):
             continue
         for et, group in INJECT.items():
             specs.append({"name": f"{domain}:{et}", "domain": domain, "error_type": group,
+                          "source": "injected",
                           "load": (lambda p=p, et=et: _injected_pair(p, et, seed))})
     return specs
 
@@ -193,14 +210,17 @@ def evaluate_suite(planner, seed: int = 7) -> dict:
         rows.append({**spec, "f1": m["f1"], "damage": m["damage"]})
     by_et = collections.defaultdict(list)
     by_dom = collections.defaultdict(list)
+    by_src = collections.defaultdict(list)
     for r in rows:
         by_et[r["error_type"]].append(r["f1"])
         by_dom[r["domain"]].append(r["f1"])
+        by_src[r.get("source", "injected")].append(r["f1"])
     et_macro = _mean(_mean(v) for v in by_et.values())
     dom_macro = _mean(_mean(v) for v in by_dom.values())
     north = (2 * et_macro * dom_macro / (et_macro + dom_macro)) if (et_macro + dom_macro) else 0.0
     ab = abstain_slice(planner)
     return {"north": north, "et_macro": et_macro, "dom_macro": dom_macro,
+            "real": _mean(by_src.get("real", [])), "injected": _mean(by_src.get("injected", [])),
             "damage": _mean(r["damage"] for r in rows), "abstain": ab["abstain_accuracy"],
             "n": len(rows), "by_et": {k: _mean(v) for k, v in by_et.items()}}
 
@@ -213,7 +233,7 @@ def main(seeds=(7, 17, 27)) -> None:
                ("no-op", lambda df: {"table_operations": [], "columns": [], "flags": []})]
     print("\n=== Cleaning north-star — WIDE validation suite (Raha + injected harvested), "
           f"{len(seeds)} seeds ===\n")
-    print(f"{'system':<24}{'NORTH*':>9}{'±95%CI':>9}{'errtype':>9}{'domain':>8}"
+    print(f"{'system':<24}{'NORTH*':>9}{'±95%CI':>9}{'REAL-F1':>9}{'INJ-F1':>8}"
           f"{'damage':>8}{'abstain':>9}")
     print("-" * 76)
     for name, planner in systems:
@@ -226,8 +246,8 @@ def main(seeds=(7, 17, 27)) -> None:
         var = _mean([(x - mean_n) ** 2 for x in norths])
         ci = 1.96 * (var ** 0.5) / (len(norths) ** 0.5)
         last = results[-1]
-        print(f"{name:<24}{mean_n:>9.3f}{ci:>9.3f}{_mean(r['et_macro'] for r in results):>9.3f}"
-              f"{_mean(r['dom_macro'] for r in results):>8.3f}"
+        print(f"{name:<24}{mean_n:>9.3f}{ci:>9.3f}{_mean(r['real'] for r in results):>9.3f}"
+              f"{_mean(r['injected'] for r in results):>8.3f}"
               f"{_mean(r['damage'] for r in results):>8.3f}"
               f"{_mean(r['abstain'] for r in results):>9.3f}")
     print(f"\nNORTH* = harmonic mean(error-type macro, domain macro) over {last['n']} datasets. "
