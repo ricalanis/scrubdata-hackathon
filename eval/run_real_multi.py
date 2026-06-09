@@ -124,33 +124,115 @@ def abstain_slice(planner, seed: int = 3) -> dict:
             "_typos": n_typo, "_traps": n_trap}
 
 
-def main() -> None:
-    print("\n=== Improved real-data north-star (multi-dataset, precision-aware, "
-          "convention-normalized) ===\n")
-    hdr = f"{'dataset':<10}{'F1':>8}{'recall':>8}{'precision':>11}{'damage':>9}{'errors':>8}"
-    print(hdr + "\n" + "-" * len(hdr))
-    f1s, dmgs = [], []
-    for name in DATASETS:
-        try:
-            dirty, clean = _fetch(name)
-        except Exception as e:  # noqa: BLE001
-            print(f"{name:<10} fetch failed ({type(e).__name__})")
+def _mean(xs):
+    xs = list(xs)
+    return sum(xs) / len(xs) if xs else 0.0
+
+
+# ---- the validation SUITE: Raha real-error pairs + injected harvested domains ----
+RAHA = [("hospital", "health"), ("beers", "beverages"), ("flights", "travel"),
+        ("rayyan", "citations"), ("movies_1", "entertainment")]
+# diverse subset of the 20+ harvested clean domains (cached locally)
+SUITE_DOMAINS = ["restaurants", "business", "jobs", "complaints", "film", "transport",
+                 "education", "music", "contractors", "alcohol-bars", "vehicles",
+                 "sf-business", "la-business", "real-estate", "food-inspections"]
+INJECT = {"typo": "canonicalization", "ocr": "canonicalization",
+          "case": "format", "whitespace": "format"}
+
+
+def _raha_pair(name):
+    dirty, clean = _fetch(name)
+    if len(dirty) > 2200:                       # movies_1: subsample for speed
+        dirty, clean = dirty.head(2000).reset_index(drop=True), clean.head(2000).reset_index(drop=True)
+    return dirty, clean
+
+
+def _injected_pair(path, error_type, seed):
+    import pandas as _pd
+    from .inject import inject
+    clean = _pd.read_csv(path, dtype=str, keep_default_na=False, nrows=600, on_bad_lines="skip")
+    dirty = inject(clean, error_type, seed)
+    return (dirty, clean) if dirty is not None else None
+
+
+def build_suite(seed: int = 7):
+    """List of specs: {name, domain, error_type, load() -> (dirty, clean) | None}."""
+    from pathlib import Path
+    specs = [{"name": n, "domain": d, "error_type": "mixed",
+              "load": (lambda n=n: _raha_pair(n))} for n, d in RAHA]
+    import json
+    src = {s["name"]: s["domain"] for s in
+           json.load(open("training/unpaired_sources.json"))}
+    cache = Path("data/real/cache")
+    for fname, domain in src.items():
+        if domain not in SUITE_DOMAINS:
             continue
-        cleaned, _ = apply_plan(dirty, _cell_only(mock_plan(dirty)))
+        p = cache / f"{fname}.csv"
+        if not p.exists():
+            continue
+        for et, group in INJECT.items():
+            specs.append({"name": f"{domain}:{et}", "domain": domain, "error_type": group,
+                          "load": (lambda p=p, et=et: _injected_pair(p, et, seed))})
+    return specs
+
+
+def evaluate_suite(planner, seed: int = 7) -> dict:
+    """Run a planner over the whole suite at one injection seed; return the double-macro."""
+    import collections
+    rows = []
+    for spec in build_suite(seed=seed):
+        try:
+            loaded = spec["load"]()
+        except Exception:  # noqa: BLE001
+            continue
+        if loaded is None:
+            continue
+        dirty, clean = loaded
+        cleaned, _ = apply_plan(dirty, _cell_only(planner(dirty)))
         m = score(dirty, clean, cleaned)
-        f1s.append(m["f1"]); dmgs.append(m["damage"])
-        print(f"{name:<10}{m['f1']:>8.3f}{m['recall']:>8.3f}{m['precision']:>11.3f}"
-              f"{m['damage']:>9.3f}{m['_errors']:>8}")
-    if f1s:
-        print("-" * len(hdr))
-        print(f"{'MACRO':<10}{sum(f1s) / len(f1s):>8.3f}{'':>8}{'':>11}"
-              f"{sum(dmgs) / len(dmgs):>9.3f}")
-    ab = abstain_slice(mock_plan)
-    print(f"\nADVERSARIAL abstain slice: typo_recall={ab['typo_recall']:.3f} "
-          f"({ab['_typos']} typos), abstain_accuracy={ab['abstain_accuracy']:.3f} "
-          f"({ab['_traps']} traps must be LEFT untouched)")
-    print("\nNORTH-STAR = macro-F1 (balances fix-rate vs over-correction) + low damage + "
-          "high abstain_accuracy. This can't be gamed by changing everything.")
+        rows.append({**spec, "f1": m["f1"], "damage": m["damage"]})
+    by_et = collections.defaultdict(list)
+    by_dom = collections.defaultdict(list)
+    for r in rows:
+        by_et[r["error_type"]].append(r["f1"])
+        by_dom[r["domain"]].append(r["f1"])
+    et_macro = _mean(_mean(v) for v in by_et.values())
+    dom_macro = _mean(_mean(v) for v in by_dom.values())
+    north = (2 * et_macro * dom_macro / (et_macro + dom_macro)) if (et_macro + dom_macro) else 0.0
+    ab = abstain_slice(planner)
+    return {"north": north, "et_macro": et_macro, "dom_macro": dom_macro,
+            "damage": _mean(r["damage"] for r in rows), "abstain": ab["abstain_accuracy"],
+            "n": len(rows), "by_et": {k: _mean(v) for k, v in by_et.items()}}
+
+
+def main(seeds=(7, 17, 27)) -> None:
+    from scrubdata.baselines import openrefine_fingerprint_plan, openrefine_knn_plan
+    systems = [("grounded (ours)", mock_plan),
+               ("OpenRefine fingerprint", openrefine_fingerprint_plan),
+               ("OpenRefine kNN", openrefine_knn_plan),
+               ("no-op", lambda df: {"table_operations": [], "columns": [], "flags": []})]
+    print("\n=== Cleaning north-star — WIDE validation suite (Raha + injected harvested), "
+          f"{len(seeds)} seeds ===\n")
+    print(f"{'system':<24}{'NORTH*':>9}{'±95%CI':>9}{'errtype':>9}{'domain':>8}"
+          f"{'damage':>8}{'abstain':>9}")
+    print("-" * 76)
+    for name, planner in systems:
+        norths, results = [], []
+        for s in seeds:
+            r = evaluate_suite(planner, seed=s)
+            norths.append(r["north"]); results.append(r)
+        mean_n = _mean(norths)
+        # 95% CI ~ 1.96 * std / sqrt(n)
+        var = _mean([(x - mean_n) ** 2 for x in norths])
+        ci = 1.96 * (var ** 0.5) / (len(norths) ** 0.5)
+        last = results[-1]
+        print(f"{name:<24}{mean_n:>9.3f}{ci:>9.3f}{_mean(r['et_macro'] for r in results):>9.3f}"
+              f"{_mean(r['dom_macro'] for r in results):>8.3f}"
+              f"{_mean(r['damage'] for r in results):>8.3f}"
+              f"{_mean(r['abstain'] for r in results):>9.3f}")
+    print(f"\nNORTH* = harmonic mean(error-type macro, domain macro) over {last['n']} datasets. "
+          "Double-macro + damage + abstain = un-gameable; hospital is 1 dataset of many. "
+          "The money result: grounded vs the tool people actually use (OpenRefine).")
 
 
 if __name__ == "__main__":
