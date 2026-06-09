@@ -145,6 +145,25 @@ def test_grounded_planner_no_wrong_merge():
     assert mapping.get("guntxrsvillx", "") != "Huntsville"
 
 
+def test_grounded_wrapper_overrides_model_overcorrection():
+    from scrubdata.grounded import make_grounded_planner
+    # a model that over-corrects (invents canonicals + wrong-merges)
+    def fake_model(df, *a):
+        return {"table_operations": [], "flags": [], "columns": [
+            {"name": "city", "detected_semantic_type": "categorical", "issues": [],
+             "operations": [{"op": "canonicalize_categories",
+                             "mapping": {"birminghxm": "Birmingham City USA",
+                                         "guntxrsvillx": "Huntsville"}}]}]}
+    df = pd.DataFrame({"city": ["birminghxm", "Birmingham", "guntxrsvillx", "Chicago",
+                               "Chcago", "Birmingham", "Chicago", "Birmingham"]})
+    plan = make_grounded_planner(fake_model)(df)
+    m = {k: v for c in plan["columns"] for o in c["operations"]
+         if o["op"] == "canonicalize_categories" for k, v in o["mapping"].items()}
+    assert m.get("birminghxm") == "Birmingham"            # grounded, not "Birmingham City USA"
+    assert m.get("guntxrsvillx", "") != "Huntsville"      # wrong-merge blocked
+    assert any(f["column"] == "city" for f in plan["flags"])   # abstained -> review flag
+
+
 def test_active_planner_defaults_to_heuristic(monkeypatch):
     monkeypatch.delenv("SCRUBDATA_MODEL", raising=False)
     from scrubdata.active import get_planner

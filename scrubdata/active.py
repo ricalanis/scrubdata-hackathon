@@ -45,4 +45,7 @@ def get_planner():
         plan["_generated_by"] = f"model:{model}"
         return plan
 
-    return tagged
+    # RACOON: ground the model's canonicalization against reference taxonomies — the
+    # model never free-generates a canonical for a reference-typed column.
+    from scrubdata.grounded import make_grounded_planner
+    return make_grounded_planner(tagged)
