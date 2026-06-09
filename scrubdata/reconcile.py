@@ -31,6 +31,9 @@ class ReferenceIndex:
         self._exact: dict[str, dict[str, str]] = {}          # type -> {norm_surface: canonical}
         # type -> {first_char: [(canonical, norm_canonical)]} for fast fuzzy scan
         self._buckets: dict[str, dict[str, list[tuple[str, str]]]] = {}
+        # fuzzy scans over big buckets (196k cities) are the eval bottleneck and the
+        # same values recur constantly across datasets/seeds — memoize per (type, value)
+        self._cache: dict[tuple[str, str], tuple | None] = {}
 
     def add(self, ctype: str, canonical: str, aliases=()) -> None:
         exact = self._exact.setdefault(ctype, {})
@@ -52,9 +55,13 @@ class ReferenceIndex:
         nv = _norm(value)
         if not nv or ctype not in self._buckets:
             return None
+        key = (ctype, nv)
+        if key in self._cache:
+            return self._cache[key]
         hit = self._exact.get(ctype, {}).get(nv)
         if hit is not None:
-            return (hit, 1.0, 1.0)
+            self._cache[key] = (hit, 1.0, 1.0)
+            return self._cache[key]
         best, best_r, second_r = None, 0.0, 0.0
         for canonical, nc in self._buckets[ctype].get(nv[0], []):
             if abs(len(nc) - len(nv)) > 1 + len(nv) // 3:        # length prefilter
@@ -64,9 +71,9 @@ class ReferenceIndex:
                 best, best_r, second_r = canonical, r, best_r
             elif r > second_r:
                 second_r = r
-        if best is None:
-            return None
-        return (best, round(best_r, 3), round(best_r - second_r, 3))
+        out = None if best is None else (best, round(best_r, 3), round(best_r - second_r, 3))
+        self._cache[key] = out
+        return out
 
     def reconcile(self, value, ctype: str, threshold: float = 0.84):
         """Return (canonical, confidence) or None (ABSTAIN) — `best` gated by threshold."""
