@@ -290,6 +290,101 @@ def _sample_mapping(plan: dict, k: int = 6) -> tuple[str, dict]:
 
 
 # --------------------------------------------------------------------------- #
+# UNPAIRED real data: derive canonical targets by frequency clustering (no clean
+# reference needed) -> lets us use ANY messy CSV (Kaggle, gov, gists).
+# --------------------------------------------------------------------------- #
+def derive_canon_from_column(values, min_nonmissing: int = 20) -> dict | None:
+    """From a single REAL messy categorical column, derive {variant -> canonical}
+    with NO clean reference: (1) group surfaces by normalized form (casing/punct/
+    whitespace) -> canonical = most frequent surface in the group; (2) conservatively
+    merge rare single-edit typos onto a much-more-frequent canonical. High precision:
+    only merges when the canonical clearly dominates."""
+    from collections import Counter
+    surf = [str(v).strip() for v in values if not _is_missing(v)]
+    if len(surf) < min_nonmissing:
+        return None
+    freq = Counter(surf)
+    distinct = list(freq)
+    # must be categorical (values repeat) but with real variety
+    if len(distinct) < 4 or len(distinct) > 0.7 * len(surf):
+        return None
+    groups: dict[str, list[str]] = {}
+    for s in distinct:
+        groups.setdefault(_norm(s), []).append(s)
+    mapping: dict[str, str] = {}
+    canon = set()
+    for members in groups.values():
+        c = max(members, key=lambda m: freq[m])     # most frequent surface = canonical
+        canon.add(c)
+        for m in members:
+            if m != c:
+                mapping[m] = c                        # casing/punct/whitespace variant
+    canon_by_freq = sorted(canon, key=lambda c: -freq[c])
+    for s in distinct:                                # rare single-edit typos
+        if s in mapping or freq[s] >= 3:
+            continue
+        for c in canon_by_freq:
+            if c != s and _norm(s) != _norm(c) and freq[c] >= 3 * freq[s] and _is_variant(s, c):
+                mapping[s] = c
+                break
+    return mapping if len(mapping) >= 2 else None
+
+
+def candidate_categorical_columns(df, max_scan: int = 25) -> list[int]:
+    """Auto-detect which columns are messy-categorical (the deriver finds >=2
+    variant->canonical pairs). No manual column specification needed."""
+    out = []
+    for j in range(min(df.shape[1], max_scan)):
+        if derive_canon_from_column(df.iloc[:, j].tolist()):
+            out.append(j)
+    return out
+
+
+def process_csv_url(name: str, url: str, rng, n_examples: int = 40,
+                    sample_rows: int = 4000, threshold: float = 0.97):
+    """Fetch a real (unpaired) CSV, auto-find messy categorical columns, frequency-
+    canonicalize them into an asserted clean_df, and yield self-verified examples.
+    Disk-aware: samples rows, deletes the raw file after."""
+    path = REAL_DIR / "unpaired" / f"{name}.csv"
+    try:
+        _download(url, path)
+        df = pd.read_csv(path, dtype=str, keep_default_na=False,
+                         on_bad_lines="skip", nrows=sample_rows, encoding_errors="replace")
+    except Exception as e:  # noqa: BLE001
+        print(f"  {name}: FETCH FAILED ({type(e).__name__}: {str(e)[:60]})")
+        return []
+    finally:
+        try:
+            path.unlink()
+        except (FileNotFoundError, OSError):
+            pass
+    cats = candidate_categorical_columns(df)
+    if not cats:
+        return []
+    clean, used = build_clean_from_unpaired(df, cats)
+    if not used:
+        return []
+    d_sub = df.iloc[:, used].reset_index(drop=True)
+    c_sub = clean.iloc[:, used].reset_index(drop=True)
+    return list(iter_examples(d_sub, c_sub, rng, n_examples, threshold=threshold))
+
+
+def build_clean_from_unpaired(dirty_df, columns: list[int]):
+    """Build an asserted clean_df by frequency-canonicalizing the given columns of a
+    real (unpaired) table. Returns (clean_df, used_col_indices)."""
+    clean = dirty_df.copy()
+    used = []
+    for j in columns:
+        col = dirty_df.iloc[:, j].tolist()
+        m = derive_canon_from_column(col)
+        if not m:
+            continue
+        clean.iloc[:, j] = [m.get(str(v).strip(), v) if not _is_missing(v) else v for v in col]
+        used.append(j)
+    return clean, used
+
+
+# --------------------------------------------------------------------------- #
 # learnable-column selection + subsampling into many small real tables
 # --------------------------------------------------------------------------- #
 def _is_missing(v) -> bool:
@@ -409,6 +504,8 @@ def main() -> None:
     ap.add_argument("--threshold", type=float, default=0.97,
                     help="min cell recovery to accept a sub-table example (self-verified)")
     ap.add_argument("--seed", type=int, default=13)
+    ap.add_argument("--unpaired-json", type=str, default=None,
+                    help="JSON file: [{'name','url'}] of real messy CSVs (Kaggle/gov/gists)")
     ap.add_argument("--out", type=str, default="data/real_train.jsonl")
     args = ap.parse_args()
 
@@ -449,13 +546,36 @@ def main() -> None:
             total += made
             rows.append((name, len(cols), made, maxcard, col_names[:6]))
 
+    # ---- unpaired real CSVs (Kaggle / government / GitHub gists) ----
+    unpaired_domains = 0
+    if args.unpaired_json:
+        sources = json.loads(Path(args.unpaired_json).read_text())
+        with out_path.open("a", encoding="utf-8") as f:
+            for src in sources:
+                nm = src["name"]
+                try:
+                    ex = process_csv_url(nm, src["url"], rng, n_examples=args.per_dataset)
+                except Exception as e:  # noqa: BLE001
+                    print(f"  {nm}: ERROR {type(e).__name__}: {str(e)[:60]}")
+                    continue
+                for record, _plan, _s in ex:
+                    f.write(json.dumps(record, ensure_ascii=False) + "\n")
+                if ex:
+                    unpaired_domains += 1
+                    total += len(ex)
+                rows.append((nm, "-", len(ex), "-", [src.get("domain", "")]))
+
     print("\n=== Real-data enrichment (many small self-verified tables) ===")
-    hdr = f"{'dataset':<10}{'canon_cols':>11}{'examples':>10}{'maxcard':>9}  learnable columns"
+    hdr = f"{'dataset':<22}{'examples':>9}  domain/columns"
     print(hdr)
     print("-" * len(hdr))
-    for name, ncols, made, maxcard, names in rows:
-        print(f"{name:<10}{ncols:>11}{made:>10}{maxcard:>9}  {', '.join(names)}")
-    print(f"\nWrote {total} self-verified REAL training examples to {out_path}")
+    for row in rows:
+        name, ncols, made, maxcard, names = row
+        print(f"{str(name):<22}{made:>9}  {', '.join(str(x) for x in names)[:48]}")
+    paired_domains = sum(1 for r in rows if r[2] and r[1] != "-")
+    print(f"\nDOMAINS with examples: {sum(1 for r in rows if r[2])} "
+          f"(paired: {paired_domains}, unpaired: {unpaired_domains})")
+    print(f"Wrote {total} self-verified REAL training examples to {out_path}")
     if best_overall[0]:
         card, ds, col, mp = best_overall
         print(f"Richest real mapping: {ds}.{col} ({card} distinct variants). Sample:")
