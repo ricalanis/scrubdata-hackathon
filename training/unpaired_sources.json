@@ -1,0 +1,127 @@
+[
+{
+"name": "restaurants_nyc",
+"domain": "restaurants",
+"url": "https://data.cityofnewyork.us/resource/43nn-pn8j.csv?$limit=6000"
+},
+{
+"name": "pawnbrokers_nyc",
+"domain": "business",
+"url": "https://data.cityofnewyork.us/resource/w7w3-xahh.csv?$limit=6000"
+},
+{
+"name": "payroll_nyc",
+"domain": "jobs",
+"url": "https://data.cityofnewyork.us/resource/k397-673e.csv?$limit=6000"
+},
+{
+"name": "svc311_nyc",
+"domain": "complaints",
+"url": "https://data.cityofnewyork.us/resource/erm2-nwe9.csv?$limit=6000"
+},
+{
+"name": "jobpostings_nyc",
+"domain": "job-postings",
+"url": "https://data.cityofnewyork.us/resource/kpav-sd4t.csv?$limit=6000"
+},
+{
+"name": "permits_nyc",
+"domain": "construction",
+"url": "https://data.cityofnewyork.us/resource/ipu4-2q9a.csv?$limit=6000"
+},
+{
+"name": "film_nyc",
+"domain": "film",
+"url": "https://data.cityofnewyork.us/resource/tg4x-b46p.csv?$limit=6000"
+},
+{
+"name": "fhv_nyc",
+"domain": "transport",
+"url": "https://data.cityofnewyork.us/resource/8wbx-tsch.csv?$limit=6000"
+},
+{
+"name": "schools_nyc",
+"domain": "education",
+"url": "https://data.cityofnewyork.us/resource/wg9x-4ke6.csv?$limit=6000"
+},
+{
+"name": "food_chicago",
+"domain": "food-inspections",
+"url": "https://data.cityofchicago.org/resource/4ijn-s7e5.csv?$limit=6000"
+},
+{
+"name": "biz_chicago",
+"domain": "business-licenses",
+"url": "https://data.cityofchicago.org/resource/r5kz-chrr.csv?$limit=6000"
+},
+{
+"name": "contractors_chi",
+"domain": "contractors",
+"url": "https://data.cityofchicago.org/resource/ydr8-5enu.csv?$limit=6000"
+},
+{
+"name": "restaurants_sf",
+"domain": "sf-restaurants",
+"url": "https://data.sfgov.org/resource/pyih-qa8i.csv?$limit=6000"
+},
+{
+"name": "biz_sf",
+"domain": "sf-business",
+"url": "https://data.sfgov.org/resource/g8m3-pdis.csv?$limit=6000"
+},
+{
+"name": "proptax_sf",
+"domain": "real-estate",
+"url": "https://data.sfgov.org/resource/wv5m-vpq2.csv?$limit=6000"
+},
+{
+"name": "biz_la",
+"domain": "la-business",
+"url": "https://data.lacity.org/resource/6rrh-rzua.csv?$limit=6000"
+},
+{
+"name": "permits_seattle",
+"domain": "seattle-permits",
+"url": "https://data.seattle.gov/resource/76t5-zqzr.csv?$limit=6000"
+},
+{
+"name": "alcohol_tx",
+"domain": "alcohol-bars",
+"url": "https://data.texas.gov/resource/naix-2893.csv?$limit=6000"
+},
+{
+"name": "ev_wa",
+"domain": "vehicles",
+"url": "https://data.wa.gov/resource/f6w7-q2d2.csv?$limit=6000"
+},
+{
+"name": "hospitals_cms",
+"domain": "hospitals",
+"url": "https://data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/0?limit=6000&format=csv"
+},
+{
+"name": "spotify",
+"domain": "music",
+"url": "https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-01-21/spotify_songs.csv"
+},
+{
+"name": "billboard",
+"domain": "music-billboard",
+"url": "https://raw.githubusercontent.com/hadley/tidy-data/master/data/billboard.csv"
+},
+{
+"name": "titanic",
+"domain": "passengers",
+"url": "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
+},
+{
+"name": "worldcities",
+"domain": "geography",
+"url": "https://raw.githubusercontent.com/datasets/world-cities/master/data/world-cities.csv"
+},
+{
+"name": "airlines",
+"domain": "aviation",
+"url": "https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv"
+}
+]

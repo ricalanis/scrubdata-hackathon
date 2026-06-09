@@ -32,6 +32,7 @@ import argparse
 import difflib
 import json
 import math
+import re
 import urllib.request
 from pathlib import Path
 
@@ -330,12 +331,35 @@ def derive_canon_from_column(values, min_nonmissing: int = 20) -> dict | None:
     return mapping if len(mapping) >= 2 else None
 
 
-def candidate_categorical_columns(df, max_scan: int = 25) -> list[int]:
-    """Auto-detect which columns are messy-categorical (the deriver finds >=2
-    variant->canonical pairs). No manual column specification needed."""
+_ENTITY_TYPES = {"categorical", "city", "state", "country", "text"}
+_BAD_NAME = re.compile(
+    r"date|time|_at\b|zip|postal|phone|fax|lat|lon|longitude|latitude|number|num\b|"
+    r"\bid\b|_id|amount|salary|wage|hours|price|cost|year|count|total|rate|pct|percent|"
+    r"score|\bage\b|size|qty|quantity", re.I)
+
+
+def _digit_heavy(v: str) -> bool:
+    v = v.strip()
+    return bool(v) and sum(c.isdigit() for c in v) > 0.4 * len(v)
+
+
+def candidate_categorical_columns(df, max_scan: int = 35) -> list[int]:
+    """Auto-detect messy TEXT-ENTITY columns good for canonicalization. Rejects
+    number/date/id/coordinate columns by NAME and by digit-density (those produce
+    arbitrary value-correction noise, not learnable canonicalization)."""
+    from scrubdata.detect import detect_semantic_type, is_missing
     out = []
     for j in range(min(df.shape[1], max_scan)):
-        if derive_canon_from_column(df.iloc[:, j].tolist()):
+        nm = str(df.columns[j])
+        if _BAD_NAME.search(nm):
+            continue
+        col = df.iloc[:, j].tolist()
+        vals = [str(v).strip() for v in col if not is_missing(v)][:600]
+        if not vals or sum(_digit_heavy(v) for v in vals) > 0.25 * len(vals):
+            continue
+        if detect_semantic_type(nm, col) not in _ENTITY_TYPES:
+            continue
+        if derive_canon_from_column(col):
             out.append(j)
     return out
 
@@ -345,19 +369,20 @@ def process_csv_url(name: str, url: str, rng, n_examples: int = 40,
     """Fetch a real (unpaired) CSV, auto-find messy categorical columns, frequency-
     canonicalize them into an asserted clean_df, and yield self-verified examples.
     Disk-aware: samples rows, deletes the raw file after."""
-    path = REAL_DIR / "unpaired" / f"{name}.csv"
+    # HARD-bounded fetch: read at most ~6MB with a connection timeout, so a slow/
+    # trickling gov server can't stall the run and huge files never fully download.
+    import io
+    import urllib.request
     try:
-        _download(url, path)
-        df = pd.read_csv(path, dtype=str, keep_default_na=False,
-                         on_bad_lines="skip", nrows=sample_rows, encoding_errors="replace")
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = resp.read(4_000_000)
+        df = pd.read_csv(io.BytesIO(data), dtype=str, keep_default_na=False,
+                         on_bad_lines="skip", nrows=sample_rows, encoding_errors="replace",
+                         low_memory=False)
     except Exception as e:  # noqa: BLE001
-        print(f"  {name}: FETCH FAILED ({type(e).__name__}: {str(e)[:60]})")
+        print(f"  {name}: FETCH FAILED ({type(e).__name__}: {str(e)[:60]})", flush=True)
         return []
-    finally:
-        try:
-            path.unlink()
-        except (FileNotFoundError, OSError):
-            pass
     cats = candidate_categorical_columns(df)
     if not cats:
         return []
@@ -563,6 +588,7 @@ def main() -> None:
                 if ex:
                     unpaired_domains += 1
                     total += len(ex)
+                print(f"  [unpaired] {src.get('domain', nm):<20} {len(ex):>3} examples")
                 rows.append((nm, "-", len(ex), "-", [src.get("domain", "")]))
 
     print("\n=== Real-data enrichment (many small self-verified tables) ===")
