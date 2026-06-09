@@ -15,6 +15,7 @@ OP_NAMES = [
     "standardize_case", "parse_currency", "parse_number", "parse_percent", "parse_date",
     "standardize_boolean", "standardize_phone", "normalize_email", "canonicalize_categories",
     "drop_empty_rows", "drop_empty_columns", "drop_exact_duplicates",
+    "flag_pii", "mask_pii", "hash_pii", "pseudonymize_pii",
 ]
 PLAN_SCHEMA = {
     "type": "object",

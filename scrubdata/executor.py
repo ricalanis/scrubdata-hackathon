@@ -156,6 +156,20 @@ def _apply_column_op(series: pd.Series, op: dict) -> pd.Series:
     if name == "canonicalize_categories":
         mapping = op.get("mapping", {})
         return series.map(lambda v: mapping.get(str(v).strip(), v) if not detect.is_missing(v) else v)
+    if name == "flag_pii":
+        return series                          # log-only: surfaces in report, data untouched
+    if name == "mask_pii":
+        from . import pii
+        ptype = op.get("pii_type", "")
+        return series.map(lambda v: pii.mask_value(v, ptype))
+    if name == "hash_pii":
+        from . import pii
+        salt = op.get("salt", "")
+        return series.map(lambda v: pii.hash_value(v, salt))
+    if name == "pseudonymize_pii":
+        from . import pii
+        salt = op.get("salt", "")
+        return series.map(lambda v: pii.pseudonymize_value(v, salt, op.get("pii_type", "pii")))
     # unknown op: no-op (forward-compatible with model-invented ops)
     return series
 

@@ -72,6 +72,7 @@ def profile_column(series: pd.Series) -> dict:
     high_card = len(non_missing) >= 12 and len(counts) > 0.8 * len(non_missing)
     k = 8 if high_card else VALUE_COUNTS_CAP
     value_counts = [[val, cnt] for val, cnt in counts.most_common(k)]
+    from .pii import detect_column_pii
     return {
         "name": str(series.name),
         "pandas_dtype": str(series.dtype),
@@ -82,6 +83,8 @@ def profile_column(series: pd.Series) -> dict:
         "value_counts": value_counts,
         "truncated_values": max(0, len(counts) - VALUE_COUNTS_CAP),
         "issues": _column_issues(series, semantic_type),
+        # tier-1 PII typing (regex + checksum over distinct values; None if not PII)
+        "pii": detect_column_pii(str(series.name), values),
     }
 
 

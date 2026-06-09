@@ -164,6 +164,58 @@ def test_grounded_wrapper_overrides_model_overcorrection():
     assert any(f["column"] == "city" for f in plan["flags"])   # abstained -> review flag
 
 
+def test_pii_validators():
+    from scrubdata.pii import luhn_ok, _is_credit_card, _is_iban
+    assert luhn_ok("4532015112830366")
+    assert not luhn_ok("4532015112830367")
+    assert _is_credit_card("4532-0151-1283-0366")
+    assert not _is_credit_card("1234567890123456")          # fails Luhn
+    assert _is_iban("DE89370400440532013000")
+    assert not _is_iban("DE89370400440532013001")           # fails mod-97
+
+
+def test_pii_column_detection_and_negatives():
+    from scrubdata.pii import detect_column_pii
+    cards = ["4532015112830366", "4716461583322103", "5425233430109903", "4024007103939509"]
+    r = detect_column_pii("card", cards)
+    assert r and r["pii_type"] == "credit_card" and r["checksum"]
+    r = detect_column_pii("ssn", ["123-45-6789", "987-65-4321", "111-22-3333"])
+    assert r and r["pii_type"] == "ssn"
+    assert detect_column_pii("city", ["Boston", "Chicago", "Dallas", "Boston"]) is None
+    assert detect_column_pii("qty", ["1", "2", "3", "4", "5"]) is None
+
+
+def test_pii_planner_masks_and_never_reformats_identifiers():
+    df = pd.DataFrame({
+        "card": ["4532015112830366", "4716461583322103", "5425233430109903",
+                 "4024007103939509", "370434978549371"],   # last one fails Luhn (80% rate)
+        "email": ["ana@corp.io", "luis@mail.com", "sofia@test.org", "raul@corp.io",
+                  "mia@mail.com"],
+        "city": ["Boston", "Chicago", "Boston", "Dallas", "Chicago"],
+    })
+    plan = mock_plan(df)
+    assert is_valid(plan)
+    ops = {c["name"]: [o["op"] for o in c["operations"]] for c in plan["columns"]}
+    # checksum-confirmed at 80% coverage -> still auto-masked, never parse_number'd
+    assert ops["card"] == ["flag_pii", "mask_pii"]
+    assert "flag_pii" in ops["email"] and "mask_pii" not in ops["email"]
+    assert "city" not in ops or not any("pii" in o for o in ops.get("city", []))
+    cleaned, _ = apply_plan(df, plan)
+    from scrubdata.pii import detect_column_pii
+    assert detect_column_pii("card", cleaned["card"].tolist()) is None   # leak-free
+    assert cleaned["card"][0].endswith("0366") and cleaned["card"][0].startswith("*")
+    assert cleaned["email"][0] == "ana@corp.io"                          # flagged, not destroyed
+
+
+def test_pii_hash_and_pseudonymize_deterministic():
+    from scrubdata.pii import hash_value, pseudonymize_value
+    assert hash_value("4532015112830366", "s1") == hash_value("4532015112830366", "s1")
+    assert hash_value("4532015112830366", "s1") != hash_value("4532015112830366", "s2")
+    p1 = pseudonymize_value("ana@corp.io", "s1", "email")
+    assert p1 == pseudonymize_value("ana@corp.io", "s1", "email")   # join-stable
+    assert p1.startswith("EMAIL_") and "ana" not in p1
+
+
 def test_active_planner_defaults_to_heuristic(monkeypatch):
     monkeypatch.delenv("SCRUBDATA_MODEL", raising=False)
     from scrubdata.active import get_planner

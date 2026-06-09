@@ -89,6 +89,43 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
     stype = col_profile["detected_semantic_type"]
     cfg = ground_cfg or {}
 
+    # PII first (orthogonal to semantic type): always FLAG; auto-mask only the
+    # high-sensitivity checksum/SSN types — contact columns (email/phone) are flagged
+    # for review, not silently destroyed. Masked columns skip format ops (never
+    # parse_number a credit card).
+    pii_info = col_profile.get("pii")
+    if pii_info:
+        from .pii import AUTO_MASK_TYPES
+        ptype = pii_info["pii_type"]
+        ops.append({"op": "flag_pii", "pii_type": ptype,
+                    "rationale": f"Column contains {ptype} values "
+                                 f"({pii_info['hit_rate']:.0%} of distinct values"
+                                 + (", checksum-confirmed" if pii_info.get("checksum") else "")
+                                 + ")."})
+        action = cfg.get("pii_action", "mask")
+        # checksum-confirmed types (Luhn/IBAN) are near-zero false-positive, so 0.6
+        # coverage is already overwhelming evidence; pattern types need 0.84.
+        confident = (pii_info["confidence"] >= 0.84
+                     or (pii_info.get("checksum") and pii_info["confidence"] >= 0.6))
+        if (ptype in AUTO_MASK_TYPES and confident
+                and action in ("mask", "hash", "pseudonymize")):
+            op = {"op": f"{action}_pii", "pii_type": ptype,
+                  "rationale": f"Protected {ptype} column ({action}); original is untouched."}
+            if action in ("hash", "pseudonymize"):
+                import secrets
+                op["salt"] = cfg.get("pii_salt") or secrets.token_hex(8)
+            ops.append(op)
+            return ops
+        if not confident and flags_out is not None:
+            flags_out.append({
+                "column": col_profile["name"], "issue": "possible_pii",
+                "values": [], "action": "left_for_review",
+                "rationale": f"Column may contain {ptype} values "
+                             f"({pii_info['hit_rate']:.0%} match) — flagged for review.",
+            })
+        if ptype in ("credit_card", "iban", "ssn", "ip_address", "mac_address"):
+            return ops      # identifier columns: NEVER fall through to format ops
+
     if "whitespace" in issues:
         ops.append({"op": "strip_whitespace",
                     "rationale": "Trimmed leading/trailing and doubled spaces."})
