@@ -82,7 +82,7 @@ def _within_one_edit(a: str, b: str) -> bool:
     return any(hi[:i] + hi[i + 1:] == lo for i in range(len(hi)))
 
 
-def _column_operations(col_profile: dict, series: pd.Series) -> list[dict]:
+def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | None = None) -> list[dict]:
     ops: list[dict] = []
     issues = set(col_profile["issues"])
     stype = col_profile["detected_semantic_type"]
@@ -118,17 +118,36 @@ def _column_operations(col_profile: dict, series: pd.Series) -> list[dict]:
     elif stype == "email":
         ops.append({"op": "normalize_email",
                     "rationale": "Lowercased and trimmed email addresses."})
-    elif stype in {"categorical", "country", "city", "state"}:
-        # Always attempt canonicalization (case folding, country dict, typo clusters);
-        # emit only if it actually merges something. Catches case variants the old
-        # issue-gate missed and typo clusters in real data.
-        mapping = _canonicalize_mapping(series.tolist())
+    elif stype in {"country", "state", "city", "categorical", "text"}:
+        # GROUNDED canonicalization: reconcile each value against the type's reference
+        # taxonomy (only map to a REAL canonical, ABSTAIN otherwise) — the structural fix
+        # for wrong-merges like guntxrsvillx->huntsville (taxonomy-grounding research).
+        # Type the column via the reference when detection didn't already tag it.
+        from scrubdata.reconcile import grounded_mapping, infer_reference_type
+        ref_type = stype if stype in {"country", "state", "city"} else None
+        if ref_type is None:
+            ref_type = infer_reference_type(series.tolist())
+        if ref_type is None:
+            if stype == "categorical":      # no reference -> conservative case/typo fold
+                mapping = _canonicalize_mapping(series.tolist())
+                if mapping:
+                    ops.append({"op": "canonicalize_categories", "mapping": mapping,
+                                "rationale": f"Unified {len(mapping)} inconsistent "
+                                             f"spellings into canonical labels."})
+            return ops
+        mapping, abstained = grounded_mapping(series.tolist(), ref_type)
         if mapping:
             ops.append({
-                "op": "canonicalize_categories",
-                "mapping": mapping,
-                "rationale": f"Unified {len(mapping)} inconsistent spellings "
-                             f"into canonical labels.",
+                "op": "canonicalize_categories", "mapping": mapping,
+                "rationale": f"Reconciled {len(mapping)} value(s) to the {ref_type} "
+                             f"reference taxonomy.",
+            })
+        if abstained and flags_out is not None:
+            flags_out.append({
+                "column": col_profile["name"], "issue": "uncertain_canonicalization",
+                "values": abstained[:20], "action": "left_for_review",
+                "rationale": f"{len(abstained)} {ref_type} value(s) look like typos but did "
+                             f"not confidently match the reference — left unchanged for review.",
             })
     return ops
 
@@ -150,10 +169,11 @@ def mock_plan(df: pd.DataFrame, profile: dict | None = None) -> dict:
                                        f"exact duplicate row(s)."})
 
     columns = []
+    flags: list[dict] = []
     for col_profile in profile["columns"]:
         if col_profile["name"] in profile["empty_columns"]:
             continue
-        ops = _column_operations(col_profile, df[col_profile["name"]])
+        ops = _column_operations(col_profile, df[col_profile["name"]], flags_out=flags)
         if ops:
             columns.append({
                 "name": col_profile["name"],
@@ -169,6 +189,6 @@ def mock_plan(df: pd.DataFrame, profile: dict | None = None) -> dict:
                            f"and {len(table_ops)} table-level fix(es).",
         "table_operations": table_ops,
         "columns": columns,
-        "flags": [],  # the model will populate anomaly flags; mock leaves empty
+        "flags": flags,  # grounded planner surfaces abstained values for review
         "_generated_by": "mock_planner",
     }

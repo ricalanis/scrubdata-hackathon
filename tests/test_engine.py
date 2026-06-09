@@ -124,6 +124,27 @@ def test_batched_planner():
     assert is_valid(plan)
 
 
+def test_reconcile_grounds_and_abstains():
+    from scrubdata.reconcile import default_index
+    idx = default_index()
+    assert idx.reconcile("USA", "country")[0] == "United States"
+    assert idx.reconcile("Germny", "country")[0] == "Germany"      # fuzzy
+    assert idx.reconcile("Xyzzylandia", "country") is None          # ABSTAIN
+    assert idx.reconcile("Califrnia", "state")[0] == "California"
+
+
+def test_grounded_planner_no_wrong_merge():
+    # 'guntxrsvillx' (a town not in the reference) must NOT be merged into a similar real
+    # city — the structural fix for guntxrsvillx->huntsville.
+    df = pd.DataFrame({"loc": ["birminghxm", "Birmingham", "guntxrsvillx", "Chicago",
+                               "Chcago", "Birmingham", "Chicago", "Birmingham"]})
+    plan = mock_plan(df)
+    mapping = {k: v for c in plan["columns"] for o in c["operations"]
+               if o["op"] == "canonicalize_categories" for k, v in o["mapping"].items()}
+    assert mapping.get("birminghxm") == "Birmingham"
+    assert mapping.get("guntxrsvillx", "") != "Huntsville"
+
+
 def test_active_planner_defaults_to_heuristic(monkeypatch):
     monkeypatch.delenv("SCRUBDATA_MODEL", raising=False)
     from scrubdata.active import get_planner
