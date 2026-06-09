@@ -127,6 +127,73 @@ def mask_value(v, pii_type: str = ""):
     return s[:1] + "*" * max(len(s) - 1, 2)
 
 
+# --- tier-2: small NER column typer (optional, lazy; OpenMed-PII 44M) ----------
+#
+# Transfer-validated (scripts/pii_transfer_check.py): 100% detection on BARE cell
+# values for names/addresses — no context template needed. The model also correctly
+# types city/county/occupation, but those are quasi-identifiers, not maskable PII, so
+# tier-2 only acts on a SENSITIVE allowlist and requires a column-level coverage vote
+# (same contract as reconcile.infer_reference_type).
+
+SENSITIVE_NER_MAP = {
+    "first_name": "person_name", "last_name": "person_name", "name": "person_name",
+    "street_address": "address", "address": "address",
+    "ssn": "ssn", "credit_card": "credit_card", "email": "email",
+    "phone_number": "phone", "date_of_birth": "date_of_birth",
+    "passport": "passport", "driver_license": "driver_license",
+    "medical_record_number": "medical_record_number", "account_number": "account_number",
+}
+
+_NER_MODEL = "OpenMed/OpenMed-PII-SuperClinical-Small-44M-v1"
+_ner_pipe = None
+
+
+def _get_ner():
+    """Lazy singleton; None when transformers isn't installed (tier-2 silently off)."""
+    global _ner_pipe
+    if _ner_pipe is None:
+        try:
+            from transformers import pipeline
+            _ner_pipe = pipeline("token-classification", model=_NER_MODEL,
+                                 aggregation_strategy="simple")
+        except Exception:  # noqa: BLE001
+            _ner_pipe = False
+    return _ner_pipe or None
+
+
+def detect_column_pii_ner(name: str, values, max_distinct: int = 40,
+                          min_coverage: float = 0.55) -> dict | None:
+    """Tier-2: type a column as sensitive PII by NER-voting over sampled distinct
+    values. Only sensitive-allowlisted entity types count; the column verdict needs
+    majority coverage. Returns the same dict shape as detect_column_pii (tier=2)."""
+    pipe = _get_ner()
+    if pipe is None:
+        return None
+    from collections import Counter
+    distinct = list(dict.fromkeys(
+        str(v).strip() for v in values if not detect.is_missing(v)))[:max_distinct]
+    if len(distinct) < 3:
+        return None
+    votes: Counter = Counter()
+    for v in distinct:
+        try:
+            ents = pipe(v)
+        except Exception:  # noqa: BLE001
+            continue
+        hit_types = {SENSITIVE_NER_MAP[e["entity_group"]] for e in ents
+                     if e.get("entity_group") in SENSITIVE_NER_MAP and e.get("score", 0) >= 0.5}
+        for t in hit_types:
+            votes[t] += 1
+    if not votes:
+        return None
+    ptype, n = votes.most_common(1)[0]
+    coverage = n / len(distinct)
+    if coverage < min_coverage:
+        return None
+    return {"pii_type": ptype, "confidence": round(coverage, 3), "tier": 2,
+            "hit_rate": round(coverage, 3), "checksum": False}
+
+
 def hash_value(v, salt: str):
     if detect.is_missing(v):
         return v

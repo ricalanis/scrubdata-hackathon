@@ -73,6 +73,12 @@ def profile_column(series: pd.Series) -> dict:
     k = 8 if high_card else VALUE_COUNTS_CAP
     value_counts = [[val, cnt] for val, cnt in counts.most_common(k)]
     from .pii import detect_column_pii
+    pii = detect_column_pii(str(series.name), values)
+    if pii is None and semantic_type in ("text", "categorical"):
+        import os
+        if os.environ.get("SCRUBDATA_PII_NER"):     # tier-2 NER: opt-in (needs transformers)
+            from .pii import detect_column_pii_ner
+            pii = detect_column_pii_ner(str(series.name), values)
     return {
         "name": str(series.name),
         "pandas_dtype": str(series.dtype),
@@ -83,8 +89,8 @@ def profile_column(series: pd.Series) -> dict:
         "value_counts": value_counts,
         "truncated_values": max(0, len(counts) - VALUE_COUNTS_CAP),
         "issues": _column_issues(series, semantic_type),
-        # tier-1 PII typing (regex + checksum over distinct values; None if not PII)
-        "pii": detect_column_pii(str(series.name), values),
+        # PII typing: tier-1 regex+checksum always; tier-2 NER when opted in. None if not PII.
+        "pii": pii,
     }
 
 
