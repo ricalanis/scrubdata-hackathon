@@ -113,7 +113,7 @@ def _apply_case(s: str, style: str) -> str:
 
 def grounded_mapping(values, ctype: str, idx: ReferenceIndex | None = None,
                      threshold: float = 0.84, review_floor: float = 0.70,
-                     min_margin: float = 0.03):
+                     min_margin: float = 0.03, case_match: bool = True):
     """Ground a column's canonicalization in the type's reference taxonomy.
 
     Returns (mapping, abstained): `mapping` only contains dirty->canonical where the
@@ -132,7 +132,7 @@ def grounded_mapping(values, ctype: str, idx: ReferenceIndex | None = None,
             continue
         canon, score, margin = b
         if score >= threshold and margin >= min_margin:
-            cased = _apply_case(canon, style)
+            cased = _apply_case(canon, style) if case_match else canon
             if cased != v:
                 mapping[v] = cased
         elif score >= review_floor:        # near-miss or ambiguous -> ABSTAIN for review

@@ -82,10 +82,12 @@ def _within_one_edit(a: str, b: str) -> bool:
     return any(hi[:i] + hi[i + 1:] == lo for i in range(len(hi)))
 
 
-def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | None = None) -> list[dict]:
+def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | None = None,
+                       ground_cfg: dict | None = None) -> list[dict]:
     ops: list[dict] = []
     issues = set(col_profile["issues"])
     stype = col_profile["detected_semantic_type"]
+    cfg = ground_cfg or {}
 
     if "whitespace" in issues:
         ops.append({"op": "strip_whitespace",
@@ -124,18 +126,23 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
         # for wrong-merges like guntxrsvillx->huntsville (taxonomy-grounding research).
         # Type the column via the reference when detection didn't already tag it.
         from scrubdata.reconcile import grounded_mapping, infer_reference_type
+        # ABLATION knob: ground_cfg.use_reference=False falls back to frequency clustering.
         ref_type = stype if stype in {"country", "state", "city"} else None
-        if ref_type is None:
+        if cfg.get("use_reference", True) and ref_type is None:
             ref_type = infer_reference_type(series.tolist())
-        if ref_type is None:
-            if stype == "categorical":      # no reference -> conservative case/typo fold
+        if not cfg.get("use_reference", True) or ref_type is None:
+            if stype in ("categorical", "country", "state", "city"):   # no/ablated reference
                 mapping = _canonicalize_mapping(series.tolist())
                 if mapping:
                     ops.append({"op": "canonicalize_categories", "mapping": mapping,
                                 "rationale": f"Unified {len(mapping)} inconsistent "
                                              f"spellings into canonical labels."})
             return ops
-        mapping, abstained = grounded_mapping(series.tolist(), ref_type)
+        mapping, abstained = grounded_mapping(
+            series.tolist(), ref_type,
+            threshold=cfg.get("threshold", 0.84),
+            min_margin=cfg.get("min_margin", 0.03),
+            case_match=cfg.get("case_match", True))
         if mapping:
             ops.append({
                 "op": "canonicalize_categories", "mapping": mapping,
@@ -152,8 +159,10 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
     return ops
 
 
-def mock_plan(df: pd.DataFrame, profile: dict | None = None) -> dict:
-    """Return a cleaning plan dict for `df` (PRODUCT.md §5 schema)."""
+def mock_plan(df: pd.DataFrame, profile: dict | None = None,
+              ground_cfg: dict | None = None) -> dict:
+    """Return a cleaning plan dict for `df` (PRODUCT.md §5 schema). `ground_cfg` tunes the
+    grounding (for ablations): use_reference, threshold, min_margin, case_match."""
     profile = profile or profile_dataframe(df)
 
     table_ops: list[dict] = []
@@ -173,7 +182,8 @@ def mock_plan(df: pd.DataFrame, profile: dict | None = None) -> dict:
     for col_profile in profile["columns"]:
         if col_profile["name"] in profile["empty_columns"]:
             continue
-        ops = _column_operations(col_profile, df[col_profile["name"]], flags_out=flags)
+        ops = _column_operations(col_profile, df[col_profile["name"]], flags_out=flags,
+                                 ground_cfg=ground_cfg)
         if ops:
             columns.append({
                 "name": col_profile["name"],
