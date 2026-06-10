@@ -95,6 +95,34 @@ def evaluate_generalization(planner, sources=None, label: str = "system") -> dic
               f"{b['variant_good']}/{b['variant_changed']} changes good | "
               f"other: {b['other_fixed']}/{b['other_errors']}", flush=True)
 
+    return _aggregate(rows, sources, label)
+
+
+def evaluate_captured_union(plans: dict, sources, label: str, tau: float = 0.5) -> dict:
+    """Score the SHIPPED pipeline from captured raw model plans (Modal --capture):
+    per source, verify(tau) the captured plan, union with the grounded heuristic —
+    byte-identical composition to scrubdata/active.py."""
+    from scrubdata.verifier import union_plans, verify_plan
+
+    def planner_for(name):
+        def planner(df, *_):
+            return union_plans(verify_plan(df, plans[name], tau=tau), mock_plan(df))
+        return planner
+
+    rows = []
+    for name in sources:
+        dirty, clean = _fetch(name)
+        cleaned, _ = apply_plan(dirty, _cell_only(planner_for(name)(dirty)))
+        m = score(dirty, clean, cleaned)
+        b = variant_breakdown(dirty, clean, cleaned)
+        rows.append({"source": name, **{k: m[k] for k in
+                                        ("f1", "precision", "recall", "damage")}, **b})
+        print(f"  {name:<16} F1={m['f1']:.3f} dmg={m['damage']:.3f} | variant: "
+              f"{b['variant_fixed']}/{b['variant_errors']} fixed", flush=True)
+    return _aggregate(rows, sources, label)
+
+
+def _aggregate(rows, sources, label) -> dict:
     def mean(xs):
         xs = list(xs)
         return sum(xs) / len(xs) if xs else 0.0
@@ -103,7 +131,7 @@ def evaluate_generalization(planner, sources=None, label: str = "system") -> dic
         return num / den if den else 0.0
 
     out = {
-        "system": label, "sources": sources,
+        "system": label, "sources": list(sources),
         "gen_f1": mean(r["f1"] for r in rows),
         "variant_recall": mean(rate(r["variant_fixed"], r["variant_errors"]) for r in rows),
         "variant_precision": mean(rate(r["variant_good"], r["variant_changed"])
@@ -120,15 +148,23 @@ def evaluate_generalization(planner, sources=None, label: str = "system") -> dic
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--sources", default=",".join(EVAL_SOURCES))
+    ap.add_argument("--plans", default=None,
+                    help="JSON file {source: captured raw model plan} -> score the "
+                         "shipped union pipeline instead of the local baselines")
+    ap.add_argument("--label", default="captured union")
     ap.add_argument("--out", default="eval/results/generalization_baseline.json")
     args = ap.parse_args()
     sources = args.sources.split(",")
-    results = [
-        evaluate_generalization(mock_plan, sources, "grounded heuristic"),
-        evaluate_generalization(
-            lambda df: {"table_operations": [], "columns": [], "flags": []},
-            sources, "no-op"),
-    ]
+    if args.plans:
+        plans = json.load(open(args.plans))
+        results = [evaluate_captured_union(plans, sources, args.label)]
+    else:
+        results = [
+            evaluate_generalization(mock_plan, sources, "grounded heuristic"),
+            evaluate_generalization(
+                lambda df: {"table_operations": [], "columns": [], "flags": []},
+                sources, "no-op"),
+        ]
     json.dump(results, open(args.out, "w"), indent=1)
     print(f"written to {args.out}")
 
