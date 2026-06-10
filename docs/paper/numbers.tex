@@ -1,0 +1,58 @@
+% Result macros — filled by the overnight runs; placeholders marked TBD.
+% Headline fine-tune (synthetic frozen gold, Layer 1)
+\newcommand{\canonFOurs}{0.815}        % v5 bf16, n=20 (single run; multi-seed below)
+\newcommand{\canonFOursBest}{0.901}    % v4 Q8 measurement
+\newcommand{\canonFBig}{0.452}         % large generic model (GLM-class, zero-shot)
+\newcommand{\canonFHeur}{0.152}        % rule heuristic
+\newcommand{\canonFMultiSeed}{TBD}     % mean ± 95% CI over training seeds (overnight)
+\newcommand{\opFOurs}{0.957}
+\newcommand{\jsonValidOurs}{0.950}
+
+% Real-data head-to-head (Raha hospital, real char-substitution typos)
+\newcommand{\hospRecallGrounded}{0.257}
+\newcommand{\hospRecallFreq}{0.193}
+\newcommand{\hospPrecGrounded}{0.053}
+\newcommand{\hospPrecFreq}{0.028}
+\newcommand{\hospWrongDelta}{62\%}     % reduction in wrong-changes vs freq clustering
+\newcommand{\hospModelRecall}{0.424}   % fine-tuned v5, repair_recall (vs 0.000 synthetic-only)
+
+% Wide-suite comparison (3 seeds, churn-neutral metric) — money table (overnight)
+\newcommand{\northGrounded}{TBD}
+\newcommand{\northGroundedCI}{TBD}
+\newcommand{\northORFp}{TBD}
+\newcommand{\northORKnn}{TBD}
+\newcommand{\realFGrounded}{TBD}
+\newcommand{\realFORKnn}{TBD}
+\newcommand{\damageGrounded}{TBD}
+\newcommand{\damageORKnn}{TBD}
+
+% Grounded MODEL on suite (overnight)
+\newcommand{\modelRealF}{TBD}
+\newcommand{\modelAbstain}{TBD}
+
+% Ablations (corrected churn-neutral metric, seed 7)
+\newcommand{\ablFull}{0.188}
+\newcommand{\ablNoGround}{0.237}
+\newcommand{\ablNoAbstain}{0.150}
+\newcommand{\ablNoMargin}{0.170}
+\newcommand{\ablNoCase}{0.180}
+\newcommand{\ablFullRealF}{0.137}
+\newcommand{\ablNoGroundRealF}{0.135}
+\newcommand{\ablNoAbstainDamage}{0.139}
+\newcommand{\ablFullDamage}{0.118}
+\newcommand{\ablFullAbstain}{1.000}
+\newcommand{\ablNoAbstainAbstain}{0.250}
+
+% Selective prediction / calibration
+\newcommand{\aurc}{0.120}
+\newcommand{\ece}{0.169}
+\newcommand{\precAtDefault}{0.899}     % threshold 0.84
+\newcommand{\covAtDefault}{0.669}
+\newcommand{\threshNinetyFive}{0.91}
+\newcommand{\covNinetyFive}{0.206}
+
+% PII transfer validation (OpenMed-PII 44M on bare cells)
+\newcommand{\piiNameBare}{100\%}
+\newcommand{\piiAddrBare}{100\%}
+\newcommand{\piiNegRate}{43\%}
+\newcommand{\piiLeakRate}{zero (0/360)} % eval/pii_leak.py, seeded

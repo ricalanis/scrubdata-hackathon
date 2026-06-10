@@ -28,7 +28,8 @@ adapter_vol = modal.Volume.from_name("scrubdata-v5-adapter", create_if_missing=T
 
 
 @app.function(gpu="A100-80GB", timeout=5400, volumes={"/vol": adapter_vol})
-def train_and_eval(epochs: int = 1, max_len: int = 2560, lr: float = 2e-4, n_synth: int = 8):
+def train_and_eval(epochs: int = 1, max_len: int = 2560, lr: float = 2e-4, n_synth: int = 8,
+                   seed: int = 0, skip_hospital: bool = False):
     import os, sys, json, torch
     os.chdir("/root/repo")
     sys.path.insert(0, "/root/repo")
@@ -88,7 +89,8 @@ def train_and_eval(epochs: int = 1, max_len: int = 2560, lr: float = 2e-4, n_syn
                 "attention_mask": torch.tensor(am)}
 
     args = TrainingArguments(
-        output_dir="/tmp/out", per_device_train_batch_size=4, gradient_accumulation_steps=4,
+        output_dir="/tmp/out", seed=seed, data_seed=seed,
+        per_device_train_batch_size=4, gradient_accumulation_steps=4,
         num_train_epochs=epochs, learning_rate=lr, lr_scheduler_type="cosine", warmup_ratio=0.03,
         bf16=True, logging_steps=25, save_strategy="no", report_to=[], optim="paged_adamw_8bit",
         gradient_checkpointing=True, gradient_checkpointing_kwargs={"use_reentrant": False})
@@ -98,9 +100,10 @@ def train_and_eval(epochs: int = 1, max_len: int = 2560, lr: float = 2e-4, n_syn
     print(f"\n[train] *** DONE, train_loss={final_loss:.4f} ***\n")
 
     # durability: persist the adapter BEFORE eval.
-    model.save_pretrained("/vol/v5")
+    adapter_dir = f"/vol/v5_seed{seed}" if seed else "/vol/v5"
+    model.save_pretrained(adapter_dir)
     adapter_vol.commit()
-    print("[train] adapter saved to volume scrubdata-v5-adapter:/v5")
+    print(f"[train] adapter saved to volume scrubdata-v5-adapter:{adapter_dir}")
 
     # ---- eval: disable checkpointing (KV cache) + MERGE the bf16-native adapter for
     # fast, correct inference.
@@ -129,7 +132,8 @@ def train_and_eval(epochs: int = 1, max_len: int = 2560, lr: float = 2e-4, n_syn
         with torch.no_grad():
             out = model.generate(input_ids=ids, attention_mask=enc["attention_mask"].to(model.device),
                                  max_new_tokens=1500, do_sample=False, eos_token_id=eos_ids,
-                                 pad_token_id=tok.pad_token_id, use_cache=True)
+                                 pad_token_id=tok.pad_token_id, use_cache=True,
+                                 suppress_tokens=[151657, 151658])  # block <tool_call> loop
         text = tok.decode(out[0][ids.shape[1]:], skip_special_tokens=True)
         plan = _extract_json(text)
         if plan is None:
@@ -143,16 +147,17 @@ def train_and_eval(epochs: int = 1, max_len: int = 2560, lr: float = 2e-4, n_syn
     gold = load_gold()[:n_synth]
     out["layer1"] = {name: evaluate(fn, gold) for name, fn in {
         "HEURISTIC": lambda df, gp: mock_plan(df), "FT_v5": base_planner}.items()}
-    _ensure_data()
-    dirty, clean = _load()
-    ft_plan = make_batched_planner(base_planner, batch_size=4)(dirty)
-    cleaned, _ = apply_plan(dirty, ft_plan)
-    out["hospital_ft"] = _score(dirty, clean, cleaned)
-    out["hospital_noop"] = _score(dirty, clean, dirty)
+    if not skip_hospital:
+        _ensure_data()
+        dirty, clean = _load()
+        ft_plan = make_batched_planner(base_planner, batch_size=4)(dirty)
+        cleaned, _ = apply_plan(dirty, ft_plan)
+        out["hospital_ft"] = _score(dirty, clean, cleaned)
+        out["hospital_noop"] = _score(dirty, clean, dirty)
 
     table = _format(out)
     print(table)
-    results["latest"] = {"out": out, "table": table}
+    results[f"seed{seed}" if seed else "latest"] = {"out": out, "table": table}
     return out
 
 
@@ -162,6 +167,8 @@ def _format(r) -> str:
     L.append(f"{'system':<12}" + "".join(f"{c:>11}" for c in cols))
     for name, m in r["layer1"].items():
         L.append(f"{name:<12}" + "".join(f"{m[c]:>11.3f}" for c in cols))
+    if "hospital_ft" not in r:
+        return "\n".join(L)
     L.append("\n=== Real hospital ===")
     for k in ("hospital_noop", "hospital_ft"):
         m = r[k]
@@ -171,8 +178,8 @@ def _format(r) -> str:
 
 
 @app.local_entrypoint()
-def main(epochs: int = 2):
-    call = train_and_eval.spawn(epochs=epochs)
+def main(epochs: int = 1, seed: int = 0, skip_hospital: bool = False, n_synth: int = 8):
+    call = train_and_eval.spawn(epochs=epochs, seed=seed, skip_hospital=skip_hospital, n_synth=n_synth)
     print(f"Launched detached. call_id={call.object_id}")
     print("Fetch: uv run python -c \"import modal;"
           "print(modal.Dict.from_name('scrubdata-train-results')['latest']['table'])\"")

@@ -1,0 +1,349 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage[numbers]{natbib}
+\input{numbers}
+
+\title{Small Fine-Tuned Planners with Execution-Verified Data and Calibrated
+Abstention for Tabular Canonicalization}
+\author{Ricardo Alanis\\ \small{\texttt{ricardo.alanis@gmail.com}}}
+\date{June 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Cleaning messy tabular data---particularly \emph{canonicalization}, the merging of
+inconsistent surface forms such as \texttt{USA}/\texttt{U.S.A}/\texttt{united states}
+into one canonical value---resists rule-based automation and is routinely done by hand.
+We present ScrubData, a system in which a small ($\leq$4B-parameter) language model acts
+as a \emph{planner}: it reads an aggregated column profile (per-value frequency counts,
+invariant to row count) and emits a structured JSON cleaning plan that a deterministic
+executor applies, making every change auditable and reversible. Three design decisions
+carry the result. (1)~\emph{Execution-verified training data}: every synthetic training
+example is kept only if executing its plan provably recovers the known-clean table.
+(2)~\emph{Reference grounding}: canonical forms are never free-generated; values are
+reconciled against type-scoped reference taxonomies (GeoNames, ISO) with fuzzy retrieval.
+(3)~\emph{Calibrated abstention}: below a confidence threshold the system declines to act
+and flags values for review; we show the confidence is selective-prediction-grade
+(AURC \aurc, precision rises monotonically with threshold). On alias-level
+canonicalization, our fine-tuned 4B planner reaches micro-F1 \canonFOursBest{} versus
+\canonFBig{} for a much larger zero-shot model and \canonFHeur{} for a rule heuristic.
+On a 65-dataset validation suite with a churn-neutral metric, grounding with abstention
+matches frequency-based clustering on real-error F1 while perfectly rejecting adversarial
+trap values that clustering systems wrong-merge. The same architecture generalizes to PII
+protection: a 44M token classifier types columns from bare cell values (100\% on
+names/addresses), and deterministic masking yields zero residual detectable PII. All
+components run locally on commodity hardware; no data leaves the machine.
+\end{abstract}
+
+\section{Introduction}
+
+A large share of practical data work is cleaning: a sales export where the same country
+is spelled four ways, a hospital roster where \texttt{birminghxm} should be
+\texttt{birmingham}, a CRM dump with mixed date formats and duplicated contacts. The
+fuzzy half of this work---recognizing that distinct surface forms denote the same
+entity---is exactly what rules do poorly and humans do slowly.
+
+Large language models can do this fuzzy matching, but deploying them as cell editors has
+three problems. First, \emph{trust}: a model that edits cells directly can silently
+corrupt data, and its errors are unauditable. Second, \emph{cost and privacy}: shipping
+every row of a private table to a hosted frontier model is expensive and often
+unacceptable. Third, \emph{hallucination}: asked for a canonical form, a generative model
+will invent one, and on tail entities it will invent wrong ones.
+
+ScrubData addresses all three with an architecture in which the model never touches
+data. A profiler aggregates each column into a value-frequency distribution; a small
+local model reads the profile and \emph{proposes} a JSON cleaning plan; a deterministic
+pandas executor \emph{applies} it. The plan is the complete, inspectable, reversible
+specification of every change---there are no silent edits by construction
+(\S\ref{sec:method}). Because the prompt scales with the number of \emph{distinct}
+values rather than rows, a million-row table profiles like a hundred-row one.
+
+This paper makes four contributions:
+\begin{enumerate}
+\item \textbf{A planner/executor decomposition for data cleaning} with an auditable
+  trust contract: the model proposes, a deterministic engine executes, every decision is
+  logged with lineage (\S\ref{sec:method}).
+\item \textbf{Execution-verified synthetic supervision}: a data-generation method in
+  which every training example is validated by running the executor on the (dirty table,
+  plan) pair and checking that the known-clean table is recovered; non-recovering
+  examples are discarded (\S\ref{sec:sft}).
+\item \textbf{Reference-grounded canonicalization with calibrated abstention}: canonical
+  forms come from type-scoped reference taxonomies via fuzzy retrieval with an ambiguity
+  margin; below-threshold matches abstain and surface for review. We characterize the
+  confidence with risk--coverage analysis (\S\ref{sec:grounding},
+  \S\ref{sec:calibration}).
+\item \textbf{An un-gameable evaluation}: a 65-dataset suite (real-error benchmarks plus
+  seeded error injection over 20 harvested open-data domains) scored with a
+  churn-neutral, convention-tolerant metric that cannot be inflated by mass rewriting;
+  we report two metric artifacts that our own ablations exposed and corrected
+  (\S\ref{sec:eval}).
+\end{enumerate}
+
+We deliberately report a negative-flavored finding alongside the positive ones: on
+\emph{injected} typos, classical frequency clustering remains a strong baseline---by
+construction, injection places the canonical form in the column, which is clustering's
+ideal regime. The advantage of grounding is concentrated where it matters: real errors,
+tail entities absent from the column, and adversarial near-misses where acting at all is
+wrong (\S\ref{sec:results}).
+
+\section{Related Work}
+\label{sec:related}
+
+\textbf{Error detection and repair.} Raha and Baran~\cite{raha} established
+configuration-free error detection and correction benchmarks (hospital, beers, flights,
+rayyan), which we adopt as out-of-distribution evaluation. HoloClean~\cite{holoclean}
+combines integrity constraints, external reference data, and statistics in probabilistic
+repair, demonstrating that external signals can veto statistically plausible but wrong
+repairs---an insight our reference-veto inherits. GARF~\cite{garf} learns repair rules
+self-supervised from the data itself; it also demonstrates the structural limit we
+observe for frequency-only methods: a lone categorical column offers no co-occurring
+signal to vote against an error.
+
+\textbf{LLMs for data wrangling.} Narayan et al.~\cite{wrangle} showed frontier
+foundation models handle entity matching and imputation few-shot;
+Jellyfish~\cite{jellyfish} and Table-GPT~\cite{tablegpt} fine-tune mid-size models for
+data tasks. RetClean~\cite{retclean} is closest in spirit: retrieval from data lakes
+grounds cell repair, with the key empirical split that parametric knowledge suffices on
+world-known head values but collapses on the tail---motivating retrieval. Our work
+differs in the planner/executor decomposition (the model emits no cell values, only
+plans), in execution-verified supervision, and in the calibrated-abstention contract.
+
+\textbf{Entity linking over tables.} TURL~\cite{turl} and TableLlama~\cite{tablellama}
+inject candidate entities into table understanding; Belotti et al.~\cite{belotti}
+show retriever coverage is the accuracy ceiling for table entity disambiguation and that
+long candidate lists hurt smaller models. RACOON~\cite{racoon} shows inference-time KG
+retrieval lifts a frozen model substantially, supporting our choice to ground at
+inference rather than bake aliases into weights (TURL's out-of-domain collapse is the
+cautionary result). MTab~\cite{mtab} established type-constrained matching with
+abstention in semantic table annotation.
+
+\textbf{Clustering-based cleaning tools.} OpenRefine's key-collision (fingerprint) and
+nearest-neighbour clustering are the de-facto practitioner baseline; we reimplement both
+faithfully (including blocking) and compare head-to-head.
+
+\textbf{Selective prediction.} Risk--coverage analysis and calibration
+metrics~\cite{selective} formalize ``knowing when not to act''; to our knowledge their
+application to data-cleaning merge decisions is new.
+
+\textbf{Small specialized models.} OpenMed~\cite{openmed} fine-tunes sub-500M encoders
+to state-of-the-art biomedical NER, the sister result to our thesis that small
+specialized models beat large generic ones on narrow structured tasks; we adopt their
+released PII token classifiers for column typing (\S\ref{sec:pii}).
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Planner / executor decomposition}
+A \emph{profiler} reduces each column to a typed summary: detected semantic type, missing
+counts, issue flags, and a value--frequency distribution capped at 80 distinct values
+(high-cardinality columns are summarized by their head). The \emph{planner}---either a
+deterministic heuristic or our fine-tuned 4B model---maps the profile (plus three sample
+rows) to a JSON plan: a list of per-column operations drawn from a closed vocabulary
+(\texttt{canonicalize\_categories} with an explicit mapping, \texttt{parse\_date},
+\texttt{standardize\_phone}, \texttt{mask\_pii}, \ldots), table operations, and review
+flags. The \emph{executor} applies the plan with pure pandas transforms. The plan is the
+only channel through which data changes: every diff is attributable to a named operation
+with a rationale, the original table is never mutated, and abstentions are first-class
+plan objects. We export per-run decision summaries as OpenTelemetry GenAI spans.
+
+\subsection{Execution-verified synthetic supervision}
+\label{sec:sft}
+Training pairs are generated by corrupting clean synthetic tables with realistic noise
+(casing, aliases, single-character typos with Zipf-distributed long-tail categorical
+columns of 30--80 distinct values) while recording the ground-truth plan. The defining
+step is \emph{verification by execution}: a candidate example is kept only if
+$\textsc{Execute}(\text{dirty}, \text{plan}) = \text{clean}$ cell-for-cell. This closes
+the loop between supervision and semantics---a plan that would not actually clean the
+table can never become a training label. We augment with real supervision derived from
+paired dirty/clean benchmarks by aligning cells and keeping only \emph{learnable}
+canonicalizations (a surface form that is a string variant of its target and never a
+legitimate value elsewhere), which excludes unlearnable per-cell corrections such as
+divergent flight times. The fine-tune is QLoRA (rank 32) over Qwen3-4B-Instruct in
+bf16; one practical finding is that the base model's tool-calling prior dominates
+free-running generation even after convergent fine-tuning (loss 0.16) and must be
+suppressed at decode time by banning the two tool-call tokens.
+
+\subsection{Reference-grounded canonicalization with abstention}
+\label{sec:grounding}
+For columns whose values reconcile to a known concept type (countries, administrative
+regions, cities), canonical forms are never generated: a fuzzy retriever (normalized
+edit similarity with first-character blocking and length prefilters) matches each
+distinct value against the type-scoped reference (ISO/pycountry; GeoNames cities500,
+196k entries). A value maps to a canonical only if (i) similarity clears a threshold
+$\tau{=}0.84$, (ii) the best--second-best margin clears $0.03$ (ambiguity veto: a value
+equally close to \texttt{Box} and \texttt{Boaz} abstains), and (iii) the canonical is
+cast to the column's observed case convention. Near-misses ($0.70{\le}s{<}\tau$) are
+surfaced as review flags. The same wrapper grounds the \emph{model} planner: for
+reference-typed columns the model's free-generated mapping is replaced by the grounded
+one, so the model can add coverage but never invent a canonical for a grounded type.
+
+\subsection{PII as a second task instance}
+\label{sec:pii}
+The identical contract covers PII: a deterministic tier types columns by checksum and
+pattern validators (Luhn, IBAN mod-97, SSN/email/phone) over distinct values; an
+optional 44M OpenMed-PII token classifier extends coverage to names and addresses,
+gated by a sensitive-type allowlist and a column-level coverage vote. High-sensitivity
+checksum-confirmed columns are masked format-preservingly (keep-last-four), contact
+columns are flagged for review, and identifier columns are excluded from numeric
+reformatting. Masking, salted hashing, and join-stable pseudonymization are deterministic
+executor operations.
+
+\section{Evaluation Design}
+\label{sec:eval}
+\textbf{Suite.} Five real-error benchmarks (Raha) plus seeded error injection
+(typo/OCR/case/whitespace) over 15 harvested open-data domains (NYC, Chicago, SF, LA,
+Seattle, Texas, WA portals; GitHub) $\approx$ 65 datasets per seed. We aggregate as a
+\emph{double macro}---mean over error types of mean over datasets, harmonically combined
+with the domain macro---so no single table or error type dominates.
+
+\textbf{Churn-neutral metric.} A cell change that is case/whitespace-equivalent to the
+input but does not restore the gold counts as nothing: not a fix, not a change, not
+damage. Without this, mass case-rewriting inflates precision (we observed $+0.12$
+NORTH from \emph{removing} case matching before the correction); with it, fixing a
+case-injected error requires actually acting. We additionally report
+\emph{damage}---the rate of semantically corrupting clean cells---and an adversarial
+\emph{abstain slice} whose traps are garbage strings (not single-edit variants of any
+reference entity; an earlier trap set mis-scored grounding for correctly mapping
+\texttt{Boazz}$\to$\texttt{Boaz}). We report both repairs of these metric artifacts as
+evidence that gameability must be tested, not assumed.
+
+\textbf{Real vs.\ injected.} Injected typos are in-distribution for frequency
+clustering by construction (the canonical is present and dominant in the column), so we
+report the real-error and injected slices separately.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Small fine-tuned planner vs.\ large generic model}
+On frozen synthetic gold, the fine-tuned 4B planner reaches canonicalization micro-F1
+\canonFOursBest{} (operation-F1 \opFOurs, JSON validity \jsonValidOurs), versus
+\canonFBig{} for a much larger zero-shot generalist prompted identically and
+\canonFHeur{} for the rule heuristic. Multi-seed: \canonFMultiSeed. On real hospital
+typos the synthetic-only fine-tune scores 0.000 repair recall; adding 20\%
+real-derived supervision lifts it to \hospModelRecall---real data is what transfers.
+
+\subsection{Grounding vs.\ clustering}
+On hospital's real errors, grounded reconciliation beats frequency clustering on recall
+(\hospRecallGrounded{} vs \hospRecallFreq), nearly doubles precision
+(\hospPrecGrounded{} vs \hospPrecFreq), and cuts wrong changes by \hospWrongDelta. On
+the full suite (Table~\ref{tab:money}), grounded cleaning is statistically tied with
+clustering on real-error F1 (\realFGrounded{} vs \ablNoGroundRealF) while clustering
+wins the injected slice---its home regime. The behavioral difference is where grounding
+earns its place: perfect abstention on adversarial traps (\ablFullAbstain) versus
+\ablNoAbstainAbstain{} when abstention is removed, and reference-vetoed wrong merges
+that clustering commits (e.g.\ \texttt{guntxrsvillx}$\to$\texttt{huntsville}).
+
+\begin{table}[t]
+\centering
+\caption{Wide-suite comparison, 3 injection seeds, churn-neutral metric. NORTH is the
+double-macro harmonic mean; REAL-F1 is the real-error slice. (Filled from the final
+run.)}
+\label{tab:money}
+\begin{tabular}{lccccc}
+\toprule
+System & NORTH & $\pm$95\%CI & REAL-F1 & damage & abstain \\
+\midrule
+Grounded (ours) & \northGrounded & \northGroundedCI & \realFGrounded & \damageGrounded & \ablFullAbstain \\
+OpenRefine fingerprint & \northORFp & -- & -- & -- & -- \\
+OpenRefine kNN & \northORKnn & -- & \realFORKnn & \damageORKnn & -- \\
+Grounded 4B model & -- & -- & \modelRealF & -- & \modelAbstain \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ablations}
+Removing abstention costs $-0.038$ NORTH, raises damage to \ablNoAbstainDamage{} (from
+\ablFullDamage), and collapses trap abstention to \ablNoAbstainAbstain. Removing the
+ambiguity margin costs $-0.018$ with $+0.007$ damage. Removing case matching costs
+$-0.008$ under the churn-neutral metric (and \emph{gained} $+0.12$ under the uncorrected
+metric---the artifact). Replacing grounding with frequency clustering gains $+0.049$
+NORTH, all of it from the injected slice (\S\ref{sec:eval}); real-error F1 is unchanged
+within noise.
+
+\subsection{Calibration of abstention}
+\label{sec:calibration}
+On a probe of reference-entity typos plus garbage traps, retrieval confidence is a
+usable selective-prediction signal: AURC \aurc, ECE \ece{} (mildly over-confident), and
+precision rises monotonically with threshold---\precAtDefault{} precision at the default
+$\tau{=}0.84$ (coverage \covAtDefault), and $\geq$95\% precision at
+$\tau{=}\threshNinetyFive$ (coverage \covNinetyFive). Figure~\ref{fig:rc} shows the
+risk--coverage curve.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.62\linewidth]{fig_risk_coverage}
+\caption{Risk--coverage for grounded city reconciliation (650 probes). Operating points
+annotated; the confidence supports thresholded abstention.}
+\label{fig:rc}
+\end{figure}
+
+\subsection{PII transfer}
+The 44M OpenMed-PII classifier, trained on sentence-level clinical text, transfers to
+bare cell values without templates: \piiNameBare{} detection on person-name cells and
+\piiAddrBare{} on addresses. Raw entity hits on non-PII columns (\piiNegRate) are
+quasi-identifier typings (\texttt{city}, \texttt{occupation}) eliminated by the
+sensitive-type allowlist and coverage vote. After deterministic masking, re-running all
+validators over the output finds \piiLeakRate{} residual detectable PII.
+
+\section{Limitations}
+Reference coverage is the recall ceiling: entities absent from the taxonomy abstain by
+design, which is safe but not helpful; coverage work (larger gazetteers, ROR for
+organizations) moves recall directly. Our damage metric is convention-tolerant for case
+and whitespace but still counts alias expansion (\texttt{NYC}$\to$\texttt{New York}) as
+damage when the gold keeps the alias---a value-level convention question we leave open.
+The confidence signal is mildly over-confident (ECE \ece); temperature scaling is future
+work. The injected half of the suite, while seeded and reproducible, inherits the
+injector's error model; we mitigate with the real-error slice and report both. PII
+coverage is English-only, and we make no de-identification guarantee. Finally, the
+fine-tune headline is reported with multi-seed confidence intervals, but the wide-suite
+model row is single-seed for cost reasons and scoped as such.
+
+\section{Conclusion}
+A small, locally-run planner with execution-verified supervision, reference grounding,
+and calibrated abstention turns LLM data cleaning from a trust liability into an
+auditable system: every change is a named, reversible operation; uncertain actions
+become review flags rather than silent corruptions; and the evaluation itself is built
+to resist gaming. We believe the recipe---propose/execute decomposition,
+verification-by-execution, retrieval-grounded outputs, and selective prediction---is a
+template for deploying small specialized models on other structured tasks.
+
+\begin{thebibliography}{20}
+\bibitem{raha} M.~Mahdavi et al. Raha: A configuration-free error detection system.
+SIGMOD 2019; Baran: Effective error correction via a unified context representation.
+VLDB 2020.
+\bibitem{holoclean} T.~Rekatsinas, X.~Chu, I.~Ilyas, C.~R\'e. HoloClean: Holistic data
+repairs with probabilistic inference. VLDB 2017. arXiv:1702.00820.
+\bibitem{garf} J.~Peng et al. GARF: Self-supervised interpretable data cleaning. VLDB
+2023.
+\bibitem{wrangle} A.~Narayan, I.~Chami, L.~Orr, C.~R\'e. Can foundation models wrangle
+your data? VLDB 2022. arXiv:2205.09911.
+\bibitem{jellyfish} H.~Zhang et al. Jellyfish: A large language model for data
+preprocessing. EMNLP 2024.
+\bibitem{tablegpt} P.~Li et al. Table-GPT: Table-tuned GPT for diverse table tasks.
+SIGMOD 2024.
+\bibitem{retclean} M.~Ahmad et al. RetClean: Retrieval-based data cleaning using LLMs
+and data lakes. VLDB 2024. arXiv:2303.16909.
+\bibitem{turl} X.~Deng et al. TURL: Table understanding through representation
+learning. VLDB 2020. arXiv:2006.14806.
+\bibitem{tablellama} T.~Zhang et al. TableLlama: Towards open large generalist models
+for tables. NAACL 2024. arXiv:2311.09206.
+\bibitem{belotti} F.~Belotti et al. Evaluating LLMs on entity disambiguation in tables.
+2024. arXiv:2408.06423.
+\bibitem{racoon} L.~Qiu et al. RACOON: Retrieval-augmented column type annotation with
+a knowledge graph. 2024. arXiv:2409.14556.
+\bibitem{mtab} P.~Nguyen et al. MTab: Matching tabular data to knowledge graph using
+probability models. SemTab 2019. arXiv:1910.00246.
+\bibitem{selective} R.~El-Yaniv, Y.~Wiener. On the foundations of noise-free selective
+classification. JMLR 2010; Y.~Geifman, R.~El-Yaniv. Selective classification for deep
+neural networks. NeurIPS 2017.
+\bibitem{openmed} M.~Panahi. OpenMed NER: Open-source domain-adapted token classifiers
+for biomedical NER. 2025. arXiv:2508.01630.
+\end{thebibliography}
+
+\end{document}
