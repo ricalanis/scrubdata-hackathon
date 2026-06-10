@@ -54,10 +54,14 @@ def is_valid(plan: dict) -> bool:
 # --- feature extraction for set-based F1 -------------------------------------
 
 def op_pairs(plan: dict) -> set:
+    """Op-identity pairs for plan F1. PII ops are excluded: they are orthogonal to the
+    cleaning gold (which predates PII support) and would unfairly penalize planners
+    that flag sensitive columns."""
     s = {("<table>", t["op"]) for t in plan.get("table_operations", [])}
     for c in plan.get("columns", []):
         for o in c.get("operations", []):
-            s.add((c["name"], o["op"]))
+            if "pii" not in o.get("op", ""):
+                s.add((c["name"], o["op"]))
     return s
 
 
