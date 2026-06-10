@@ -229,7 +229,9 @@ typos the synthetic-only fine-tune scores 0.000 repair recall; adding 20\%
 real-derived supervision lifts it to \hospModelRecall, and a data-scaling iteration
 (tripling the real-derived share from three paired benchmarks) reaches
 \hospModelRecallVSix{} recall at \hospModelPrecVSix{} precision---approaching the 0.51
-of a frontier-scale zero-shot model. Real, execution-verified pairs are what transfer:
+of a frontier-scale zero-shot model. The scaling gain is seed-robust: $+0.09$
+canonicalization F1 over the base mix under identical protocol, with non-overlapping
+3-seed confidence intervals. Real, execution-verified pairs are what transfer:
 the same iteration found frequency-derived and algorithm-cleaned labels both
 \emph{reduce} quality, consistent with our grounding thesis.
 
