@@ -233,6 +233,36 @@ def department_vocab() -> dict[str, list[str]]:
     return _cached("department", _department_entries)
 
 
+def _org_entries(limit: int = 2500, seed: int = 3) -> dict[str, list[str]]:
+    """Real organization alias->canonical pairs harvested from the ROR registry
+    (data/ror_aliases.jsonl, CC0; 72k orgs with aliases/acronyms): 'RMIT' ->
+    'RMIT University'. Empty dict (archetype skipped) when the harvest is absent."""
+    import json as _json
+    from pathlib import Path
+    p = Path(__file__).resolve().parent.parent / "data" / "ror_aliases.jsonl"
+    if not p.exists():
+        return {}
+    rows = [_json.loads(l) for l in p.open(encoding="utf-8")]
+    rng = random.Random(seed)
+    rng.shuffle(rows)
+    out: dict[str, list[str]] = {}
+    for r in rows:
+        canon = r["canonical"].strip()
+        aliases = [a.strip() for a in r.get("aliases", []) if a and a.strip() != canon]
+        if not aliases or not (4 <= len(canon) <= 60):
+            continue
+        if sum(c.isascii() for c in canon) < 0.9 * len(canon):   # keep learnable/ascii-ish
+            continue
+        out[canon] = aliases[:4]
+        if len(out) >= limit:
+            break
+    return out
+
+
+def org_vocab() -> dict[str, list[str]]:
+    return _cached("org", _org_entries)
+
+
 def job_title_vocab() -> dict[str, list[str]]:
     return _cached("job_title", _job_title_entries)
 

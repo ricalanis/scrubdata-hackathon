@@ -382,6 +382,13 @@ ARCHETYPES: list[Field] = [
     VocabField(["department", "dept", "team"], "categorical", V.department_vocab(), max_card=4),
     VocabField(["job_title", "title", "role", "position"], "categorical", V.job_title_vocab(), max_card=4),
     VocabField(["industry", "sector", "vertical"], "categorical", V.industry_vocab(), max_card=4),
+    # real ROR organizations (alias/acronym -> canonical): both low-card and the
+    # hospital-style high-cardinality long-tail regime. Skipped if harvest absent.
+    *([VocabField(["organization", "institution", "affiliation", "employer"], "categorical",
+                  V.org_vocab(), max_card=5),
+       VocabField(["organization", "institution", "affiliation"], "categorical",
+                  V.org_vocab(), min_card=25, max_card=60, high_card=True)]
+      if V.org_vocab() else []),
     VocabField(["unit", "uom", "measure_unit"], "categorical", V.unit_vocab(), max_card=4),
     StatusField(),
     CurrencyField(), DateField(), BooleanField(), PhoneField(),
