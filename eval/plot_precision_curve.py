@@ -26,6 +26,14 @@ def main() -> None:
     union = json.load(open(RESULTS / "v6_hospital_union_curve.json"))
 
     fig, ax = plt.subplots(figsize=(5.2, 3.6))
+    for fname in ("v6s25_hospital_union_curve.json", "v6s26_hospital_union_curve.json"):
+        p = RESULTS / fname
+        if p.exists():                       # sibling training seeds, faint
+            rows = json.load(open(p))
+            pts = sorted(((r["coverage"], r["precision"]) for r in rows if r["tau"] > 0))
+            ax.plot([x for x, _ in pts], [y for _, y in pts], lw=0.9, color="#2f6f5e",
+                    alpha=0.25, zorder=1,
+                    label="union, sibling seeds" if "s25" in fname else None)
     for rows, label, color, marker in (
             (model, "verifier-gated model plan", "#888888", "s"),
             (union, "verified union (shipped)", "#2f6f5e", "o")):

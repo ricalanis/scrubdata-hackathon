@@ -323,7 +323,24 @@ Baran given oracle error positions and 20 gold-labeled tuples per dataset reache
 \realFBaran{} F1 on the same slice (\S\ref{sec:ws4})---selective prediction does not
 close a supervised gap, but it makes the zero-label operating point trustworthy, which
 is the regime our user occupies. Precision is flat ($0.89$--$0.91$) for
-$\tau\in[0.2,0.8]$, so the operating point is not threshold-brittle.
+$\tau\in[0.2,0.8]$, so the operating point is not threshold-brittle, and the result is
+seed-robust: across three training seeds of the same data recipe the union operating
+point is \unionGateThreeSeedPrec{} precision at \unionGateThreeSeedCov{} coverage
+(the shipped adapter is the strongest seed), with every seed clearing the
+$0.70$-precision/$0.30$-coverage bar decisively.
+
+\textbf{Candidate-constrained planning (negative result).} We also tested constraining
+the planner's \emph{inputs}: the profiler emits evidence-backed (variant$\,\to\,$
+canonical) candidate pairs (frequency dominance, edit similarity, reference membership)
+and the model may only select among them, with a deterministic check dropping
+off-candidate mappings to review flags. As a standalone guard it is strong---the raw
+plan's precision rises from \hospModelPrecVSix{} to \pairsRawPrec{} with no verifier at
+all---but composed with the verifier and union it reaches \pairsUnionPrec{} precision
+at \pairsUnionCov{} coverage, slightly \emph{below} the unconstrained pipeline at the
+same $\tau$: the candidate cap (top-3 per surface) removes some correct repairs the
+verifier would have kept, and the two mechanisms gate the same failure class. We ship
+the verifier and keep candidate constraining available but off by default, reporting
+this as a measured redundancy rather than a stacked win.
 
 \begin{figure}[t]
 \centering

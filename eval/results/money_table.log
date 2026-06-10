@@ -1,0 +1,12 @@
+
+=== Cleaning north-star — WIDE validation suite (Raha + injected harvested), 3 seeds ===
+
+system                     NORTH*   ±95%CI  REAL-F1  INJ-F1  damage  abstain
+----------------------------------------------------------------------------
+grounded (ours)             0.203    0.003    0.174   0.214   0.104    1.000
+OpenRefine fingerprint      0.211    0.000    0.039   0.282   0.001    1.000
+OpenRefine kNN              0.122    0.002    0.058   0.149   0.096    1.000
+no-op                       0.000    0.000    0.000   0.000   0.000    1.000
+rows written to eval/results/money_table.json
+
+NORTH* = harmonic mean(error-type macro, domain macro) over 65 datasets. Double-macro + damage + abstain = un-gameable; hospital is 1 dataset of many. The money result: grounded vs the tool people actually use (OpenRefine).
