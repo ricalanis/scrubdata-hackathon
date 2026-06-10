@@ -54,6 +54,7 @@ DATASETS = {
     "rayyan":   {"keep": True, "sample": None},    # ~150K
     "flights":  {"keep": True, "sample": None},    # ~250K
     "tax":      {"keep": False, "sample": 4000},   # ~30MB raw -> sample then DELETE
+    "movies_1": {"keep": True, "sample": 2500},    # real errors: titles/years/cast
 }
 
 
