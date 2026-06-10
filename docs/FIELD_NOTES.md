@@ -56,6 +56,19 @@ column, which is clustering's ideal regime. Grounding's edge is real errors, tai
 entities, and not wrong-merging. We report both slices separately rather than
 averaging the difference away.
 
+**The verifier that made the model shippable.** The fine-tune's hospital numbers told
+an awkward story: recall 0.475 (best we'd measured for a local model) at precision
+0.185 — it fixed errors *and* invented merges. Instead of retraining, we scored every
+proposed mapping with three deterministic gates distilled from its actual failures: a
+value occurring ≥3 times is data, not a typo (*errors are rare*); a repair target must
+dominate its source in frequency (no mapping one typo onto another); digit-bearing
+codes only repair when the letter part is near-identical (`amix-2 → ami-2` yes,
+`ak_ → al_` no). The gated model plan alone: **0.993 precision at 0.287 coverage** —
+146 of 147 changes correct. Union it with the grounded heuristic and you get **0.905
+precision at 0.413 coverage** on hospital's 509 real errors. Every dropped mapping
+becomes a review flag, not a silent skip. That composition — verify the model's
+output, never trust it — is what the app now ships as its default planner.
+
 ## The PII turn
 
 A friend pointed at the OpenMed project (small Apache-2.0 token classifiers; their

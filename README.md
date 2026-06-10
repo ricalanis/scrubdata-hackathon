@@ -32,10 +32,16 @@ A small local model is the **planner**, never a row-by-row editor:
    taxonomies (GeoNames 196k cities, ISO countries/states) with fuzzy retrieval; ambiguous
    matches **abstain** and surface for human review (calibrated: 90% precision at the
    default threshold, ≥95% at 0.91).
-4. **Protect** — PII is detected locally (Luhn/IBAN checksums + a 44M OpenMed-PII
+4. **Verify** — every model-proposed mapping is scored by deterministic evidence
+   (errors-are-rare frequency gates, variant similarity, reference agreement); entries
+   below the confidence threshold (`SCRUBDATA_TAU`, default 0.5) become review flags
+   instead of edits. The shipped **verified union planner** (gated model plan ∪ grounded
+   heuristic) measures **0.905 precision @ 0.413 coverage** on hospital's 509 real errors
+   — the gated model plan alone is 0.993 @ 0.287.
+5. **Protect** — PII is detected locally (Luhn/IBAN checksums + a 44M OpenMed-PII
    classifier): cards/SSNs masked format-preservingly, contacts flagged, **0/360 residual
    PII** after masking in our leak test.
-5. **Execute** — deterministic pandas applies the plan. No silent edits, by construction;
+6. **Execute** — deterministic pandas applies the plan. No silent edits, by construction;
    every run exports an audit trail (OpenTelemetry-GenAI spans + open traces).
 
 **Model:** `Qwen3-4B-Instruct-2507` (Tiny Titan), QLoRA fine-tuned on **execution-verified**
@@ -65,13 +71,15 @@ SCRUBDATA_MODEL=scrubdata-ft uv run server.py      # model planner, heuristic fa
 
 SCRUBDATA_PII_NER=1 uv run server.py               # +44M NER for name/address columns
 uv run python -m scrubdata.cli messy.csv -o clean.csv --plan plan.json
-uv run pytest tests/                               # engine tests (25)
+uv run pytest tests/                               # engine tests (29)
 ```
 
 ## Repo map
 - `scrubdata/` — `profiler` · `planner` · `reconcile` (reference grounding + abstain) ·
-  `grounded` (RACOON wrapper) · `pii` (checksum + NER tiers, mask/hash/pseudonymize) ·
-  `executor` · `observability` · `trace` · `baselines` (OpenRefine) · `cli`.
+  `grounded` (RACOON wrapper) · `verifier` (selective prediction + union planner) ·
+  `pair_profile` (candidate-constrained canonicalization, opt-in) · `pii` (checksum +
+  NER tiers, mask/hash/pseudonymize) · `executor` · `observability` · `trace` ·
+  `baselines` (OpenRefine) · `cli`.
 - `training/` — execution-verified synthetic generator + real-data derivation
   (`real_data.py`: paired benchmarks + frequency-derived unpaired open data).
 - `eval/` — frozen gold · wide suite + double-macro north-star (`run_real_multi.py`) ·
