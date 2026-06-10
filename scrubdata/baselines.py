@@ -53,26 +53,32 @@ def _norm(s: str) -> str:
     return "".join(c.lower() for c in str(s) if c.isalnum())
 
 
-def knn_clusters(values, threshold: float = 0.82) -> dict:
+def knn_clusters(values, threshold: float = 0.82, max_distinct: int = 400) -> dict:
     """OpenRefine nearest-neighbor: greedily attach a rarer value to a more-frequent
-    canonical within edit-similarity `threshold`. NO reference -> over-merges."""
+    canonical within edit-similarity `threshold`. NO reference -> over-merges.
+
+    Tractability mirrors real OpenRefine, which never does all-pairs either (it blocks
+    on char-ngrams): we block candidates by first normalized char and consider only the
+    `max_distinct` most frequent values (raw all-pairs is O(n^2) difflib and made the
+    eval suite take hours on high-cardinality gov columns)."""
     freq = _freq(values)
-    distinct = sorted(freq, key=lambda v: -freq[v])
-    canon: list[tuple[str, str]] = []        # (value, normalized)
+    distinct = sorted(freq, key=lambda v: -freq[v])[:max_distinct]
+    buckets: dict[str, list[tuple[str, str]]] = {}   # first-char -> [(value, normalized)]
     mapping = {}
     for v in distinct:
         nv = _norm(v)
         if not nv:
             continue
         match = None
-        for cval, cn in canon:
-            if freq[cval] >= freq[v] and difflib.SequenceMatcher(None, nv, cn).ratio() >= threshold:
+        for cval, cn in buckets.get(nv[0], []):
+            if (freq[cval] >= freq[v] and abs(len(cn) - len(nv)) <= 1 + len(nv) // 3
+                    and difflib.SequenceMatcher(None, nv, cn).ratio() >= threshold):
                 match = cval
                 break
         if match is not None and match != v:
             mapping[v] = match
         else:
-            canon.append((v, nv))
+            buckets.setdefault(nv[0], []).append((v, nv))
     return mapping
 
 
