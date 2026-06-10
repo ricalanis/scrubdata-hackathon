@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ScrubData — Tu lista, ordenada con calma</title>
+<style>
+  :root{
+    --paper:#fbf7f0;
+    --paper-2:#fffdf9;
+    --ink:#3a3530;
+    --ink-soft:#6f675d;
+    --line:#ece4d6;
+    --accent:#7ba087;      /* single calm sage accent */
+    --accent-soft:#e8f0ea;
+    --accent-deep:#5e8470;
+    --warm:#d8a25e;        /* gentle merit-badge gold, used sparingly */
+    --shadow:0 14px 40px -22px rgba(80,70,55,.45);
+    --radius:26px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #fffdf9 0%, var(--paper) 55%, #f5efe4 100%);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:34px 20px 70px;
+  }
+  ::selection{background:var(--accent-soft);}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    width:100%;
+    max-width:760px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:30px;
+  }
+  .brand{display:flex;align-items:center;gap:11px;}
+  .leaf{width:34px;height:34px;flex:none;}
+  .brand-name{font-size:1.18rem;font-weight:600;letter-spacing:.2px;}
+  .brand-name small{display:block;font-size:.72rem;color:var(--ink-soft);letter-spacing:.4px;font-weight:400;}
+  .lang{
+    display:flex;background:var(--paper-2);border:1px solid var(--line);
+    border-radius:999px;padding:3px;font-family:system-ui,sans-serif;font-size:.8rem;
+  }
+  .lang button{
+    border:none;background:transparent;color:var(--ink-soft);
+    padding:6px 14px;border-radius:999px;cursor:pointer;font-weight:600;letter-spacing:.3px;
+  }
+  .lang button.on{background:var(--accent);color:#fff;}
+
+  /* ---------- shared card ---------- */
+  .stage{width:100%;max-width:760px;}
+  .card{
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:46px 44px;
+  }
+  .screen{display:none;}
+  .screen.active{display:block;animation:rise .6s ease both;}
+  @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+
+  h1{font-size:2.05rem;line-height:1.25;margin:0 0 12px;font-weight:600;letter-spacing:.2px;}
+  .lede{font-size:1.18rem;color:var(--ink-soft);margin:0 0 30px;max-width:46ch;}
+
+  /* persistent safety strip */
+  .safety{
+    display:flex;align-items:center;gap:12px;
+    background:var(--accent-soft);
+    border-radius:18px;
+    padding:14px 18px;
+    margin-top:26px;
+    font-family:system-ui,sans-serif;
+    font-size:.95rem;
+    color:var(--accent-deep);
+  }
+  .safety svg{flex:none;}
+  .safety b{font-weight:600;}
+
+  /* ---------- screen 1: drop ---------- */
+  .drop{
+    border:2px dashed #cdbfa6;
+    background:linear-gradient(180deg,#fffefb,#fbf6ec);
+    border-radius:24px;
+    padding:54px 30px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .25s, background .25s, transform .25s;
+  }
+  .drop:hover{border-color:var(--accent);background:#fbfaf4;transform:translateY(-2px);}
+  .drop .basket{font-size:2.6rem;display:block;margin-bottom:10px;}
+  .drop .big{font-size:1.32rem;font-weight:600;margin-bottom:4px;}
+  .drop .sub{color:var(--ink-soft);font-family:system-ui,sans-serif;font-size:.95rem;}
+  .filechip{
+    display:inline-flex;align-items:center;gap:9px;margin-top:22px;
+    background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:9px 15px;font-family:system-ui,sans-serif;font-size:.9rem;color:var(--ink);
+  }
+  .filechip .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);}
+
+  .btn{
+    font-family:system-ui,sans-serif;font-size:1.06rem;font-weight:600;
+    border:none;border-radius:16px;cursor:pointer;padding:16px 30px;
+    transition:transform .15s, box-shadow .25s, background .2s;
+  }
+  .btn-primary{
+    background:var(--accent);color:#fff;
+    box-shadow:0 10px 24px -12px rgba(94,132,112,.9);
+    width:100%;margin-top:26px;
+  }
+  .btn-primary:hover{background:var(--accent-deep);transform:translateY(-2px);}
+  .btn-ghost{
+    background:transparent;color:var(--accent-deep);border:1px solid #cfe0d4;
+  }
+  .btn-ghost:hover{background:var(--accent-soft);}
+
+  /* ---------- screen 2: working ---------- */
+  .working{text-align:center;padding:30px 10px 14px;}
+  .breath{
+    width:120px;height:120px;margin:6px auto 26px;border-radius:50%;
+    background:radial-gradient(circle at 50% 50%, var(--accent-soft), #fff);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    animation:breathe 3.4s ease-in-out infinite;
+  }
+  .breath span{font-size:2.4rem;}
+  @keyframes breathe{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(123,160,135,.25);}50%{transform:scale(1.07);box-shadow:0 0 0 18px rgba(123,160,135,0);}}
+  .working h1{font-size:1.7rem;}
+  .steps{list-style:none;padding:0;margin:24px auto 0;max-width:380px;text-align:left;font-family:system-ui,sans-serif;}
+  .steps li{
+    display:flex;align-items:center;gap:12px;padding:9px 0;color:var(--ink-soft);font-size:1rem;
+    opacity:.35;transition:opacity .4s;
+  }
+  .steps li.done{opacity:1;color:var(--ink);}
+  .steps li .tick{
+    width:22px;height:22px;border-radius:50%;border:2px solid #d8cdb8;flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#fff;background:transparent;
+  }
+  .steps li.done .tick{background:var(--accent);border-color:var(--accent);}
+
+  /* ---------- screen 3: result ---------- */
+  .result-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:8px;}
+  .badge{
+    width:62px;height:62px;flex:none;
+  }
+  .h-eyebrow{font-family:system-ui,sans-serif;font-size:.82rem;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent-deep);font-weight:700;}
+
+  .summary{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:24px 26px;
+    margin:22px 0 8px;
+    font-size:1.12rem;
+  }
+  .summary p{margin:0 0 14px;}
+  .summary p:last-child{margin-bottom:0;}
+  .summary .num{color:var(--accent-deep);font-weight:600;}
+
+  .section-title{
+    font-family:system-ui,sans-serif;font-size:.95rem;font-weight:700;
+    color:var(--ink-soft);letter-spacing:.4px;margin:34px 0 14px;
+    display:flex;align-items:center;gap:9px;
+  }
+  .section-title .pill{font-size:.7rem;background:var(--accent-soft);color:var(--accent-deep);padding:3px 9px;border-radius:999px;font-weight:700;}
+
+  /* change cards */
+  .change{
+    border:1px solid var(--line);border-radius:18px;background:#fff;
+    padding:18px 20px;margin-bottom:14px;
+  }
+  .change .lead{font-size:1.08rem;margin:0 0 12px;}
+  .change .lead b{color:var(--ink);}
+  .ba{display:flex;gap:10px;flex-wrap:wrap;font-family:system-ui,sans-serif;font-size:.9rem;}
+  .chip{
+    padding:7px 13px;border-radius:12px;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink-soft);
+  }
+  .chip.after{background:var(--accent-soft);border-color:#cfe0d4;color:var(--accent-deep);font-weight:600;}
+  .arrow{align-self:center;color:#bdb3a1;font-family:system-ui,sans-serif;}
+
+  /* gentle question card */
+  .ask{
+    border:1px solid #e7dcc4;background:linear-gradient(180deg,#fffdf6,#fbf3e3);
+    border-radius:18px;padding:20px 22px;margin-bottom:14px;
+  }
+  .ask .q{font-size:1.1rem;margin:0 0 6px;}
+  .ask .why{font-family:system-ui,sans-serif;font-size:.92rem;color:var(--ink-soft);margin:0 0 16px;}
+  .ask .row{display:flex;gap:10px;}
+  .ask .btn{padding:11px 20px;font-size:.95rem;}
+
+  /* honest flags */
+  .flag{
+    display:flex;gap:12px;align-items:flex-start;
+    background:#fff;border:1px dashed #d8cdb8;border-radius:16px;padding:16px 18px;margin-bottom:12px;
+  }
+  .flag .mark{font-size:1.2rem;flex:none;}
+  .flag p{margin:0;font-size:1rem;}
+  .flag .small{font-family:system-ui,sans-serif;font-size:.88rem;color:var(--ink-soft);}
+
+  /* bonus card */
+  .bonus{
+    background:linear-gradient(180deg,#f4faf6,#eaf3ed);
+    border:1px solid #d3e6da;border-radius:20px;padding:22px 24px;margin-top:8px;
+    display:flex;gap:16px;align-items:center;
+  }
+  .bonus .ic{font-size:2rem;flex:none;}
+  .bonus h3{margin:0 0 4px;font-size:1.15rem;}
+  .bonus p{margin:0;color:var(--ink-soft);font-size:1.02rem;}
+
+  /* download zone */
+  .download{
+    margin-top:30px;text-align:center;
+    border-top:1px solid var(--line);padding-top:30px;
+  }
+  .download .btn-primary{width:auto;display:inline-block;padding:18px 44px;font-size:1.12rem;}
+  .download .aside{font-family:system-ui,sans-serif;font-size:.92rem;color:var(--ink-soft);margin-top:14px;}
+  .download .aside a{color:var(--accent-deep);text-decoration:underline;cursor:pointer;}
+
+  .reset{display:block;margin:26px auto 0;background:none;border:none;color:var(--ink-soft);
+    font-family:system-ui,sans-serif;font-size:.85rem;cursor:pointer;text-decoration:underline;}
+
+  @media(max-width:560px){
+    .card{padding:32px 24px;}
+    h1{font-size:1.7rem;}
+    .lede{font-size:1.05rem;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <svg class="leaf" viewBox="0 0 40 40" fill="none">
+        <path d="M20 36C8 30 6 16 12 8c8 2 18 8 16 22-1 4-4 6-8 6z" fill="#e8f0ea" stroke="#7ba087" stroke-width="1.6"/>
+        <path d="M20 34c-1-8 0-16 6-22" stroke="#7ba087" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M18 24c-2-1-4-3-5-6M22 18c2 0 5 0 7-1" stroke="#7ba087" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <div class="brand-name">ScrubData<small>tu lista, ordenada con calma</small></div>
+    </div>
+    <div class="lang" aria-label="idioma">
+      <button class="on">ES</button>
+      <button>EN</button>
+    </div>
+  </div>
+
+  <div class="stage">
+
+    <!-- ============ SCREEN 1 : WELCOME + DROP ============ -->
+    <section class="screen active" id="s1">
+      <div class="card">
+        <h1>Hola, Doña Lupe.<br/>Vamos a ordenar su lista, sin prisa.</h1>
+        <p class="lede">Suelte aquí su archivo y yo le echo un ojo. Usted no tiene que configurar nada.</p>
+
+        <div class="drop" onclick="goWork()">
+          <span class="basket">🧺</span>
+          <div class="big">Suelte su archivo aquí</div>
+          <div class="sub">o toque para buscarlo en su computadora · Excel o CSV</div>
+          <div class="filechip"><span class="dot"></span> ventas-del-mes.xlsx · listo para revisar</div>
+        </div>
+
+        <button class="btn btn-primary" onclick="goWork()">Ordénalo por mí</button>
+
+        <div class="safety">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V5l8-3z" stroke="#5e8470" stroke-width="1.6"/><path d="M9 12l2 2 4-4" stroke="#5e8470" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div><b>Su original se queda igualito.</b> Hago una copia limpia aparte. Nada sale de esta computadora.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 2 : WORKING ============ -->
+    <section class="screen" id="s2">
+      <div class="card working">
+        <div class="breath"><span>🍃</span></div>
+        <h1>Trabajando aquí mismo, en su computadora…</h1>
+        <p class="lede" style="margin:8px auto 0;">Respire tranquila. Su original está a salvo. Esto toma un momentito.</p>
+        <ul class="steps" id="steps">
+          <li data-i="0"><span class="tick">✓</span> Leyendo su lista con cuidado</li>
+          <li data-i="1"><span class="tick">✓</span> Juntando los tacos que están escritos de varias formas</li>
+          <li data-i="2"><span class="tick">✓</span> Revisando teléfonos, fechas y espacios en blanco</li>
+          <li data-i="3"><span class="tick">✓</span> Apuntando lo que no estoy segura, para preguntarle</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 3 : RESULT ============ -->
+    <section class="screen" id="s3">
+      <div class="card">
+        <div class="result-head">
+          <svg class="badge" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="29" fill="#fff" stroke="#d8a25e" stroke-width="2" stroke-dasharray="3 3"/>
+            <circle cx="32" cy="32" r="22" fill="#e8f0ea" stroke="#7ba087" stroke-width="1.6"/>
+            <path d="M24 33l5 5 11-12" stroke="#5e8470" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div>
+            <div class="h-eyebrow">Listo · su resumen</div>
+            <h1 style="margin-top:2px;">Esto fue lo que encontré.</h1>
+          </div>
+        </div>
+
+        <div class="summary">
+          <p>Revisé su lista de <b>ventas-del-mes</b> con calma. Esto fue lo que arreglé:</p>
+          <p>· <span class="num">«Al pastor»</span> estaba escrito de 4 maneras distintas. Lo junté todo: <span class="num">1,204 vendidos</span>.</p>
+          <p>· <span class="num">23 personas</span> aparecían dos veces en su lista. Las reuní para que usted las mire.</p>
+          <p>· Puse todos los <span class="num">teléfonos</span> y las <span class="num">fechas</span> escritos igualito, fáciles de leer.</p>
+          <p>· <span class="num">14 espacios</span> decían «N/A» o solo un guion — los tomé como vacíos.</p>
+          <p style="font-family:system-ui,sans-serif;font-size:.98rem;color:var(--ink-soft);">Puede leerlo en voz alta a Yolanda o imprimirlo. Nada de esto tocó su archivo original.</p>
+        </div>
+
+        <!-- already-done change card (mechanical, safe) -->
+        <div class="section-title">Lo que ya dejé arreglado <span class="pill">hecho</span></div>
+
+        <div class="change">
+          <p class="lead">El mismo taco, escrito de varias formas — lo conté junto:</p>
+          <div class="ba">
+            <span class="chip">al pastor</span>
+            <span class="chip">Al Pastor</span>
+            <span class="chip">pastor</span>
+            <span class="chip">al pastór</span>
+            <span class="arrow">→</span>
+            <span class="chip after">Al pastor · 1,204</span>
+          </div>
+        </div>
+
+        <div class="change">
+          <p class="lead">Los teléfonos ahora se ven todos iguales:</p>
+          <div class="ba">
+            <span class="chip">55-1234 5678</span>
+            <span class="chip">5512345678</span>
+            <span class="arrow">→</span>
+            <span class="chip after">(55) 1234-5678</span>
+          </div>
+        </div>
+
+        <!-- gentle confirms (money / identity) -->
+        <div class="section-title">Antes de seguir, dos preguntitas <span class="pill" style="background:#f6ecd6;color:#a9742f;">usted decide</span></div>
+
+        <div class="ask">
+          <p class="q">Encontré <b>31 filas en $0.00</b> — parece un error del sistema.</p>
+          <p class="why">Si las dejo dentro, bajan su total del mes. ¿Las saco de la suma?</p>
+          <div class="row">
+            <button class="btn btn-primary" style="width:auto;margin:0;" onclick="this.closest('.ask').style.opacity=.55;this.closest('.row').innerHTML='<span style=&quot;font-family:system-ui;color:#5e8470;font-weight:600&quot;>✓ Hecho — las dejé fuera del total.</span>'">Sí, sácalas</button>
+            <button class="btn btn-ghost" onclick="this.closest('.row').innerHTML='<span style=&quot;font-family:system-ui;color:#6f675d&quot;>De acuerdo, las dejo en la suma.</span>'">No, déjalas</button>
+          </div>
+        </div>
+
+        <div class="ask">
+          <p class="q">Estas dos parecen <b>la misma persona</b>: «Yolanda R.» y «Yolanda Reyes».</p>
+          <p class="why">¿Las cuento como una sola, o son personas distintas?</p>
+          <div class="row">
+            <button class="btn btn-primary" style="width:auto;margin:0;" onclick="this.closest('.row').innerHTML='<span style=&quot;font-family:system-ui;color:#5e8470;font-weight:600&quot;>✓ Las junté en una.</span>'">Sí, es la misma</button>
+            <button class="btn btn-ghost" onclick="this.closest('.row').innerHTML='<span style=&quot;font-family:system-ui;color:#6f675d&quot;>Las dejé separadas.</span>'">Son distintas</button>
+          </div>
+        </div>
+
+        <!-- honest flags -->
+        <div class="section-title">No estuve segura de esto — se lo dejé a usted</div>
+
+        <div class="flag">
+          <span class="mark">🤔</span>
+          <p>Dos teléfonos tenían solo 7 dígitos. No quise inventar los que faltan.<br/>
+            <span class="small">Los dejé tal cual para que usted los revise contra su libreta.</span></p>
+        </div>
+        <div class="flag">
+          <span class="mark">🧮</span>
+          <p>El total de su caja dice <b>$48,920</b>, pero su lista suma <b>$48,655</b>.<br/>
+            <span class="small">No cuadran por $265 — aquí se lo marco para que lo compare con su efectivo.</span></p>
+        </div>
+
+        <!-- bonus -->
+        <div class="bonus">
+          <span class="ic">🌶️</span>
+          <div>
+            <h3>Ah, y una cosita más…</h3>
+            <p>Se le está acabando el <b>adobo de pastor</b> — fue el más vendido del mes. Quizá conviene pedir más antes del finde.</p>
+          </div>
+        </div>
+
+        <!-- download -->
+        <div class="download">
+          <button class="btn btn-primary">Descargar mi copia limpia</button>
+          <p class="aside">
+            Su original sigue a salvo en su USB. ·
+            <a onclick="alert('Su archivo original nunca se tocó — está justo donde lo dejó.')">Devolver todo como estaba</a><br/>
+            También puede <a onclick="window.print()">imprimir este resumen</a> para Yolanda.
+          </p>
+        </div>
+
+        <div class="safety" style="margin-top:30px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V5l8-3z" stroke="#5e8470" stroke-width="1.6"/><path d="M9 12l2 2 4-4" stroke="#5e8470" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div><b>Buen trabajo, Doña Lupe.</b> Su lista quedó en buen estado, y usted la revisó con sus propios ojos. Nada salió de esta computadora.</div>
+        </div>
+
+        <button class="reset" onclick="reset()">Empezar de nuevo con otro archivo</button>
+      </div>
+    </section>
+
+  </div>
+
+<script>
+  function show(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function goWork(){
+    show('s2');
+    const lis=document.querySelectorAll('#steps li');
+    lis.forEach(l=>l.classList.remove('done'));
+    let i=0;
+    const t=setInterval(()=>{
+      if(i<lis.length){lis[i].classList.add('done');i++;}
+      else{clearInterval(t);setTimeout(()=>show('s3'),650);}
+    },720);
+  }
+  function reset(){show('s1');}
+</script>
+</body>
+</html>

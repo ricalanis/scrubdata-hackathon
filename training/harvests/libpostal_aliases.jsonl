@@ -1,0 +1,502 @@
+{"canonical": "abbey", "aliases": ["abby"]}
+{"canonical": "access", "aliases": ["acc", "accs"]}
+{"canonical": "acres", "aliases": ["acrs"]}
+{"canonical": "alley", "aliases": ["al", "alee", "ally", "aly"]}
+{"canonical": "alleyway", "aliases": ["allwy", "allyway", "alwy"]}
+{"canonical": "amble", "aliases": ["ambl"]}
+{"canonical": "anchorage", "aliases": ["ancg"]}
+{"canonical": "annex", "aliases": ["anx"]}
+{"canonical": "apartments", "aliases": ["appartments", "apts"]}
+{"canonical": "approach", "aliases": ["apch", "app", "appr"]}
+{"canonical": "arcade", "aliases": ["arc"]}
+{"canonical": "arterial", "aliases": ["artl"]}
+{"canonical": "artery", "aliases": ["art", "arty"]}
+{"canonical": "avenue", "aliases": ["av", "ave", "aven", "avenu", "avn"]}
+{"canonical": "avenues", "aliases": ["avens", "avenus", "aves", "avns", "avs"]}
+{"canonical": "autoroute", "aliases": ["aut"]}
+{"canonical": "back", "aliases": ["bk"]}
+{"canonical": "bank", "aliases": ["bnk"]}
+{"canonical": "basin", "aliases": ["basn", "bsn"]}
+{"canonical": "bay", "aliases": ["by"]}
+{"canonical": "bayou", "aliases": ["bayoo", "byu"]}
+{"canonical": "beach", "aliases": ["baech", "bch", "beech"]}
+{"canonical": "belt", "aliases": ["blt"]}
+{"canonical": "bend", "aliases": ["bnd"]}
+{"canonical": "block", "aliases": ["bl", "blck", "blk"]}
+{"canonical": "bluff", "aliases": ["blf", "blfs", "bluf", "bluffs"]}
+{"canonical": "boardwalk", "aliases": ["board walk", "bwk", "bwlk"]}
+{"canonical": "boulevard", "aliases": ["bd", "bde", "bl", "blv", "blvd"]}
+{"canonical": "bottom", "aliases": ["bot", "bottm", "btm", "bttm"]}
+{"canonical": "bottoms", "aliases": ["bottms", "btms", "bttms"]}
+{"canonical": "boundary", "aliases": ["bdy"]}
+{"canonical": "bowl", "aliases": ["bl"]}
+{"canonical": "brace", "aliases": ["br", "brce"]}
+{"canonical": "branch", "aliases": ["br", "brch", "brnch"]}
+{"canonical": "brae", "aliases": ["br"]}
+{"canonical": "break", "aliases": ["brk"]}
+{"canonical": "bridge", "aliases": ["bdge", "br", "brdg", "brg", "bri"]}
+{"canonical": "broadway", "aliases": ["bdwy", "brdway", "bway", "bwy"]}
+{"canonical": "brook", "aliases": ["brk"]}
+{"canonical": "brooks", "aliases": ["brks"]}
+{"canonical": "brow", "aliases": ["brw"]}
+{"canonical": "burg", "aliases": ["bg"]}
+{"canonical": "burgs", "aliases": ["brgs"]}
+{"canonical": "burrow", "aliases": ["burw"]}
+{"canonical": "butte", "aliases": ["bte", "btte"]}
+{"canonical": "bypass", "aliases": ["bps", "byp", "bypa", "byps"]}
+{"canonical": "byway", "aliases": ["bywy"]}
+{"canonical": "camp", "aliases": ["cp"]}
+{"canonical": "cape", "aliases": ["cp", "cpe"]}
+{"canonical": "canyon", "aliases": ["cnyn", "cyn"]}
+{"canonical": "caravan", "aliases": ["c van", "cvan", "cvn"]}
+{"canonical": "causeway", "aliases": ["caus", "cause", "causewy", "csway", "cswy"]}
+{"canonical": "center", "aliases": ["c", "centre", "cetr", "cntr", "ctr"]}
+{"canonical": "centers", "aliases": ["ctrs"]}
+{"canonical": "centreway", "aliases": ["cnwy"]}
+{"canonical": "chase", "aliases": ["ch", "chas"]}
+{"canonical": "circle", "aliases": ["cir", "circel", "cirlce"]}
+{"canonical": "circles", "aliases": ["cirs"]}
+{"canonical": "circlet", "aliases": ["clt"]}
+{"canonical": "circuit", "aliases": ["cct", "ci", "circ", "cirt", "crct"]}
+{"canonical": "circus", "aliases": ["crc", "crcs"]}
+{"canonical": "claim", "aliases": ["clm"]}
+{"canonical": "cliff", "aliases": ["clf"]}
+{"canonical": "cliffs", "aliases": ["clfs"]}
+{"canonical": "close", "aliases": ["cl", "cls", "clse"]}
+{"canonical": "cluster", "aliases": ["clr", "clstr"]}
+{"canonical": "colonnade", "aliases": ["clde", "clnde"]}
+{"canonical": "common", "aliases": ["cm", "cmmn", "cmn", "com", "comm"]}
+{"canonical": "commons", "aliases": ["cmmns", "cmns", "comms"]}
+{"canonical": "concord", "aliases": ["cncd", "cncrd"]}
+{"canonical": "concession", "aliases": ["conc"]}
+{"canonical": "concourse", "aliases": ["cnc", "con", "concs", "concse"]}
+{"canonical": "connection", "aliases": ["cntn", "cxn"]}
+{"canonical": "connector", "aliases": ["cnctr", "cntr", "conr"]}
+{"canonical": "copse", "aliases": ["cps"]}
+{"canonical": "corner", "aliases": ["cnr", "cor", "crn"]}
+{"canonical": "corners", "aliases": ["cnrs", "cors", "crns"]}
+{"canonical": "corseo", "aliases": ["cseo"]}
+{"canonical": "corso", "aliases": ["cso"]}
+{"canonical": "county highway", "aliases": ["c h", "c.h", "c.h.", "c.hw", "ch"]}
+{"canonical": "county road", "aliases": ["c r", "c.r", "c.r.", "co.r", "cr"]}
+{"canonical": "county route", "aliases": ["c r", "c.r", "c.r.", "co.r", "cr"]}
+{"canonical": "course", "aliases": ["crse"]}
+{"canonical": "court", "aliases": ["crt", "ct"]}
+{"canonical": "courts", "aliases": ["crts", "cts"]}
+{"canonical": "courtyard", "aliases": ["ctyd", "cyd"]}
+{"canonical": "cove", "aliases": ["ce", "cov", "cv"]}
+{"canonical": "creek", "aliases": ["cr", "crk"]}
+{"canonical": "crescent", "aliases": ["cr", "crecent", "cres", "crs"]}
+{"canonical": "crest", "aliases": ["crst", "cst"]}
+{"canonical": "crief", "aliases": ["crf"]}
+{"canonical": "croft", "aliases": ["cft"]}
+{"canonical": "cross", "aliases": ["crss", "cs"]}
+{"canonical": "crossing", "aliases": ["crsg", "csg", "x ing", "x-ing", "xing"]}
+{"canonical": "crossroad", "aliases": ["crd", "cross road", "x road", "x-road", "xroad"]}
+{"canonical": "crossroads", "aliases": ["cross roads", "xrds"]}
+{"canonical": "crossway", "aliases": ["cowy", "crwy", "x-way", "xway", "xwy"]}
+{"canonical": "cruiseway", "aliases": ["crwy", "cuwy"]}
+{"canonical": "cul de sac", "aliases": ["cds", "csac", "cul-de-sac", "culdesac", "cusac"]}
+{"canonical": "curve", "aliases": ["crv", "crve", "curv", "cve"]}
+{"canonical": "cutting", "aliases": ["ctg", "cttg", "cutt"]}
+{"canonical": "dale", "aliases": ["dle"]}
+{"canonical": "deviation", "aliases": ["devn"]}
+{"canonical": "distributor", "aliases": ["dstr"]}
+{"canonical": "divide", "aliases": ["div"]}
+{"canonical": "diversion", "aliases": ["divers"]}
+{"canonical": "down", "aliases": ["dn"]}
+{"canonical": "downs", "aliases": ["dns", "dwns"]}
+{"canonical": "drive", "aliases": ["d", "dr", "drv", "dv", "dve"]}
+{"canonical": "driveway", "aliases": ["drvwy", "drwy", "dvwy", "dway", "dwy"]}
+{"canonical": "drove", "aliases": ["drov"]}
+{"canonical": "easement", "aliases": ["esmt"]}
+{"canonical": "edge", "aliases": ["edg"]}
+{"canonical": "elbow", "aliases": ["elb"]}
+{"canonical": "entrance", "aliases": ["ent", "entr"]}
+{"canonical": "esplanade", "aliases": ["esp", "espl"]}
+{"canonical": "estate", "aliases": ["est"]}
+{"canonical": "estates", "aliases": ["ests"]}
+{"canonical": "expressway", "aliases": ["exp", "expway", "expwy", "expy", "exwy"]}
+{"canonical": "extension", "aliases": ["ex", "ext", "exten", "extn"]}
+{"canonical": "extensions", "aliases": ["exts"]}
+{"canonical": "fairway", "aliases": ["fawy", "fy"]}
+{"canonical": "fall", "aliases": ["fl"]}
+{"canonical": "falls", "aliases": ["fls"]}
+{"canonical": "farm", "aliases": ["frm"]}
+{"canonical": "farms", "aliases": ["frms"]}
+{"canonical": "farm to market", "aliases": ["farm-to-market", "fm"]}
+{"canonical": "ferry", "aliases": ["fry", "fy"]}
+{"canonical": "field", "aliases": ["fd", "fld"]}
+{"canonical": "fields", "aliases": ["fds", "flds"]}
+{"canonical": "fireline", "aliases": ["fire line", "fline", "flne"]}
+{"canonical": "firetrack", "aliases": ["fire track", "ftrk"]}
+{"canonical": "firetrail", "aliases": ["fire trail", "fit", "fitr"]}
+{"canonical": "flat", "aliases": ["fl", "flt"]}
+{"canonical": "flats", "aliases": ["flts"]}
+{"canonical": "follow", "aliases": ["folw"]}
+{"canonical": "footway", "aliases": ["foot way", "ftwy"]}
+{"canonical": "ford", "aliases": ["frd"]}
+{"canonical": "foreshore", "aliases": ["fore shore", "fshr"]}
+{"canonical": "formation", "aliases": ["fmtn", "form"]}
+{"canonical": "freeway", "aliases": ["frwy", "fw", "fway", "fwy"]}
+{"canonical": "front", "aliases": ["frnt"]}
+{"canonical": "frontage", "aliases": ["fr", "frtg"]}
+{"canonical": "gap", "aliases": ["gp"]}
+{"canonical": "garden", "aliases": ["gdn", "grd", "grdn"]}
+{"canonical": "gardens", "aliases": ["gdns", "grdns", "grds"]}
+{"canonical": "gate", "aliases": ["ga", "gte"]}
+{"canonical": "gates", "aliases": ["gtes"]}
+{"canonical": "gateway", "aliases": ["gtway", "gtwy", "gway", "gwy"]}
+{"canonical": "glade", "aliases": ["gl", "gld", "glde"]}
+{"canonical": "glen", "aliases": ["gln"]}
+{"canonical": "grand boulevard", "aliases": ["g bd", "gbd", "gdbd", "grbd", "grdbd"]}
+{"canonical": "grange", "aliases": ["gra"]}
+{"canonical": "green", "aliases": ["gn", "gren", "grn"]}
+{"canonical": "greenway", "aliases": ["grwy"]}
+{"canonical": "ground", "aliases": ["grnd"]}
+{"canonical": "grounds", "aliases": ["grnds"]}
+{"canonical": "grove", "aliases": ["gr", "gro", "grv", "grve"]}
+{"canonical": "gulch", "aliases": ["glch"]}
+{"canonical": "gully", "aliases": ["gly"]}
+{"canonical": "hanger", "aliases": ["hngr"]}
+{"canonical": "harbor", "aliases": ["harbour", "hbr", "hrbr"]}
+{"canonical": "harbors", "aliases": ["hbrs"]}
+{"canonical": "haven", "aliases": ["havn", "hvn"]}
+{"canonical": "head", "aliases": ["hd"]}
+{"canonical": "heads", "aliases": ["hds"]}
+{"canonical": "heath", "aliases": ["heth", "hth"]}
+{"canonical": "heights", "aliases": ["hghts", "hgts", "hieghts", "ht", "hts"]}
+{"canonical": "highlands", "aliases": ["hghlds", "hglds", "hlds"]}
+{"canonical": "highroad", "aliases": ["hi rd", "hi.rd", "high road", "hird", "hrd"]}
+{"canonical": "highway", "aliases": ["hgwy", "hi", "hw", "hway", "hwy"]}
+{"canonical": "hill", "aliases": ["hl"]}
+{"canonical": "hills", "aliases": ["hils", "hls"]}
+{"canonical": "hollow", "aliases": ["hllw", "holw"]}
+{"canonical": "impasse", "aliases": ["imp"]}
+{"canonical": "inlet", "aliases": ["inlt"]}
+{"canonical": "interchange", "aliases": ["intchg", "inter change", "intg"]}
+{"canonical": "intersection", "aliases": ["inter section", "intn", "intsctn"]}
+{"canonical": "interstate", "aliases": ["i", "i h", "ih", "inter state"]}
+{"canonical": "island", "aliases": ["i", "id", "is", "isl", "isld"]}
+{"canonical": "islands", "aliases": ["ids", "islds", "iss"]}
+{"canonical": "junction", "aliases": ["jct", "jctn", "jnc", "jnct", "jtn"]}
+{"canonical": "junctions", "aliases": ["jcts"]}
+{"canonical": "key", "aliases": ["ky"]}
+{"canonical": "keys", "aliases": ["kys"]}
+{"canonical": "knoll", "aliases": ["knl", "knol"]}
+{"canonical": "knolls", "aliases": ["knls"]}
+{"canonical": "ladder", "aliases": ["ladr"]}
+{"canonical": "lagoon", "aliases": ["lagn", "lagon", "lgn"]}
+{"canonical": "landing", "aliases": ["landng", "ldg", "lndg"]}
+{"canonical": "lane", "aliases": ["l", "la", "ln"]}
+{"canonical": "laneway", "aliases": ["lnwy"]}
+{"canonical": "light", "aliases": ["lgt", "lt"]}
+{"canonical": "limits", "aliases": ["lmts"]}
+{"canonical": "line", "aliases": ["ln"]}
+{"canonical": "link", "aliases": ["lk", "lnk"]}
+{"canonical": "little", "aliases": ["lit", "litl", "littl", "ltl", "lttl"]}
+{"canonical": "loaf", "aliases": ["lf"]}
+{"canonical": "lookout", "aliases": ["lkt", "look out"]}
+{"canonical": "loop", "aliases": ["lp"]}
+{"canonical": "loops", "aliases": ["lps"]}
+{"canonical": "lot", "aliases": ["lt"]}
+{"canonical": "lynne", "aliases": ["lynn"]}
+{"canonical": "mall", "aliases": ["ml"]}
+{"canonical": "manor", "aliases": ["mnr"]}
+{"canonical": "meadow", "aliases": ["mdw"]}
+{"canonical": "meadows", "aliases": ["mdws", "mead"]}
+{"canonical": "mead", "aliases": ["md"]}
+{"canonical": "meander", "aliases": ["mdr", "mndr", "mr"]}
+{"canonical": "mew", "aliases": ["mw"]}
+{"canonical": "mews", "aliases": ["mws"]}
+{"canonical": "mile", "aliases": ["mi"]}
+{"canonical": "mill", "aliases": ["ml"]}
+{"canonical": "mills", "aliases": ["mls"]}
+{"canonical": "motorway", "aliases": ["mtwy", "mway", "mwy"]}
+{"canonical": "mount", "aliases": ["mt"]}
+{"canonical": "neaves", "aliases": ["nvs"]}
+{"canonical": "nook", "aliases": ["nk"]}
+{"canonical": "number", "aliases": ["#", "nbr", "nmbr", "no", "num"]}
+{"canonical": "outlet", "aliases": ["otlt"]}
+{"canonical": "outlook", "aliases": ["otlk", "out"]}
+{"canonical": "overbridge", "aliases": ["over bridge", "ovrb"]}
+{"canonical": "overlook", "aliases": ["over look", "ovlk"]}
+{"canonical": "overpass", "aliases": ["opas", "over pass"]}
+{"canonical": "paddock", "aliases": ["padk"]}
+{"canonical": "palms", "aliases": ["plms"]}
+{"canonical": "parade", "aliases": ["pard", "pde", "prd", "prde"]}
+{"canonical": "park", "aliases": ["pk", "prk"]}
+{"canonical": "parklands", "aliases": ["park land", "park lands", "parkland", "pkld", "pklds"]}
+{"canonical": "parkway", "aliases": ["parkwy", "pkway", "pkwy", "pky", "prkwy"]}
+{"canonical": "parkways", "aliases": ["pkwys"]}
+{"canonical": "part", "aliases": ["prt"]}
+{"canonical": "pass", "aliases": ["ps"]}
+{"canonical": "passage", "aliases": ["pasg", "pass", "psge"]}
+{"canonical": "path", "aliases": ["pth"]}
+{"canonical": "pathway", "aliases": ["phwy", "pthway", "pthwy", "ptway", "pway"]}
+{"canonical": "peninsula", "aliases": ["psla"]}
+{"canonical": "piazza", "aliases": ["piaz", "pzza"]}
+{"canonical": "pike", "aliases": ["pk", "pke"]}
+{"canonical": "pine", "aliases": ["pn", "pne"]}
+{"canonical": "pines", "aliases": ["pnes", "pns"]}
+{"canonical": "place", "aliases": ["pl", "pla", "plac", "plc"]}
+{"canonical": "plain", "aliases": ["pl", "pln"]}
+{"canonical": "plains", "aliases": ["plns", "pls"]}
+{"canonical": "plateau", "aliases": ["plat", "plt"]}
+{"canonical": "plaza", "aliases": ["plz", "plza", "pz"]}
+{"canonical": "prarie", "aliases": ["pr"]}
+{"canonical": "pocket", "aliases": ["pckt", "pkt", "pokt"]}
+{"canonical": "point", "aliases": ["piont", "pnt", "pt"]}
+{"canonical": "pointe", "aliases": ["pnte", "pte"]}
+{"canonical": "port", "aliases": ["prt"]}
+{"canonical": "ports", "aliases": ["prts"]}
+{"canonical": "prairie", "aliases": ["pr"]}
+{"canonical": "priors", "aliases": ["prrs"]}
+{"canonical": "private", "aliases": ["pvt"]}
+{"canonical": "promenade", "aliases": ["prm", "prom"]}
+{"canonical": "pursuit", "aliases": ["pur"]}
+{"canonical": "quad", "aliases": ["qd"]}
+{"canonical": "quadrangle", "aliases": ["qdgl"]}
+{"canonical": "quadrant", "aliases": ["qd", "qdrt"]}
+{"canonical": "quay", "aliases": ["quy", "qy"]}
+{"canonical": "quays", "aliases": ["quys", "qys"]}
+{"canonical": "radial", "aliases": ["radl"]}
+{"canonical": "ramble", "aliases": ["ra", "rmbl"]}
+{"canonical": "ramp", "aliases": ["rmp"]}
+{"canonical": "ranae", "aliases": ["ran"]}
+{"canonical": "ranch", "aliases": ["rnch"]}
+{"canonical": "rapid", "aliases": ["rpd"]}
+{"canonical": "rapids", "aliases": ["rpds"]}
+{"canonical": "range", "aliases": ["rang", "rng", "rnge"]}
+{"canonical": "range road", "aliases": ["range rd", "rge rd", "rr"]}
+{"canonical": "reach", "aliases": ["rch"]}
+{"canonical": "reserve", "aliases": ["res", "resrv", "resv", "rserv", "rsrv"]}
+{"canonical": "rest", "aliases": ["rst"]}
+{"canonical": "retreat", "aliases": ["rt", "rtt"]}
+{"canonical": "return", "aliases": ["rtn"]}
+{"canonical": "ridge", "aliases": ["rdg", "rdge"]}
+{"canonical": "ridges", "aliases": ["rdgs"]}
+{"canonical": "ridgeway", "aliases": ["rdgwy", "rgwy", "ridge way"]}
+{"canonical": "right of way", "aliases": ["r o w", "rightofway", "rofw", "row", "rowy"]}
+{"canonical": "rise", "aliases": ["ri"]}
+{"canonical": "riverway", "aliases": ["rvwy"]}
+{"canonical": "riviera", "aliases": ["rvra"]}
+{"canonical": "road", "aliases": ["r", "raod", "rd", "ro", "roa"]}
+{"canonical": "roads", "aliases": ["raods", "rds"]}
+{"canonical": "roadside", "aliases": ["rdsd", "road side"]}
+{"canonical": "roadway", "aliases": ["rdw", "rdwy", "rdy"]}
+{"canonical": "rocks", "aliases": ["rks"]}
+{"canonical": "ronde", "aliases": ["rnde"]}
+{"canonical": "rosebowl", "aliases": ["rose bowl", "rsbl"]}
+{"canonical": "rotary", "aliases": ["rty"]}
+{"canonical": "round", "aliases": ["rnd"]}
+{"canonical": "route", "aliases": ["rt", "rte"]}
+{"canonical": "row", "aliases": ["rw"]}
+{"canonical": "run", "aliases": ["rn"]}
+{"canonical": "rural route", "aliases": ["r r", "r.r", "rr"]}
+{"canonical": "service road", "aliases": ["service rd", "sv rd", "svc rd", "svc road", "svrd"]}
+{"canonical": "serviceway", "aliases": ["svcwy", "svwy", "swy"]}
+{"canonical": "shoal", "aliases": ["shl"]}
+{"canonical": "shoals", "aliases": ["shls"]}
+{"canonical": "shore", "aliases": ["shor", "shr"]}
+{"canonical": "shores", "aliases": ["shors", "shrs"]}
+{"canonical": "shunt", "aliases": ["shnt", "shun"]}
+{"canonical": "siding", "aliases": ["sdg", "sdng"]}
+{"canonical": "skyway", "aliases": ["skwy"]}
+{"canonical": "slope", "aliases": ["slp", "slpe"]}
+{"canonical": "sound", "aliases": ["snd"]}
+{"canonical": "space", "aliases": ["spc"]}
+{"canonical": "spring", "aliases": ["spg", "sprn", "sprng"]}
+{"canonical": "springs", "aliases": ["spgs", "spns", "sprngs"]}
+{"canonical": "spur", "aliases": ["spr"]}
+{"canonical": "square", "aliases": ["sq", "sqr"]}
+{"canonical": "squares", "aliases": ["sqs"]}
+{"canonical": "stairs", "aliases": ["strs"]}
+{"canonical": "stairway", "aliases": ["st wy", "st.wy", "stair way", "strwy", "stwy"]}
+{"canonical": "state highway", "aliases": ["s highway", "s.highway", "sh", "st highway", "st.highway"]}
+{"canonical": "state road", "aliases": ["s r", "s.r", "s.r.", "sr", "stateroad"]}
+{"canonical": "state route", "aliases": ["s r", "s.r", "s.r.", "sr", "stateroute"]}
+{"canonical": "steps", "aliases": ["stps"]}
+{"canonical": "strand", "aliases": ["stra", "strd", "strnd"]}
+{"canonical": "strands", "aliases": ["strds", "strnds"]}
+{"canonical": "stravenue", "aliases": ["stra", "strav"]}
+{"canonical": "street", "aliases": ["st", "str", "stre", "stree", "strt"]}
+{"canonical": "streets", "aliases": ["sts"]}
+{"canonical": "strip", "aliases": ["strp"]}
+{"canonical": "subdivision", "aliases": ["subdiv"]}
+{"canonical": "subway", "aliases": ["sbwy"]}
+{"canonical": "summit", "aliases": ["smt", "sumt"]}
+{"canonical": "tarn", "aliases": ["tn"]}
+{"canonical": "terrace", "aliases": ["tce", "ter", "terace", "terr", "tr"]}
+{"canonical": "thicket", "aliases": ["thick"]}
+{"canonical": "thoroughfare", "aliases": ["thfr", "thor", "thorough fare", "throughfare"]}
+{"canonical": "thoroughway", "aliases": ["thwy"]}
+{"canonical": "throughway", "aliases": ["thro", "thru", "thruway", "thwy", "trwy"]}
+{"canonical": "tollway", "aliases": ["tlwy", "twy"]}
+{"canonical": "township highway", "aliases": ["t h", "t.h", "t.h.", "th", "twp.h"]}
+{"canonical": "township road", "aliases": ["t r", "t rd", "t.r", "t.r.", "tr"]}
+{"canonical": "township route", "aliases": ["t r", "t rt", "t.r", "t.r.", "tr"]}
+{"canonical": "tower", "aliases": ["twr"]}
+{"canonical": "towers", "aliases": ["twrs"]}
+{"canonical": "townline", "aliases": ["tline"]}
+{"canonical": "trace", "aliases": ["trc", "trce"]}
+{"canonical": "track", "aliases": ["tr", "trak", "trk"]}
+{"canonical": "trafficway", "aliases": ["trfy"]}
+{"canonical": "trail", "aliases": ["tr", "trl"]}
+{"canonical": "trailer", "aliases": ["trlr"]}
+{"canonical": "tramway", "aliases": ["tmwy"]}
+{"canonical": "trees", "aliases": ["trs"]}
+{"canonical": "triangle", "aliases": ["tri"]}
+{"canonical": "truck trail", "aliases": ["trktrl"]}
+{"canonical": "trunkway", "aliases": ["tkwy"]}
+{"canonical": "tunnel", "aliases": ["tun", "tunl"]}
+{"canonical": "turnabout", "aliases": ["trnabt"]}
+{"canonical": "turn", "aliases": ["tn", "trn"]}
+{"canonical": "turnpike", "aliases": ["tpk", "tpke"]}
+{"canonical": "underpass", "aliases": ["under pass", "upas", "upass", "ups"]}
+{"canonical": "union", "aliases": ["un"]}
+{"canonical": "unions", "aliases": ["uns"]}
+{"canonical": "us highway", "aliases": ["u s hwy", "us hwy"]}
+{"canonical": "us route", "aliases": ["u s rte", "us rte"]}
+{"canonical": "vale", "aliases": ["va", "vl"]}
+{"canonical": "valley", "aliases": ["vlly", "vly", "vy"]}
+{"canonical": "valleys", "aliases": ["vllys", "vlys"]}
+{"canonical": "viaduct", "aliases": ["vdct", "via", "viad", "viadct"]}
+{"canonical": "view", "aliases": ["vw"]}
+{"canonical": "views", "aliases": ["vws"]}
+{"canonical": "villa", "aliases": ["vl", "vla", "vlla"]}
+{"canonical": "village", "aliases": ["vlge"]}
+{"canonical": "villas", "aliases": ["vlas"]}
+{"canonical": "vista", "aliases": ["vis", "vst", "vsta"]}
+{"canonical": "walk", "aliases": ["wk", "wlk"]}
+{"canonical": "walkway", "aliases": ["wkwy", "wky", "wlkwy"]}
+{"canonical": "waters", "aliases": ["wtrs"]}
+{"canonical": "way", "aliases": ["wy"]}
+{"canonical": "ways", "aliases": ["wys"]}
+{"canonical": "well", "aliases": ["wl"]}
+{"canonical": "wells", "aliases": ["wls"]}
+{"canonical": "wharf", "aliases": ["whf", "whrf"]}
+{"canonical": "wynd", "aliases": ["wyn"]}
+{"canonical": "yard", "aliases": ["yd", "yrd"]}
+{"canonical": "central", "aliases": ["c", "cn", "cntrl", "ctrl"]}
+{"canonical": "centre", "aliases": ["c", "ctr"]}
+{"canonical": "east", "aliases": ["e"]}
+{"canonical": "eastern", "aliases": ["eastrn", "estn", "estrn"]}
+{"canonical": "lower", "aliases": ["lowr", "lwr"]}
+{"canonical": "middle", "aliases": ["mddl", "mdl", "midle"]}
+{"canonical": "north", "aliases": ["n", "n.", "nrt", "nrth", "nth"]}
+{"canonical": "northeast", "aliases": ["n east", "neast", "north e", "north east", "northe"]}
+{"canonical": "northeastern", "aliases": ["north eastern", "north eastrn", "north estrn", "northeastrn", "northestrn"]}
+{"canonical": "northwest", "aliases": ["north w", "north west", "north wst", "northw", "northwst"]}
+{"canonical": "northwestern", "aliases": ["north western", "north westrn", "north wstrn", "northwestrn", "northwstrn"]}
+{"canonical": "south", "aliases": ["s", "so", "sth"]}
+{"canonical": "southeast", "aliases": ["s east", "seast", "south e", "south east", "southe"]}
+{"canonical": "southeastern", "aliases": ["south eastern", "south eastrn", "south estrn", "southeastrn", "southestrn"]}
+{"canonical": "southwest", "aliases": ["south w", "south west", "south wst", "southw", "southwst"]}
+{"canonical": "southwestern", "aliases": ["south western", "south westrn", "south wstrn", "southwestrn", "southwstrn"]}
+{"canonical": "upper", "aliases": ["up", "uppr", "upr"]}
+{"canonical": "west", "aliases": ["w", "wst"]}
+{"canonical": "western", "aliases": ["westrn", "wstn", "wstrn"]}
+{"canonical": "antenna", "aliases": ["ant"]}
+{"canonical": "apartment", "aliases": ["ap", "aprt", "apt", "aptmnt"]}
+{"canonical": "barbecue", "aliases": ["barbeque", "bbq"]}
+{"canonical": "berth", "aliases": ["brth"]}
+{"canonical": "boatshed", "aliases": ["btsd"]}
+{"canonical": "building", "aliases": ["bdg", "bldg", "blg"]}
+{"canonical": "bungalow", "aliases": ["bnglw", "bngw", "bongalow", "bungalo", "bunglow"]}
+{"canonical": "carpark", "aliases": ["carp"]}
+{"canonical": "carspace", "aliases": ["cars"]}
+{"canonical": "cottage", "aliases": ["cott", "cottg"]}
+{"canonical": "duplex", "aliases": ["dup", "dupl"]}
+{"canonical": "factory", "aliases": ["fcty", "fty", "fy"]}
+{"canonical": "garage", "aliases": ["grge"]}
+{"canonical": "hangar", "aliases": ["hngr"]}
+{"canonical": "house", "aliases": ["ho", "hous", "hs", "hse"]}
+{"canonical": "kiosk", "aliases": ["ksk"]}
+{"canonical": "lease", "aliases": ["lse"]}
+{"canonical": "lobby", "aliases": ["lbby", "lby"]}
+{"canonical": "location", "aliases": ["loc", "locn", "loctn"]}
+{"canonical": "maisonette", "aliases": ["msnt"]}
+{"canonical": "marine berth", "aliases": ["mb", "mbth"]}
+{"canonical": "office", "aliases": ["o", "ofc", "off", "offc"]}
+{"canonical": "penthouse", "aliases": ["pent house", "ph", "pths"]}
+{"canonical": "portion", "aliases": ["por"]}
+{"canonical": "room", "aliases": ["rm"]}
+{"canonical": "section", "aliases": ["sec"]}
+{"canonical": "shed", "aliases": ["shd"]}
+{"canonical": "shop", "aliases": ["shp"]}
+{"canonical": "showroom", "aliases": ["shrm"]}
+{"canonical": "stall", "aliases": ["sl", "stl", "stll"]}
+{"canonical": "store", "aliases": ["stor"]}
+{"canonical": "strata unit", "aliases": ["str", "su"]}
+{"canonical": "studio", "aliases": ["stu"]}
+{"canonical": "substation", "aliases": ["subs"]}
+{"canonical": "suite", "aliases": ["se", "ste"]}
+{"canonical": "tenancy", "aliases": ["tncy"]}
+{"canonical": "townhouse", "aliases": ["tnhs", "tnhse", "twnhs", "twnhse"]}
+{"canonical": "trailer park lot", "aliases": ["trlr park lot", "trlr pk lot"]}
+{"canonical": "unit", "aliases": ["u", "un", "unt"]}
+{"canonical": "vault", "aliases": ["vlt"]}
+{"canonical": "ward", "aliases": ["wd", "wrd"]}
+{"canonical": "warehouse", "aliases": ["we", "whs", "wrhs"]}
+{"canonical": "workshop", "aliases": ["wkshp", "wksp", "wshp"]}
+{"canonical": "arch bishop", "aliases": ["archbishop"]}
+{"canonical": "brigadier general", "aliases": ["brig gen"]}
+{"canonical": "colonel", "aliases": ["col"]}
+{"canonical": "commander", "aliases": ["cmdr"]}
+{"canonical": "congressman", "aliases": ["congress man"]}
+{"canonical": "congresswoman", "aliases": ["congress woman"]}
+{"canonical": "corporal", "aliases": ["cpl"]}
+{"canonical": "captain", "aliases": ["capt", "cpt"]}
+{"canonical": "chairman", "aliases": ["chair man"]}
+{"canonical": "chairwoman", "aliases": ["chair woman"]}
+{"canonical": "czar", "aliases": ["tsar"]}
+{"canonical": "deputy prime minister", "aliases": ["deputy pm"]}
+{"canonical": "doctor", "aliases": ["doc", "dr"]}
+{"canonical": "doctors", "aliases": ["docs", "drs"]}
+{"canonical": "brother", "aliases": ["br"]}
+{"canonical": "father", "aliases": ["fr"]}
+{"canonical": "sister", "aliases": ["sr"]}
+{"canonical": "his royal highness", "aliases": ["h r h", "hrh"]}
+{"canonical": "her royal highness", "aliases": ["h r h", "hrh"]}
+{"canonical": "general", "aliases": ["gen"]}
+{"canonical": "his honor", "aliases": ["his honour"]}
+{"canonical": "her honor", "aliases": ["her honour"]}
+{"canonical": "honorable", "aliases": ["hon", "honourable"]}
+{"canonical": "lieutenant", "aliases": ["lgt", "lieut", "lt"]}
+{"canonical": "lieutenant governor", "aliases": ["lgt gov", "lgt governor", "lieut gov", "lieut governor", "lt governor"]}
+{"canonical": "lieutenant colonel", "aliases": ["lgt col", "lgt colonel", "lieut col", "lieut colonel", "lt colonel"]}
+{"canonical": "lieutenant commander", "aliases": ["lgt cmdr", "lgt commander", "lieut cmdr", "lieut commander", "lt commander"]}
+{"canonical": "lieutenant general", "aliases": ["lgt gen", "lgt general", "lieut gen", "lieut general", "lt general"]}
+{"canonical": "king", "aliases": ["kg"]}
+{"canonical": "major", "aliases": ["maj"]}
+{"canonical": "major general", "aliases": ["maj gen", "maj general", "major gen"]}
+{"canonical": "mp", "aliases": ["member of parliament"]}
+{"canonical": "mps", "aliases": ["members of parliament"]}
+{"canonical": "mr", "aliases": ["mister"]}
+{"canonical": "mrs", "aliases": ["misses"]}
+{"canonical": "ms", "aliases": ["miss"]}
+{"canonical": "officer", "aliases": ["ofcr"]}
+{"canonical": "president", "aliases": ["pres"]}
+{"canonical": "prime minister", "aliases": ["pm"]}
+{"canonical": "private first class", "aliases": ["p f c", "pfc"]}
+{"canonical": "professor", "aliases": ["prof"]}
+{"canonical": "professors", "aliases": ["profs"]}
+{"canonical": "reverend", "aliases": ["rev"]}
+{"canonical": "right honorable", "aliases": ["right hon", "right honorable", "right honourable", "rt honorable"]}
+{"canonical": "saint", "aliases": ["st"]}
+{"canonical": "saints", "aliases": ["ss"]}
+{"canonical": "sainte", "aliases": ["ste"]}
+{"canonical": "san", "aliases": ["s"]}
+{"canonical": "santa", "aliases": ["sta"]}
+{"canonical": "sargeant", "aliases": ["sgt"]}
+{"canonical": "secretary", "aliases": ["sec"]}
+{"canonical": "representative", "aliases": ["rep"]}
+{"canonical": "representatives", "aliases": ["reps"]}
+{"canonical": "senator", "aliases": ["sen"]}
+{"canonical": "senators", "aliases": ["sens"]}
+{"canonical": "vice chairman", "aliases": ["vice chair man"]}
+{"canonical": "vice chairperson", "aliases": ["vice chair", "vice chair person"]}
+{"canonical": "vice chairwoman", "aliases": ["vice chair woman"]}
+{"canonical": "vice president", "aliases": ["vice pres"]}
+{"canonical": "vice prime minister", "aliases": ["vice pm"]}

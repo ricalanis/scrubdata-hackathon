@@ -1,0 +1,555 @@
+{"canonical": "Name1", "aliases": ["Name2", "Relationship"]}
+{"canonical": "Abednego", "aliases": ["Bedney"]}
+{"canonical": "Abijah", "aliases": ["Bige"]}
+{"canonical": "Absalom", "aliases": ["App"]}
+{"canonical": "Adelaide", "aliases": ["Heidi"]}
+{"canonical": "Adelbert", "aliases": ["Delbert"]}
+{"canonical": "Adelphia", "aliases": ["Philly"]}
+{"canonical": "Adena", "aliases": ["Adina", "Deena", "Dena"]}
+{"canonical": "Adolphus", "aliases": ["Ado", "Adolph"]}
+{"canonical": "Adrian", "aliases": ["Rian"]}
+{"canonical": "Adriane", "aliases": ["Riane"]}
+{"canonical": "Adrienne", "aliases": ["Enne"]}
+{"canonical": "Agatha", "aliases": ["Aga"]}
+{"canonical": "Agnes", "aliases": ["Inez"]}
+{"canonical": "Alanson", "aliases": ["Lanson"]}
+{"canonical": "Aldrich", "aliases": ["Riche"]}
+{"canonical": "Aleksandr", "aliases": ["Alek"]}
+{"canonical": "Aleva", "aliases": ["Leve", "Levy"]}
+{"canonical": "Alexander", "aliases": ["Alec"]}
+{"canonical": "Alexandria", "aliases": ["Alexander", "Drina"]}
+{"canonical": "Alexis", "aliases": ["Lexi"]}
+{"canonical": "Alfreda", "aliases": ["Alfy"]}
+{"canonical": "Algernon", "aliases": ["Algy"]}
+{"canonical": "Aline", "aliases": ["Adeline"]}
+{"canonical": "Alixandra", "aliases": ["Alix"]}
+{"canonical": "Allan", "aliases": ["Allen"]}
+{"canonical": "Allen", "aliases": ["Allan"]}
+{"canonical": "Alonzo", "aliases": ["Lonzo"]}
+{"canonical": "Alphinias", "aliases": ["Alphus"]}
+{"canonical": "Alverta", "aliases": ["Vert", "Virdie"]}
+{"canonical": "Alyssa", "aliases": ["Lissia"]}
+{"canonical": "Alzada", "aliases": ["Zada"]}
+{"canonical": "Amanda", "aliases": ["Manda"]}
+{"canonical": "Ambrose", "aliases": ["Brose"]}
+{"canonical": "Amelia", "aliases": ["Amy"]}
+{"canonical": "Amos", "aliases": ["Moses"]}
+{"canonical": "Andrea", "aliases": ["Andi", "Andrew", "Rea"]}
+{"canonical": "Andriane", "aliases": ["Adri"]}
+{"canonical": "Angelica", "aliases": ["Angelika", "Angelique"]}
+{"canonical": "Anna", "aliases": ["Anne"]}
+{"canonical": "Anselm", "aliases": ["Ance", "Anse", "Ansel", "Selma"]}
+{"canonical": "Appoline", "aliases": ["Appie", "Appy"]}
+{"canonical": "Aquilla", "aliases": ["Quil", "Quillie"]}
+{"canonical": "Araminta", "aliases": ["Armida", "Middie", "Minty", "Ruminta"]}
+{"canonical": "Archibald", "aliases": ["Archie"]}
+{"canonical": "Archilles", "aliases": ["Kill", "Killis"]}
+{"canonical": "Ariadne", "aliases": ["Ari"]}
+{"canonical": "Aristotle", "aliases": ["Telly"]}
+{"canonical": "Arlene", "aliases": ["Arly"]}
+{"canonical": "Arminda", "aliases": ["Mindie"]}
+{"canonical": "Arminta", "aliases": ["Minite"]}
+{"canonical": "Arnold", "aliases": ["Arnie"]}
+{"canonical": "Artelepsa", "aliases": ["Epsey"]}
+{"canonical": "Arzada", "aliases": ["Zaddi"]}
+{"canonical": "Asenath", "aliases": ["Assene", "Sene"]}
+{"canonical": "Ashley", "aliases": ["Ash", "Ashly", "Leah"]}
+{"canonical": "Audrey", "aliases": ["Audree"]}
+{"canonical": "Aurelia", "aliases": ["Aurilla", "Orilla"]}
+{"canonical": "Azariah", "aliases": ["Aze"]}
+{"canonical": "Barbara", "aliases": ["Babs", "Barbie"]}
+{"canonical": "Barney", "aliases": ["Barnabas"]}
+{"canonical": "Bart", "aliases": ["Bartholomew"]}
+{"canonical": "Bartholomew", "aliases": ["Bartel", "Bat", "Mees", "Meus"]}
+{"canonical": "Bazaleel", "aliases": ["Basil"]}
+{"canonical": "Bea", "aliases": ["Beatrice"]}
+{"canonical": "Beatrice", "aliases": ["Trix"]}
+{"canonical": "Bedelia", "aliases": ["Bridgit"]}
+{"canonical": "Bella", "aliases": ["Arabella", "Isabella"]}
+{"canonical": "Benjamin", "aliases": ["Benjy", "Benny"]}
+{"canonical": "Benjy", "aliases": ["Benjamin"]}
+{"canonical": "Bernard", "aliases": ["Berney", "Berny"]}
+{"canonical": "Bethena", "aliases": ["Thaney"]}
+{"canonical": "Beverly", "aliases": ["Bev"]}
+{"canonical": "Bezaleel", "aliases": ["Zeely"]}
+{"canonical": "Boetius", "aliases": ["Bo"]}
+{"canonical": "Brad", "aliases": ["Bradford"]}
+{"canonical": "Brenda", "aliases": ["Brandy"]}
+{"canonical": "Brian", "aliases": ["Bryan", "Bryant"]}
+{"canonical": "Bridget", "aliases": ["Bridgie", "Bridie"]}
+{"canonical": "Broderick", "aliases": ["Brady"]}
+{"canonical": "Bryanna", "aliases": ["Briana", "Brianna"]}
+{"canonical": "Caldonia", "aliases": ["Calliedona"]}
+{"canonical": "California", "aliases": ["Callie"]}
+{"canonical": "Calista", "aliases": ["Kissy"]}
+{"canonical": "Calpurnia", "aliases": ["Cally"]}
+{"canonical": "Candace", "aliases": ["Candy", "Dacey"]}
+{"canonical": "Carla", "aliases": ["Karla"]}
+{"canonical": "Carmelo", "aliases": ["Melo"]}
+{"canonical": "Carmon", "aliases": ["Carm", "Charm"]}
+{"canonical": "Carol", "aliases": ["Carolann", "Carri", "Kara", "Kari"]}
+{"canonical": "Casper", "aliases": ["Jasper"]}
+{"canonical": "Cathy", "aliases": ["Cathleen"]}
+{"canonical": "Cedric", "aliases": ["Ced"]}
+{"canonical": "Celeste", "aliases": ["Lessie"]}
+{"canonical": "Charity", "aliases": ["Chat"]}
+{"canonical": "Charles", "aliases": ["Charlie", "Chick"]}
+{"canonical": "Charlie", "aliases": ["Charles"]}
+{"canonical": "Charlotte", "aliases": ["Char", "Lotta"]}
+{"canonical": "Chauncey", "aliases": ["Chan"]}
+{"canonical": "Chelsey", "aliases": ["Chelsie"]}
+{"canonical": "Cheryl", "aliases": ["Cher"]}
+{"canonical": "Chet", "aliases": ["Chester"]}
+{"canonical": "Chick", "aliases": ["Charlotte"]}
+{"canonical": "Chloe", "aliases": ["Clo"]}
+{"canonical": "Cinderella", "aliases": ["Arilla", "Rella"]}
+{"canonical": "Cindy", "aliases": ["Cinderella"]}
+{"canonical": "Clara", "aliases": ["Clarissa"]}
+{"canonical": "Claudia", "aliases": ["Claud"]}
+{"canonical": "Cleatus", "aliases": ["Cleat"]}
+{"canonical": "Clementine", "aliases": ["Clement"]}
+{"canonical": "Cliff", "aliases": ["Clifford"]}
+{"canonical": "Cole", "aliases": ["Colie"]}
+{"canonical": "Columbus", "aliases": ["Clum"]}
+{"canonical": "Constance", "aliases": ["Connie"]}
+{"canonical": "Corinne", "aliases": ["Cora"]}
+{"canonical": "Cornelia", "aliases": ["Cornie", "Nelia", "Nelle"]}
+{"canonical": "Cornelius", "aliases": ["Neil", "Niel"]}
+{"canonical": "Courtney", "aliases": ["Court"]}
+{"canonical": "Crystal", "aliases": ["Crys", "Stal", "Tal"]}
+{"canonical": "Cynthia", "aliases": ["Cintha"]}
+{"canonical": "Cyrenius", "aliases": ["Cene", "Renius", "Serene", "Swene"]}
+{"canonical": "Dalton", "aliases": ["Dahl"]}
+{"canonical": "Daniel", "aliases": ["Dann"]}
+{"canonical": "Danielle", "aliases": ["Dani"]}
+{"canonical": "Danny", "aliases": ["Daniel"]}
+{"canonical": "Daphne", "aliases": ["Daph", "Daphie"]}
+{"canonical": "Darlene", "aliases": ["Darry"]}
+{"canonical": "David", "aliases": ["Dave", "Davey", "Day"]}
+{"canonical": "Daycia", "aliases": ["Dacia", "Daisha"]}
+{"canonical": "Debbie", "aliases": ["Deborah", "Debra"]}
+{"canonical": "Delia", "aliases": ["Cordelia", "Delius", "Fidelia"]}
+{"canonical": "Delilah", "aliases": ["Lila"]}
+{"canonical": "Deliverance", "aliases": ["Delly", "Dilly"]}
+{"canonical": "Della", "aliases": ["Adela", "Adelaide", "Delilah"]}
+{"canonical": "Delores", "aliases": ["Lola"]}
+{"canonical": "Delpha", "aliases": ["Philadelphia"]}
+{"canonical": "Delphine", "aliases": ["Delf", "Delphi"]}
+{"canonical": "Democrates", "aliases": ["Mock"]}
+{"canonical": "Dennis", "aliases": ["Dennie"]}
+{"canonical": "Dennison", "aliases": ["Dennis"]}
+{"canonical": "Derek", "aliases": ["Derrek"]}
+{"canonical": "Derrick", "aliases": ["Eric"]}
+{"canonical": "Deuteronomy", "aliases": ["Duty"]}
+{"canonical": "Diane", "aliases": ["Dian", "Dianne"]}
+{"canonical": "Dicey", "aliases": ["Dicie"]}
+{"canonical": "Dick", "aliases": ["Richard"]}
+{"canonical": "Donna", "aliases": ["Dona"]}
+{"canonical": "Dorcus", "aliases": ["Darkey"]}
+{"canonical": "Dorinda", "aliases": ["Dorothea"]}
+{"canonical": "Dorothea", "aliases": ["Doda"]}
+{"canonical": "Dorothy", "aliases": ["Dolly", "Dortha", "Dottie"]}
+{"canonical": "Douglas", "aliases": ["Doug"]}
+{"canonical": "Duncan", "aliases": ["Dunk"]}
+{"canonical": "Earnest", "aliases": ["Ernestine"]}
+{"canonical": "Ebenezer", "aliases": ["Eben"]}
+{"canonical": "Edna", "aliases": ["Edny"]}
+{"canonical": "Edwina", "aliases": ["Edwin"]}
+{"canonical": "Egbert", "aliases": ["Burt"]}
+{"canonical": "Eighta", "aliases": ["Athy"]}
+{"canonical": "Elaine", "aliases": ["Lainie"]}
+{"canonical": "Elbertson", "aliases": ["Elbert"]}
+{"canonical": "Eleanor", "aliases": ["Lanna", "Lenora"]}
+{"canonical": "Eleazer", "aliases": ["Lazar"]}
+{"canonical": "Elias", "aliases": ["Lias"]}
+{"canonical": "Elijah", "aliases": ["Lige"]}
+{"canonical": "Eliphalel", "aliases": ["Life"]}
+{"canonical": "Eliphalet", "aliases": ["Left"]}
+{"canonical": "Elisha", "aliases": ["Lish"]}
+{"canonical": "Elizabeth", "aliases": ["Bess", "Lib", "Liza", "Lizzie", "Lizzy"]}
+{"canonical": "Ella", "aliases": ["El"]}
+{"canonical": "Eloise", "aliases": ["Heloise"]}
+{"canonical": "Elvira", "aliases": ["Elvie"]}
+{"canonical": "Epaphroditius", "aliases": ["Dite", "Ditus", "Dyce", "Dyche", "Eppa"]}
+{"canonical": "Ephraim", "aliases": ["Eph"]}
+{"canonical": "Erasmus", "aliases": ["Rasmus", "Raze"]}
+{"canonical": "Ernestine", "aliases": ["Erna", "Ernest"]}
+{"canonical": "Erwin", "aliases": ["Irwin"]}
+{"canonical": "Eseneth", "aliases": ["Senie"]}
+{"canonical": "Essy", "aliases": ["Es"]}
+{"canonical": "Esther", "aliases": ["Essie", "Hester"]}
+{"canonical": "Eudoris", "aliases": ["Dosie", "Dossie"]}
+{"canonical": "Eugene", "aliases": ["Gene"]}
+{"canonical": "Euphemia", "aliases": ["Effie", "Effy"]}
+{"canonical": "Eustacia", "aliases": ["Stacia"]}
+{"canonical": "Evaline", "aliases": ["Eva"]}
+{"canonical": "Evangeline", "aliases": ["Evan", "Vangie"]}
+{"canonical": "Evelyn", "aliases": ["Evelina"]}
+{"canonical": "Experience", "aliases": ["Exie"]}
+{"canonical": "Faith", "aliases": ["Fay"]}
+{"canonical": "Fallon", "aliases": ["Fal", "Falcon", "Fall", "Fallie", "Fally"]}
+{"canonical": "Felicia", "aliases": ["Fel", "Feli", "Felix"]}
+{"canonical": "Felicity", "aliases": ["Flick", "Tick"]}
+{"canonical": "Ferdinando", "aliases": ["Nando"]}
+{"canonical": "Fionna", "aliases": ["Fiona"]}
+{"canonical": "Flora", "aliases": ["Florence"]}
+{"canonical": "Florence", "aliases": ["Flo", "Flora", "Flossy"]}
+{"canonical": "Floyd", "aliases": ["Lloyd"]}
+{"canonical": "Frances", "aliases": ["Fanny", "Sis"]}
+{"canonical": "Francie", "aliases": ["Francine"]}
+{"canonical": "Frankie", "aliases": ["Francis"]}
+{"canonical": "Frederica", "aliases": ["Erica", "Erika", "Frederick"]}
+{"canonical": "Frederick", "aliases": ["Derick", "Fritz"]}
+{"canonical": "Fredericka", "aliases": ["Ericka", "Ricka"]}
+{"canonical": "Gabriel", "aliases": ["Gabe"]}
+{"canonical": "Garrett", "aliases": ["Barrett", "Garratt", "Garret", "Garry", "Rhett"]}
+{"canonical": "Garrick", "aliases": ["Garri"]}
+{"canonical": "George", "aliases": ["Georgie"]}
+{"canonical": "Georgiana", "aliases": ["Georgia"]}
+{"canonical": "Georgine", "aliases": ["George"]}
+{"canonical": "Geraldine", "aliases": ["Gerri", "Gerrie"]}
+{"canonical": "Gerhardt", "aliases": ["Gay"]}
+{"canonical": "Gertrude", "aliases": ["Gertie", "Trudy"]}
+{"canonical": "Gilbert", "aliases": ["Gil", "Wilber"]}
+{"canonical": "Giovanni", "aliases": ["Gio"]}
+{"canonical": "Glenn", "aliases": ["Glen"]}
+{"canonical": "Gloria", "aliases": ["Glory"]}
+{"canonical": "Governor", "aliases": ["Govie"]}
+{"canonical": "Greenberry", "aliases": ["Green"]}
+{"canonical": "Greggory", "aliases": ["Gregg"]}
+{"canonical": "Gregory", "aliases": ["Gory", "Greg"]}
+{"canonical": "Griselda", "aliases": ["Grissel"]}
+{"canonical": "Gwendolyn", "aliases": ["Gwen"]}
+{"canonical": "Hamilton", "aliases": ["Ham"]}
+{"canonical": "Harriet", "aliases": ["Hattie"]}
+{"canonical": "Harry", "aliases": ["Harold", "Henry"]}
+{"canonical": "Haseltine", "aliases": ["Hassie"]}
+{"canonical": "Helena", "aliases": ["Aileen", "Eileen", "Eleanor"]}
+{"canonical": "Heloise", "aliases": ["Eloise", "Elouise"]}
+{"canonical": "Henrietta", "aliases": ["Henny"]}
+{"canonical": "Herbert", "aliases": ["Herb"]}
+{"canonical": "Herman", "aliases": ["Dutch", "Harman"]}
+{"canonical": "Hermione", "aliases": ["Hermie"]}
+{"canonical": "Hester", "aliases": ["Esther", "Hessy"]}
+{"canonical": "Hezekiah", "aliases": ["Hez", "Kiah"]}
+{"canonical": "Hillary", "aliases": ["Hilary"]}
+{"canonical": "Honora", "aliases": ["Honey", "Norah", "Norry"]}
+{"canonical": "Hopkins", "aliases": ["Hop", "Hopp"]}
+{"canonical": "Horace", "aliases": ["Horry"]}
+{"canonical": "Hortense", "aliases": ["Harty", "Tensey"]}
+{"canonical": "Hosea", "aliases": ["Hosey", "Hosie"]}
+{"canonical": "Howard", "aliases": ["Howie"]}
+{"canonical": "Hubert", "aliases": ["Hub"]}
+{"canonical": "Ignatius", "aliases": ["Natius"]}
+{"canonical": "Ignatzio", "aliases": ["Naz"]}
+{"canonical": "Immanuel", "aliases": ["Emmanuel"]}
+{"canonical": "India", "aliases": ["Indie", "Indy"]}
+{"canonical": "Inez", "aliases": ["Agnes"]}
+{"canonical": "Iona", "aliases": ["Onnie"]}
+{"canonical": "Irvin", "aliases": ["Irving"]}
+{"canonical": "Irving", "aliases": ["Irv"]}
+{"canonical": "Irwin", "aliases": ["Erwin"]}
+{"canonical": "Isaac", "aliases": ["Ike"]}
+{"canonical": "Isaiah", "aliases": ["Zadie", "Zay"]}
+{"canonical": "Iva", "aliases": ["Ivy"]}
+{"canonical": "Jacob", "aliases": ["Jaap"]}
+{"canonical": "Jacobus", "aliases": ["Jacob"]}
+{"canonical": "Jacqueline", "aliases": ["Jackie", "Jacqui"]}
+{"canonical": "Jahoda", "aliases": ["Hoda", "Hodie", "Hody"]}
+{"canonical": "Jalen", "aliases": ["Alen", "Haylen", "Jaelin", "Jaelyn", "Jailyn"]}
+{"canonical": "James", "aliases": ["Jem", "Jim", "Jimmy"]}
+{"canonical": "Jane", "aliases": ["Janie"]}
+{"canonical": "Jasper", "aliases": ["Casper", "Jap"]}
+{"canonical": "Jebadiah", "aliases": ["Jeb"]}
+{"canonical": "Jehiel", "aliases": ["Hiel"]}
+{"canonical": "Jehu", "aliases": ["Gee"]}
+{"canonical": "Jemima", "aliases": ["Mima"]}
+{"canonical": "Jennifer", "aliases": ["Jen", "Jenni"]}
+{"canonical": "Jeremy", "aliases": ["Jez", "Jezza"]}
+{"canonical": "Jerry", "aliases": ["Geraldine", "Geri"]}
+{"canonical": "Joanna", "aliases": ["Jodi"]}
+{"canonical": "John", "aliases": ["Ian", "Jock"]}
+{"canonical": "Josephine", "aliases": ["Fina", "Josie"]}
+{"canonical": "Josetta", "aliases": ["Jettie"]}
+{"canonical": "Josey", "aliases": ["Josophine"]}
+{"canonical": "Joshua", "aliases": ["Josh"]}
+{"canonical": "Joyce", "aliases": ["Joy"]}
+{"canonical": "Juanita", "aliases": ["Nita"]}
+{"canonical": "Judah", "aliases": ["Juder"]}
+{"canonical": "Judith", "aliases": ["Juda", "Judi", "Judie", "Judy"]}
+{"canonical": "Judson", "aliases": ["Jud"]}
+{"canonical": "Judy", "aliases": ["Judith"]}
+{"canonical": "Julia", "aliases": ["Julie"]}
+{"canonical": "Julie", "aliases": ["Julia"]}
+{"canonical": "June", "aliases": ["Junius"]}
+{"canonical": "Junior", "aliases": ["Jr", "June", "Junie"]}
+{"canonical": "Justin", "aliases": ["Justina", "Juston", "Justus"]}
+{"canonical": "Kalli", "aliases": ["Cali", "Kali"]}
+{"canonical": "Kameron", "aliases": ["Kam"]}
+{"canonical": "Karla", "aliases": ["Carla"]}
+{"canonical": "Kelley", "aliases": ["Kelli", "Kellie", "Kelly"]}
+{"canonical": "Kendra", "aliases": ["Kenj", "Kenji"]}
+{"canonical": "Kenny", "aliases": ["Kenneth"]}
+{"canonical": "Kerry", "aliases": ["Kerri"]}
+{"canonical": "Kevin", "aliases": ["Kev"]}
+{"canonical": "Keziah", "aliases": ["Kizza", "Kizzie"]}
+{"canonical": "Kimberley", "aliases": ["Kimberly"]}
+{"canonical": "Kimberly", "aliases": ["Kimberley"]}
+{"canonical": "Kymberly", "aliases": ["Kym"]}
+{"canonical": "Lafayette", "aliases": ["Fate", "Laffie"]}
+{"canonical": "Laodicia", "aliases": ["Cenia", "Dicy"]}
+{"canonical": "Larry", "aliases": ["Laurence"]}
+{"canonical": "Latisha", "aliases": ["Tisha"]}
+{"canonical": "Lauren", "aliases": ["Ren"]}
+{"canonical": "Laurinda", "aliases": ["Laura"]}
+{"canonical": "Laveda", "aliases": ["Veda"]}
+{"canonical": "Laverne", "aliases": ["Verna", "Vernon"]}
+{"canonical": "Lawrence", "aliases": ["Lawrie"]}
+{"canonical": "Leanne", "aliases": ["Lea"]}
+{"canonical": "Lecurgus", "aliases": ["Curg"]}
+{"canonical": "Leilani", "aliases": ["Lani"]}
+{"canonical": "Lemuel", "aliases": ["Lem"]}
+{"canonical": "Leonard", "aliases": ["Leo", "Lineau"]}
+{"canonical": "Leonore", "aliases": ["Elenor", "Honor"]}
+{"canonical": "Leroy", "aliases": ["L.R.", "Roy"]}
+{"canonical": "Letitia", "aliases": ["Lettice", "Titia"]}
+{"canonical": "Levicy", "aliases": ["Vicy"]}
+{"canonical": "Lincoln", "aliases": ["Link"]}
+{"canonical": "Lindsay", "aliases": ["Lindsey", "Lindsie", "Lindsy"]}
+{"canonical": "Littleberry", "aliases": ["L.B.", "Little"]}
+{"canonical": "Lorelei", "aliases": ["Lori"]}
+{"canonical": "Lorenzo", "aliases": ["Loren"]}
+{"canonical": "Lou", "aliases": ["Louis"]}
+{"canonical": "Louis", "aliases": ["Lewis", "Louie"]}
+{"canonical": "Lucia", "aliases": ["Lucius"]}
+{"canonical": "Lucille", "aliases": ["Cille"]}
+{"canonical": "Lucina", "aliases": ["Sinah"]}
+{"canonical": "Lucretia", "aliases": ["Creasey"]}
+{"canonical": "Lucy", "aliases": ["Lucinda"]}
+{"canonical": "Luella", "aliases": ["Lula"]}
+{"canonical": "Luke", "aliases": ["Lucas"]}
+{"canonical": "Lurana", "aliases": ["Lura"]}
+{"canonical": "Mabel", "aliases": ["Amabel", "Mehitabel"]}
+{"canonical": "Mackenzie", "aliases": ["Kenzy", "Mack"]}
+{"canonical": "Mahala", "aliases": ["Hallie"]}
+{"canonical": "Makayla", "aliases": ["Kayla"]}
+{"canonical": "Malachi", "aliases": ["Mally"]}
+{"canonical": "Malcolm", "aliases": ["Mal", "Malc"]}
+{"canonical": "Manerva", "aliases": ["Minerva", "Nerva", "Nervie"]}
+{"canonical": "Manoah", "aliases": ["Noah"]}
+{"canonical": "Manola", "aliases": ["Nonnie"]}
+{"canonical": "Manuel", "aliases": ["Emanuel"]}
+{"canonical": "Marcus", "aliases": ["Marc", "Mark"]}
+{"canonical": "Margaret", "aliases": ["Maggy"]}
+{"canonical": "Margarita", "aliases": ["Greta", "Maisie", "Margo", "Megan", "Metta"]}
+{"canonical": "Marge", "aliases": ["Margaretta"]}
+{"canonical": "Margie", "aliases": ["Marjorie"]}
+{"canonical": "Marian", "aliases": ["Marianna"]}
+{"canonical": "Marietta", "aliases": ["Mariah", "Maureen", "May", "Mollie"]}
+{"canonical": "Marissa", "aliases": ["Rissa"]}
+{"canonical": "Marni", "aliases": ["Marnie"]}
+{"canonical": "Marsha", "aliases": ["Marcia", "Marcie"]}
+{"canonical": "Martine", "aliases": ["Tine"]}
+{"canonical": "Marv", "aliases": ["Marvin"]}
+{"canonical": "Marvin", "aliases": ["Marv"]}
+{"canonical": "Masayuki", "aliases": ["Masa"]}
+{"canonical": "Mathew", "aliases": ["Maty"]}
+{"canonical": "Matilda", "aliases": ["Tilla", "Tilly"]}
+{"canonical": "Maud", "aliases": ["Middy"]}
+{"canonical": "Mckenna", "aliases": ["Kenna", "Meaka"]}
+{"canonical": "Mehitabel", "aliases": ["Hitty", "Mabel"]}
+{"canonical": "Melchizedek", "aliases": ["Zadock"]}
+{"canonical": "Melinda", "aliases": ["Mindy"]}
+{"canonical": "Melody", "aliases": ["Lodi"]}
+{"canonical": "Mercedes", "aliases": ["Merci"]}
+{"canonical": "Merv", "aliases": ["Mervin"]}
+{"canonical": "Micajah", "aliases": ["Cage"]}
+{"canonical": "Michael", "aliases": ["Micah"]}
+{"canonical": "Micheal", "aliases": ["Miky"]}
+{"canonical": "Michelle", "aliases": ["Chelle", "Shelley", "Shellie", "Shely"]}
+{"canonical": "Miguel", "aliases": ["Miggy", "Miguael", "Miguaell", "Miguail", "Miguaill"]}
+{"canonical": "Minnie", "aliases": ["Wilhelmina"]}
+{"canonical": "Miranda", "aliases": ["Randi"]}
+{"canonical": "Miriam", "aliases": ["Mimi", "Mitzie"]}
+{"canonical": "Missy", "aliases": ["Melissa"]}
+{"canonical": "Mitch", "aliases": ["Mitchell"]}
+{"canonical": "Mitchell", "aliases": ["Mitch"]}
+{"canonical": "Monica", "aliases": ["Monna", "Monnie"]}
+{"canonical": "Monteleon", "aliases": ["Monte"]}
+{"canonical": "Montgomery", "aliases": ["Gum"]}
+{"canonical": "Monty", "aliases": ["Lamont"]}
+{"canonical": "Mortimer", "aliases": ["Mort"]}
+{"canonical": "Moses", "aliases": ["Amos", "Mose", "Moss"]}
+{"canonical": "Muriel", "aliases": ["Mur"]}
+{"canonical": "Myrtle", "aliases": ["Mert", "Myrt", "Myrti"]}
+{"canonical": "Nadine", "aliases": ["Nada"]}
+{"canonical": "Naomi", "aliases": ["Omi"]}
+{"canonical": "Napoleon", "aliases": ["Nap", "Nappy"]}
+{"canonical": "Natasha", "aliases": ["Tasha"]}
+{"canonical": "Nathaniel", "aliases": ["Than"]}
+{"canonical": "Nelson", "aliases": ["Nels"]}
+{"canonical": "Newt", "aliases": ["Newton"]}
+{"canonical": "Newton", "aliases": ["Newt"]}
+{"canonical": "Nicholas", "aliases": ["Claas"]}
+{"canonical": "Nicholette", "aliases": ["Nichole", "Nickey", "Nicole"]}
+{"canonical": "Nicole", "aliases": ["Nole"]}
+{"canonical": "Norbert", "aliases": ["Norby"]}
+{"canonical": "Norbusamte", "aliases": ["Norbu"]}
+{"canonical": "Norman", "aliases": ["Norm"]}
+{"canonical": "Nowell", "aliases": ["Noel"]}
+{"canonical": "Obedience", "aliases": ["Beda", "Beedy"]}
+{"canonical": "Obie", "aliases": ["Obediah"]}
+{"canonical": "Octavia", "aliases": ["Tave", "Tavia"]}
+{"canonical": "Odell", "aliases": ["Odo"]}
+{"canonical": "Ollie", "aliases": ["Oliver"]}
+{"canonical": "Onicyphorous", "aliases": ["Cyphorus", "One", "Osaforum", "Osaforus", "Syphorous"]}
+{"canonical": "Orlando", "aliases": ["Roland"]}
+{"canonical": "Orphelia", "aliases": ["Phelia"]}
+{"canonical": "Oswald", "aliases": ["Waldo"]}
+{"canonical": "Otis", "aliases": ["Ode", "Ote"]}
+{"canonical": "Pamela", "aliases": ["Pam"]}
+{"canonical": "Parmelia", "aliases": ["Amelia", "Melia"]}
+{"canonical": "Parthenia", "aliases": ["Parsuny", "Pasoonie", "Phenie"]}
+{"canonical": "Patricia", "aliases": ["Patti", "Tricia", "Trish"]}
+{"canonical": "Patrick", "aliases": ["Paddy", "Peter"]}
+{"canonical": "Penelope", "aliases": ["Penny"]}
+{"canonical": "Percival", "aliases": ["Percy"]}
+{"canonical": "Permelia", "aliases": ["Melly"]}
+{"canonical": "Persephone", "aliases": ["Seph", "Sephy"]}
+{"canonical": "Peter", "aliases": ["Pete"]}
+{"canonical": "Pheney", "aliases": ["Josephine"]}
+{"canonical": "Pheriba", "aliases": ["Ferbie", "Pherbia"]}
+{"canonical": "Philander", "aliases": ["Fie"]}
+{"canonical": "Philetus", "aliases": ["Leet"]}
+{"canonical": "Philipina", "aliases": ["Penie", "Phoebe"]}
+{"canonical": "Philomena", "aliases": ["Menaalmena"]}
+{"canonical": "Phoebe", "aliases": ["Fifi"]}
+{"canonical": "Pinckney", "aliases": ["Pink"]}
+{"canonical": "Pleasant", "aliases": ["Ples"]}
+{"canonical": "Pocahontas", "aliases": ["Pokey"]}
+{"canonical": "Posthuma", "aliases": ["Humey"]}
+{"canonical": "Prescott", "aliases": ["Pres", "Scott"]}
+{"canonical": "Priscilla", "aliases": ["Prissy"]}
+{"canonical": "Providence", "aliases": ["Provy"]}
+{"canonical": "Prudence", "aliases": ["Prudy", "Prue"]}
+{"canonical": "Prudy", "aliases": ["Prudence"]}
+{"canonical": "Rachel", "aliases": ["Rachael"]}
+{"canonical": "Rafaela", "aliases": ["Rafa"]}
+{"canonical": "Ramona", "aliases": ["Mona"]}
+{"canonical": "Raphael", "aliases": ["Ralph"]}
+{"canonical": "Ray", "aliases": ["Raymond"]}
+{"canonical": "Raymond", "aliases": ["Ray"]}
+{"canonical": "Rebecca", "aliases": ["Reba"]}
+{"canonical": "Regina", "aliases": ["Gina"]}
+{"canonical": "Reginald", "aliases": ["Renny"]}
+{"canonical": "Relief", "aliases": ["Leafa"]}
+{"canonical": "Reuben", "aliases": ["Rube"]}
+{"canonical": "Rhoda", "aliases": ["Rodie"]}
+{"canonical": "Rhyna", "aliases": ["Rhynie"]}
+{"canonical": "Richard", "aliases": ["Dickie", "Dickon", "Dicky"]}
+{"canonical": "Robert", "aliases": ["Dob", "Dobbin", "Hob", "Hobkin", "Robby"]}
+{"canonical": "Roberta", "aliases": ["Birtie", "Robbie", "Roby"]}
+{"canonical": "Roderick", "aliases": ["Rickie", "Roddy"]}
+{"canonical": "Rodger", "aliases": ["Roger"]}
+{"canonical": "Roger", "aliases": ["Rodger"]}
+{"canonical": "Roland", "aliases": ["Lanny", "Orlando", "Rollo", "Rolly"]}
+{"canonical": "Ronny", "aliases": ["Ronald"]}
+{"canonical": "Roscoe", "aliases": ["Ross"]}
+{"canonical": "Rosemary", "aliases": ["Rosemarie", "Rosey"]}
+{"canonical": "Rosina", "aliases": ["Sina"]}
+{"canonical": "Roxane", "aliases": ["Rox"]}
+{"canonical": "Russell", "aliases": ["Russ", "Rusty"]}
+{"canonical": "Ryan", "aliases": ["Ry"]}
+{"canonical": "Sabrina", "aliases": ["Brina"]}
+{"canonical": "Safieel", "aliases": ["Safie"]}
+{"canonical": "Salome", "aliases": ["Loomie"]}
+{"canonical": "Samantha", "aliases": ["Mantha"]}
+{"canonical": "Sandra", "aliases": ["Cassandra"]}
+{"canonical": "Sarah", "aliases": ["Sara"]}
+{"canonical": "Savannah", "aliases": ["Savanna"]}
+{"canonical": "Scott", "aliases": ["Sceeter", "Scottie", "Squat"]}
+{"canonical": "Sebastian", "aliases": ["Seb", "Sebby"]}
+{"canonical": "Selma", "aliases": ["Anselm"]}
+{"canonical": "Seymour", "aliases": ["See"]}
+{"canonical": "Shaun", "aliases": ["Shawn"]}
+{"canonical": "Shawn", "aliases": ["Shaun"]}
+{"canonical": "Sheila", "aliases": ["Cecilia"]}
+{"canonical": "Shelton", "aliases": ["Shel"]}
+{"canonical": "Sheryl", "aliases": ["Cheri", "Cherie", "Sheri", "Sherri", "Sherryl"]}
+{"canonical": "Shirley", "aliases": ["Shirl"]}
+{"canonical": "Sibbilla", "aliases": ["Sibbell", "Sybill"]}
+{"canonical": "Sidney", "aliases": ["Syd"]}
+{"canonical": "Sigismund", "aliases": ["Sig"]}
+{"canonical": "Silence", "aliases": ["Liley"]}
+{"canonical": "Silvester", "aliases": ["Vest"]}
+{"canonical": "Smith", "aliases": ["Smitty"]}
+{"canonical": "Socrates", "aliases": ["Crate"]}
+{"canonical": "Solomon", "aliases": ["Salmon", "Saul", "Sol", "Solly", "Zolly"]}
+{"canonical": "Sondra", "aliases": ["Dre", "Sonnie"]}
+{"canonical": "Sophia", "aliases": ["Sophie"]}
+{"canonical": "Sophronia", "aliases": ["Frona", "Fronia", "Sophia"]}
+{"canonical": "Stacey", "aliases": ["Stacie"]}
+{"canonical": "Stacie", "aliases": ["Stacey"]}
+{"canonical": "Stephanie", "aliases": ["Steffi", "Steffie", "Stephani", "Stephany", "Stephie"]}
+{"canonical": "Stuart", "aliases": ["Stu"]}
+{"canonical": "Sue", "aliases": ["Susan"]}
+{"canonical": "Sullivan", "aliases": ["Sully", "Van"]}
+{"canonical": "Suzanne", "aliases": ["Suki"]}
+{"canonical": "Sylvester", "aliases": ["Sy", "Vessie", "Vet"]}
+{"canonical": "Tabby", "aliases": ["Tabitha"]}
+{"canonical": "Tabitha", "aliases": ["Tabby"]}
+{"canonical": "Tammy", "aliases": ["Tammie"]}
+{"canonical": "Tanafra", "aliases": ["Tanny"]}
+{"canonical": "Tasha", "aliases": ["Tash", "Tashie"]}
+{"canonical": "Temperance", "aliases": ["Tempy"]}
+{"canonical": "Terri", "aliases": ["Teri", "Terrie"]}
+{"canonical": "Terry", "aliases": ["Terence"]}
+{"canonical": "Thad", "aliases": ["Thaddeus"]}
+{"canonical": "Thaddeus", "aliases": ["Thad"]}
+{"canonical": "Theo", "aliases": ["Theodore"]}
+{"canonical": "Theodosia", "aliases": ["Dosia", "Theodosius"]}
+{"canonical": "Theophilus", "aliases": ["Ophi"]}
+{"canonical": "Theotha", "aliases": ["Otha"]}
+{"canonical": "Theresa", "aliases": ["Thirza", "Traci", "Tracie", "Tracy"]}
+{"canonical": "Thomas", "aliases": ["Thom"]}
+{"canonical": "Thomasa", "aliases": ["Tamzine"]}
+{"canonical": "Tiffany", "aliases": ["Tiff", "Tiffy"]}
+{"canonical": "Timothy", "aliases": ["Tim"]}
+{"canonical": "Tina", "aliases": ["Christina"]}
+{"canonical": "Tobias", "aliases": ["Bias", "Toby"]}
+{"canonical": "Tony", "aliases": ["Anthony"]}
+{"canonical": "Tranquilla", "aliases": ["Quilla", "Trannie"]}
+{"canonical": "Tryphena", "aliases": ["Phena"]}
+{"canonical": "Unice", "aliases": ["Eunice"]}
+{"canonical": "Ursula", "aliases": ["Sula", "Sulie"]}
+{"canonical": "Valentina", "aliases": ["Vallie"]}
+{"canonical": "Valeri", "aliases": ["Valerie"]}
+{"canonical": "Vanburen", "aliases": ["Buren"]}
+{"canonical": "Vanessa", "aliases": ["Essa", "Vanna"]}
+{"canonical": "Vernisee", "aliases": ["Nicey"]}
+{"canonical": "Veronica", "aliases": ["Franky", "Frony", "Ronie", "Ronna"]}
+{"canonical": "Vic", "aliases": ["Victor"]}
+{"canonical": "Vicki", "aliases": ["Victoria"]}
+{"canonical": "Victoria", "aliases": ["Tori", "Torie", "Torri", "Torrie", "Tory"]}
+{"canonical": "Vijay", "aliases": ["Vij"]}
+{"canonical": "Viola", "aliases": ["Ola"]}
+{"canonical": "Virginia", "aliases": ["Ginger", "Ginny", "Virgy"]}
+{"canonical": "Vivian", "aliases": ["Viv"]}
+{"canonical": "Washington", "aliases": ["Wash"]}
+{"canonical": "Webster", "aliases": ["Webb"]}
+{"canonical": "Wendy", "aliases": ["Wen"]}
+{"canonical": "Westley", "aliases": ["Farmboy", "West"]}
+{"canonical": "Wilhelmina", "aliases": ["Mina", "Wilma"]}
+{"canonical": "Will", "aliases": ["Wilbur"]}
+{"canonical": "William", "aliases": ["Bela"]}
+{"canonical": "Wilma", "aliases": ["Billiewilhelm"]}
+{"canonical": "Winfield", "aliases": ["Field"]}
+{"canonical": "Winifred", "aliases": ["Winnet"]}
+{"canonical": "Winton", "aliases": ["Wint"]}
+{"canonical": "Woodrow", "aliases": ["Wood"]}
+{"canonical": "Yoshihiko", "aliases": ["Yoshi"]}
+{"canonical": "Yulan", "aliases": ["Lan", "Yul"]}
+{"canonical": "Yvonne", "aliases": ["Vonna"]}
+{"canonical": "Zebedee", "aliases": ["Zeb"]}
+{"canonical": "Zedediah", "aliases": ["Zed"]}
+{"canonical": "Zephaniah", "aliases": ["Zeph"]}

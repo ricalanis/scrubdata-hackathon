@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ScrubData — tu ayudante de listas</title>
+<style>
+  :root{
+    --paper:#fbf4e7;
+    --paper-2:#f4e9d4;
+    --card:#fffdf8;
+    --ink:#4a3b2e;
+    --ink-soft:#6f5d49;
+    --line:#e6d6b8;
+    --accent:#e07a3f;      /* warm terracotta */
+    --accent-soft:#f6c89a;
+    --leaf:#6e8a5a;        /* trail green */
+    --leaf-soft:#dfe7cf;
+    --sky:#8fb0c4;
+    --shadow:0 10px 28px rgba(120,90,50,.14);
+    --shadow-sm:0 4px 12px rgba(120,90,50,.10);
+    --radius:22px;
+    --font: "Segoe UI", "Helvetica Neue", system-ui, -apple-system, "Trebuchet MS", sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--font);
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #fdf6e8 0%, rgba(253,246,232,0) 60%),
+      radial-gradient(900px 500px at 0% 100%, #f6ecd6 0%, rgba(246,236,214,0) 55%),
+      var(--paper);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+    min-height:100vh;
+  }
+  /* tiny hand-drawn paper texture via repeating soft dots */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(rgba(180,150,100,.06) 1px, transparent 1px);
+    background-size:22px 22px;
+  }
+  .wrap{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:26px 20px 80px;}
+
+  /* ---- top bar ---- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;letter-spacing:.2px;}
+  .brand .logo{
+    width:40px;height:40px;border-radius:14px;
+    background:linear-gradient(150deg,var(--accent),#f0a05f);
+    display:grid;place-items:center;color:#fff;font-size:20px;
+    box-shadow:var(--shadow-sm);transform:rotate(-4deg);
+  }
+  .brand small{display:block;font-weight:600;font-size:12px;color:var(--ink-soft);letter-spacing:0;}
+  .lang{
+    display:flex;background:var(--card);border:1.5px solid var(--line);
+    border-radius:999px;padding:4px;box-shadow:var(--shadow-sm);font-weight:700;font-size:13px;
+  }
+  .lang button{
+    border:0;background:transparent;color:var(--ink-soft);
+    padding:6px 14px;border-radius:999px;cursor:pointer;font:inherit;font-weight:700;
+  }
+  .lang button.on{background:var(--accent);color:#fff;}
+
+  /* ---- persistent safety ribbon ---- */
+  .safety{
+    display:flex;align-items:center;gap:10px;
+    background:var(--leaf-soft);color:#41522f;
+    border:1.5px solid #cdd9bb;border-radius:999px;
+    padding:9px 16px;font-size:14px;font-weight:600;margin-bottom:24px;
+    box-shadow:var(--shadow-sm);
+  }
+  .safety .dot{font-size:16px;}
+
+  /* ---- card base ---- */
+  .card{
+    background:var(--card);border:1.5px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:30px;margin-bottom:22px;
+  }
+  h1{font-size:30px;margin:.1em 0 .25em;line-height:1.2;}
+  h2{font-size:22px;margin:.1em 0 .5em;}
+  .lead{font-size:18px;color:var(--ink-soft);margin:0 0 6px;}
+
+  /* ---- screen toggling ---- */
+  .screen{display:none;}
+  .screen.active{display:block;animation:fade .5s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  /* ---- step pills ---- */
+  .steps{display:flex;gap:8px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}
+  .steps .pill{
+    font-size:12.5px;font-weight:700;color:var(--ink-soft);
+    background:var(--paper-2);border:1.5px solid var(--line);
+    padding:6px 13px;border-radius:999px;cursor:pointer;transition:.2s;
+  }
+  .steps .pill.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+  /* ---- drop zone ---- */
+  .drop{
+    border:2.5px dashed var(--accent-soft);border-radius:26px;
+    background:linear-gradient(180deg,#fffdf7,#fdf3e2);
+    padding:46px 24px;text-align:center;cursor:pointer;transition:.2s;
+  }
+  .drop:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow);}
+  .drop .big{font-size:54px;line-height:1;margin-bottom:10px;}
+  .drop .title{font-size:21px;font-weight:800;margin-bottom:4px;}
+  .drop .sub{color:var(--ink-soft);font-size:15px;}
+  .file-chip{
+    display:inline-flex;align-items:center;gap:9px;margin-top:18px;
+    background:var(--leaf-soft);border:1.5px solid #cdd9bb;border-radius:14px;
+    padding:9px 15px;font-weight:700;font-size:14.5px;color:#41522f;
+  }
+
+  /* ---- big friendly button ---- */
+  .btn{
+    border:0;cursor:pointer;font:inherit;font-weight:800;font-size:18px;
+    background:linear-gradient(150deg,var(--accent),#ef9a55);color:#fff;
+    padding:16px 30px;border-radius:18px;box-shadow:0 8px 18px rgba(224,122,63,.30);
+    transition:.15s;display:inline-flex;align-items:center;gap:10px;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 22px rgba(224,122,63,.38);}
+  .btn.ghost{
+    background:var(--card);color:var(--ink);border:1.5px solid var(--line);
+    box-shadow:var(--shadow-sm);font-size:15px;padding:12px 20px;
+  }
+  .btn.ghost:hover{box-shadow:var(--shadow-sm);}
+  .center{text-align:center;}
+  .mt{margin-top:22px;}
+
+  /* ---- working state ---- */
+  .work{text-align:center;padding:20px 10px 6px;}
+  .pot{font-size:64px;display:inline-block;animation:stir 1.6s ease-in-out infinite;}
+  @keyframes stir{0%,100%{transform:rotate(-6deg);}50%{transform:rotate(6deg);}}
+  .progress{height:14px;background:var(--paper-2);border-radius:999px;overflow:hidden;margin:22px auto;max-width:430px;border:1.5px solid var(--line);}
+  .progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--leaf));border-radius:999px;animation:fill 3.4s ease forwards;}
+  @keyframes fill{to{width:100%;}}
+  .work-note{color:var(--ink-soft);font-size:15px;min-height:22px;}
+
+  /* ---- summary hero ---- */
+  .badge-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:6px;}
+  .merit{
+    width:78px;height:78px;flex:none;border-radius:50%;
+    background:radial-gradient(circle at 50% 35%,#fbe2c2,#f0b277);
+    border:3px dashed #d98b4e;display:grid;place-items:center;
+    color:#7a4a1f;font-size:30px;box-shadow:var(--shadow-sm);transform:rotate(-5deg);
+  }
+  .summary-list{margin:18px 0 4px;padding:0;list-style:none;display:grid;gap:12px;}
+  .summary-list li{
+    display:flex;gap:13px;align-items:flex-start;font-size:16.5px;
+    background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:13px 16px;
+  }
+  .summary-list .ic{font-size:22px;flex:none;line-height:1.2;}
+  .summary-list b{color:var(--ink);}
+
+  /* ---- change cards (before/after) ---- */
+  .change{
+    border:1.5px solid var(--line);border-radius:18px;background:var(--card);
+    padding:18px 18px 16px;margin-bottom:16px;box-shadow:var(--shadow-sm);
+  }
+  .change .head{font-weight:800;font-size:17px;margin-bottom:4px;display:flex;align-items:center;gap:9px;}
+  .change .say{color:var(--ink-soft);font-size:14.5px;margin-bottom:14px;}
+  .ba{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;}
+  .ba .col{background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;}
+  .ba .lab{font-size:11.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:7px;}
+  .ba .col.after{background:var(--leaf-soft);border-color:#cdd9bb;}
+  .ba .row{font-size:15px;padding:3px 0;color:var(--ink);}
+  .ba .row.dim{color:#a98f6e;}
+  .ba .arrow{font-size:26px;color:var(--accent);text-align:center;}
+
+  /* gentle confirm card */
+  .ask{
+    border:1.5px solid var(--accent-soft);background:linear-gradient(180deg,#fffaf2,#fdf1e0);
+    border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow-sm);
+  }
+  .ask .q{font-weight:800;font-size:17px;margin-bottom:5px;display:flex;gap:9px;align-items:center;}
+  .ask .detail{color:var(--ink-soft);font-size:14.5px;margin-bottom:14px;}
+  .ask .actions{display:flex;gap:10px;flex-wrap:wrap;}
+  .yes{background:var(--leaf);color:#fff;border:0;font-weight:800;border-radius:13px;padding:11px 20px;cursor:pointer;font:inherit;font-weight:800;}
+  .no{background:var(--card);color:var(--ink);border:1.5px solid var(--line);font-weight:700;border-radius:13px;padding:11px 20px;cursor:pointer;font:inherit;font-weight:700;}
+  .answered{font-weight:800;color:var(--leaf);font-size:15px;display:none;align-items:center;gap:8px;margin-top:4px;}
+
+  /* honest flags */
+  .flags{background:#fcf6ea;border:1.5px dashed #e0c9a0;border-radius:18px;padding:18px;margin-bottom:16px;}
+  .flags .q{font-weight:800;font-size:16.5px;margin-bottom:8px;display:flex;gap:9px;align-items:center;}
+  .flags ul{margin:6px 0 0;padding-left:4px;list-style:none;}
+  .flags li{font-size:14.5px;color:var(--ink-soft);padding:6px 0;border-top:1px dashed #e7d6b6;}
+  .flags li:first-child{border-top:0;}
+
+  /* bonus card */
+  .bonus{
+    background:linear-gradient(150deg,#eef3e3,#e3ecd2);border:1.5px solid #cdd9bb;
+    border-radius:18px;padding:20px;margin-bottom:16px;display:flex;gap:15px;align-items:center;
+  }
+  .bonus .em{font-size:42px;flex:none;}
+  .bonus .t{font-weight:800;font-size:17px;color:#3f5230;margin-bottom:3px;}
+  .bonus .d{color:#4f6240;font-size:14.5px;}
+
+  /* download band */
+  .download{
+    text-align:center;background:linear-gradient(180deg,#fffdf7,#fdf2e1);
+    border:1.5px solid var(--line);border-radius:20px;padding:26px 20px;margin-bottom:8px;
+  }
+  .download .small{color:var(--ink-soft);font-size:13.5px;margin-top:12px;}
+
+  .section-title{font-size:14px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-soft);margin:26px 4px 12px;}
+
+  .footnote{text-align:center;color:var(--ink-soft);font-size:13px;margin-top:30px;}
+  @media(max-width:560px){
+    .ba{grid-template-columns:1fr;}
+    .ba .arrow{transform:rotate(90deg);}
+    h1{font-size:25px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="brand">
+      <span class="logo">🧺</span>
+      <span>ScrubData<small data-es="tu ayudante de listas" data-en="your list helper">tu ayudante de listas</small></span>
+    </div>
+    <div class="lang">
+      <button class="on" onclick="setLang('es',this)">Español</button>
+      <button onclick="setLang('en',this)">English</button>
+    </div>
+  </div>
+
+  <!-- PERSISTENT SAFETY RIBBON -->
+  <div class="safety">
+    <span class="dot">🌿</span>
+    <span data-es="Tu archivo original no se toca. Nada sale de esta computadora. Siempre puedes dejarlo como estaba."
+          data-en="Your original file stays exactly as it is. Nothing leaves this computer. You can always put it back the way it was.">
+      Tu archivo original no se toca. Nada sale de esta computadora. Siempre puedes dejarlo como estaba.
+    </span>
+  </div>
+
+  <!-- STEP PILLS (let reviewer walk the arc) -->
+  <div class="steps">
+    <span class="pill on" onclick="go(0,this)" data-es="1 · Bienvenida" data-en="1 · Welcome">1 · Bienvenida</span>
+    <span class="pill" onclick="go(1,this)" data-es="2 · Acomodando" data-en="2 · Tidying">2 · Acomodando</span>
+    <span class="pill" onclick="go(2,this)" data-es="3 · Lo que encontré" data-en="3 · What I found">3 · Lo que encontré</span>
+  </div>
+
+  <!-- ============ SCREEN 1 — WELCOME + DROP ============ -->
+  <section class="screen active" id="s0">
+    <div class="card">
+      <h1 data-es="Hola, Lupita. Vamos a poner tu lista bonita. 🌼"
+          data-en="Hi, Lupita. Let's make your list nice and tidy. 🌼">
+        Hola, Lupita. Vamos a poner tu lista bonita. 🌼
+      </h1>
+      <p class="lead" data-es="Sube tu archivo y yo lo reviso contigo, despacito. Sin botones raros, sin configurar nada."
+         data-en="Drop your file and I'll look through it with you, nice and slow. No strange buttons, nothing to set up.">
+        Sube tu archivo y yo lo reviso contigo, despacito. Sin botones raros, sin configurar nada.
+      </p>
+
+      <div class="drop" onclick="go(1)">
+        <div class="big">📂</div>
+        <div class="title" data-es="Suelta tu archivo aquí — yo le echo un ojo."
+             data-en="Drop your file here — I'll take a look.">Suelta tu archivo aquí — yo le echo un ojo.</div>
+        <div class="sub" data-es="Excel o CSV está bien. Tu original se queda igualito."
+             data-en="Excel or CSV is fine. Your original stays exactly as it is.">Excel o CSV está bien. Tu original se queda igualito.</div>
+        <div class="file-chip">📄 resumen-del-mes-mayo.xlsx</div>
+      </div>
+
+      <div class="center mt">
+        <button class="btn" onclick="go(1)">
+          <span>🧽</span><span data-es="Acomódalo por mí" data-en="Clean it up">Acomódalo por mí</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 2 — WORKING ============ -->
+  <section class="screen" id="s1">
+    <div class="card work">
+      <div class="pot">🍲</div>
+      <h2 data-es="Estoy acomodando tu lista…" data-en="I'm tidying your list…">Estoy acomodando tu lista…</h2>
+      <div class="progress"><i></i></div>
+      <p class="work-note" id="workNote"
+         data-es="Trabajando aquí mismo, en tu computadora. Tu original está a salvo."
+         data-en="Working right here on your computer. Your original is safe.">
+        Trabajando aquí mismo, en tu computadora. Tu original está a salvo.
+      </p>
+      <div class="center mt">
+        <button class="btn ghost" onclick="go(2)" data-es="Ver lo que encontré →" data-en="See what I found →">Ver lo que encontré →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 3 — RESULT ============ -->
+  <section class="screen" id="s2">
+
+    <!-- SUMMARY HERO -->
+    <div class="card">
+      <div class="badge-row">
+        <div class="merit">🏅</div>
+        <div>
+          <h1 style="margin:0" data-es="¡Listo! Tu lista quedó bien bonita."
+              data-en="All done! Your list is in great shape.">¡Listo! Tu lista quedó bien bonita.</h1>
+          <p class="lead" style="margin:2px 0 0" data-es="Esto fue lo que acomodé por ti — léelo en voz alta a Yolanda si quieres."
+             data-en="Here's what I tidied for you — read it out loud to Yolanda if you like.">
+            Esto fue lo que acomodé por ti — léelo en voz alta a Yolanda si quieres.
+          </p>
+        </div>
+      </div>
+
+      <ul class="summary-list">
+        <li><span class="ic">🌮</span><span data-es="<b>“Al pastor”</b> estaba escrito de 4 maneras. Los junté: <b>1,204 vendidos</b> en mayo."
+            data-en="<b>“Al pastor”</b> was written 4 different ways. I counted them together: <b>1,204 sold</b> in May.">
+            <b>“Al pastor”</b> estaba escrito de 4 maneras. Los junté: <b>1,204 vendidos</b> en mayo.</span></li>
+        <li><span class="ic">👥</span><span data-es="<b>3 clientes</b> aparecían dos veces. Los reuní para que los revises."
+            data-en="<b>3 customers</b> showed up twice. I gathered each one for you to check.">
+            <b>3 clientes</b> aparecían dos veces. Los reuní para que los revises.</span></li>
+        <li><span class="ic">📞</span><span data-es="Acomodé <b>todos los teléfonos</b> para que se lean igualito."
+            data-en="I made <b>all the phone numbers</b> match so they're easy to read.">
+            Acomodé <b>todos los teléfonos</b> para que se lean igualito.</span></li>
+        <li><span class="ic">🗓️</span><span data-es="Puse <b>todas las fechas</b> escritas de la misma forma."
+            data-en="I made <b>all the dates</b> written the same way.">
+            Puse <b>todas las fechas</b> escritas de la misma forma.</span></li>
+        <li><span class="ic">⬜</span><span data-es="Algunos espacios decían “N/A” o un guion. Los dejé como <b>vacíos</b>."
+            data-en="Some spots said “N/A” or just a dash. I treated those as <b>empty</b>.">
+            Algunos espacios decían “N/A” o un guion. Los dejé como <b>vacíos</b>.</span></li>
+      </ul>
+    </div>
+
+    <!-- CHANGE CARDS (story, not diff) -->
+    <div class="section-title" data-es="Aquí está lo que cambió — antes y después" data-en="Here's what changed — before and after">
+      Aquí está lo que cambió — antes y después
+    </div>
+
+    <div class="change">
+      <div class="head">🌮 <span data-es="El mismo taco, escrito de varias maneras" data-en="The same taco, written a few ways">El mismo taco, escrito de varias maneras</span></div>
+      <div class="say" data-es="La computadora por fin entiende que es el mismo taco. Los conté juntos."
+           data-en="The computer finally understands it's the same taco. I counted them together.">
+        La computadora por fin entiende que es el mismo taco. Los conté juntos.</div>
+      <div class="ba">
+        <div class="col">
+          <div class="lab" data-es="Antes" data-en="Before">Antes</div>
+          <div class="row dim">al pastor</div>
+          <div class="row dim">Al Pastor</div>
+          <div class="row dim">pastor</div>
+          <div class="row dim">tacos al pastor</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="col after">
+          <div class="lab" data-es="Después" data-en="After">Después</div>
+          <div class="row"><b>Al pastor</b></div>
+          <div class="row" data-es="1,204 vendidos" data-en="1,204 sold">1,204 vendidos</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="change">
+      <div class="head">📞 <span data-es="Los teléfonos, todos parejitos" data-en="Phone numbers, all matching">Los teléfonos, todos parejitos</span></div>
+      <div class="say" data-es="Los dejé escritos igual para que sean fáciles de leer y marcar."
+           data-en="I made them all match so they're easy to read and dial.">
+        Los dejé escritos igual para que sean fáciles de leer y marcar.</div>
+      <div class="ba">
+        <div class="col">
+          <div class="lab" data-es="Antes" data-en="Before">Antes</div>
+          <div class="row dim">55-1234.5678</div>
+          <div class="row dim">(55) 12345678</div>
+          <div class="row dim">5512345678</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="col after">
+          <div class="lab" data-es="Después" data-en="After">Después</div>
+          <div class="row"><b>55 1234 5678</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GENTLE CONFIRM — money -->
+    <div class="ask" id="ask1">
+      <div class="q">💵 <span data-es="¿Dejo fuera del total las filas de $0.00?" data-en="Leave the $0.00 rows out of the total?">¿Dejo fuera del total las filas de $0.00?</span></div>
+      <div class="detail" data-es="Encontré <b>31 filas que marcan $0.00</b>. Eso parece un error del sistema, no una venta. Tú decides — yo no toco el dinero sin preguntarte."
+           data-en="I found <b>31 rows showing $0.00</b>. That looks like a glitch, not a sale. You decide — I won't touch money without asking.">
+        Encontré <b>31 filas que marcan $0.00</b>. Eso parece un error del sistema, no una venta. Tú decides — yo no toco el dinero sin preguntarte.</div>
+      <div class="actions">
+        <button class="yes" onclick="answer('ask1')" data-es="Sí, déjalas fuera" data-en="Yes, leave them out">Sí, déjalas fuera</button>
+        <button class="no" onclick="answer('ask1')" data-es="No, déjalas" data-en="No, keep them">No, déjalas</button>
+      </div>
+      <div class="answered" id="ans-ask1">✓ <span data-es="Anotado. Tú mandas." data-en="Got it. You're in charge.">Anotado. Tú mandas.</span></div>
+    </div>
+
+    <!-- GENTLE CONFIRM — duplicates -->
+    <div class="ask" id="ask2">
+      <div class="q">👥 <span data-es="¿Estos dos son la misma persona?" data-en="Are these two the same person?">¿Estos dos son la misma persona?</span></div>
+      <div class="detail" data-es="<b>“Yolanda Pérez”</b> y <b>“Yola Perez”</b> tienen el mismo teléfono. ¿Los junto en uno solo?"
+           data-en="<b>“Yolanda Pérez”</b> and <b>“Yola Perez”</b> share the same phone. Shall I count them as one?">
+        <b>“Yolanda Pérez”</b> y <b>“Yola Perez”</b> tienen el mismo teléfono. ¿Los junto en uno solo?</div>
+      <div class="actions">
+        <button class="yes" onclick="answer('ask2')" data-es="Sí, es la misma" data-en="Yes, same person">Sí, es la misma</button>
+        <button class="no" onclick="answer('ask2')" data-es="No, déjalas aparte" data-en="No, keep separate">No, déjalas aparte</button>
+      </div>
+      <div class="answered" id="ans-ask2">✓ <span data-es="Listo, como tú digas." data-en="Done, as you say.">Listo, como tú digas.</span></div>
+    </div>
+
+    <!-- HONEST FLAGS -->
+    <div class="flags">
+      <div class="q">🤔 <span data-es="De estas no estuve segura — te las dejé para que las veas" data-en="I wasn't sure about these — I left them for you">De estas no estuve segura — te las dejé para que las veas</span></div>
+      <ul>
+        <li data-es="Dos teléfonos tienen muy pocos números. No los cambié por si tú los conoces."
+            data-en="Two phone numbers have too few digits. I didn't change them in case you know them.">
+            Dos teléfonos tienen muy pocos números. No los cambié por si tú los conoces.</li>
+        <li data-es="Las notas del catering (“fiesta Sra. Mendoza”) no las entendí bien. Las dejé tal cual."
+            data-en="The catering notes (“Mrs. Mendoza's party”) I didn't quite understand. I left them as they were.">
+            Las notas del catering (“fiesta Sra. Mendoza”) no las entendí bien. Las dejé tal cual.</li>
+        <li data-es="El total de mayo y la suma de las filas no cuadran por $84. Aquí te lo marco para que lo cheques con tu caja."
+            data-en="May's total and the rows add up $84 apart. I'm flagging it so you can check it against your cash.">
+            El total de mayo y la suma de las filas no cuadran por $84. Aquí te lo marco para que lo cheques con tu caja.</li>
+      </ul>
+    </div>
+
+    <!-- BONUS CARD -->
+    <div class="bonus">
+      <div class="em">🫙</div>
+      <div>
+        <div class="t" data-es="De pasada: se te está acabando el adobo de pastor"
+             data-en="By the way: you're running low on pastor marinade">De pasada: se te está acabando el adobo de pastor</div>
+        <div class="d" data-es="Con lo que vendiste, te alcanza para unos 6 días. Buen momento para pedir más."
+             data-en="At this pace you have about 6 days left. Good time to reorder.">
+            Con lo que vendiste, te alcanza para unos 6 días. Buen momento para pedir más.</div>
+      </div>
+    </div>
+
+    <!-- DOWNLOAD BAND -->
+    <div class="download">
+      <button class="btn" onclick="return false">
+        <span>💾</span><span data-es="Dame mi copia limpia" data-en="Get my clean copy">Dame mi copia limpia</span>
+      </button>
+      <div style="margin-top:14px;">
+        <button class="btn ghost" onclick="return false" data-es="🖨️ Imprimir el resumen en palabras sencillas" data-en="🖨️ Print the plain-words summary">
+          🖨️ Imprimir el resumen en palabras sencillas</button>
+      </div>
+      <div class="small" data-es="Tu original (resumen-del-mes-mayo.xlsx) sigue intacto. Esto es una copia nueva."
+           data-en="Your original (resumen-del-mes-mayo.xlsx) is untouched. This is a fresh new copy.">
+        Tu original (resumen-del-mes-mayo.xlsx) sigue intacto. Esto es una copia nueva.</div>
+    </div>
+
+    <!-- REVERSIBILITY -->
+    <div class="center mt">
+      <button class="btn ghost" onclick="return false" data-es="↩️ Mejor déjalo como estaba" data-en="↩️ Put it back the way it was">↩️ Mejor déjalo como estaba</button>
+    </div>
+
+    <div class="footnote" data-es="Lo hiciste tú misma, y está bien. 🌙 Buenas noches, Lupita."
+         data-en="You did it yourself, and it's right. 🌙 Goodnight, Lupita.">
+      Lo hiciste tú misma, y está bien. 🌙 Buenas noches, Lupita.
+    </div>
+  </section>
+
+</div>
+
+<script>
+  var screens = ['s0','s1','s2'];
+  var pills = document.querySelectorAll('.steps .pill');
+
+  function go(i, el){
+    screens.forEach(function(id,n){
+      document.getElementById(id).classList.toggle('active', n===i);
+    });
+    pills.forEach(function(p,n){ p.classList.toggle('on', n===i); });
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(i===1){ runWork(); }
+  }
+
+  // working state: cycle reassuring notes, then auto-advance
+  var workTimers = [];
+  function runWork(){
+    workTimers.forEach(clearTimeout); workTimers = [];
+    var note = document.getElementById('workNote');
+    var es = [
+      "Trabajando aquí mismo, en tu computadora. Tu original está a salvo.",
+      "Estoy juntando los tacos que están escritos de varias maneras…",
+      "Acomodando teléfonos y fechas para que se lean igualito…",
+      "Casi listo — guardando una copia nueva, sin tocar tu original."
+    ];
+    var en = [
+      "Working right here on your computer. Your original is safe.",
+      "Gathering the tacos that are written a few different ways…",
+      "Tidying phone numbers and dates so they're easy to read…",
+      "Almost there — saving a fresh copy, leaving your original untouched."
+    ];
+    var k = (lang==='es') ? es : en;
+    var step = 0;
+    note.textContent = k[0];
+    for(var s=1;s<k.length;s++){
+      (function(s){ workTimers.push(setTimeout(function(){ note.textContent = k[s]; }, s*900)); })(s);
+    }
+    workTimers.push(setTimeout(function(){ if(document.getElementById('s1').classList.contains('active')) go(2); }, 3700));
+  }
+
+  function answer(id){
+    var card = document.getElementById(id);
+    card.querySelector('.actions').style.display='none';
+    document.getElementById('ans-'+id).style.display='flex';
+  }
+
+  // language toggle
+  var lang = 'es';
+  function setLang(l, el){
+    lang = l;
+    document.querySelectorAll('.lang button').forEach(function(b){b.classList.remove('on');});
+    el.classList.add('on');
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-es]').forEach(function(node){
+      var v = node.getAttribute('data-'+l);
+      if(v!=null) node.innerHTML = v;
+    });
+  }
+</script>
+</body>
+</html>
