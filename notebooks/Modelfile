@@ -8,11 +8,12 @@
 # ALSO: the current Unsloth (2026.6.1) Q4_K_M GGUF export is CORRUPTED for this model
 # (degenerates into <tool_call> loops). Use Q8_0 — it works. Export with q8_0.
 #
-#   ollama pull hf.co/ricalanis/scrubdata-qwen3-4b-v4-q8:Q8_0
+#   ollama pull hf.co/ricalanis/scrubdata-qwen3-4b-v6-q8:Q8_0
 #   ollama create scrubdata-ft -f notebooks/Modelfile
 #   uv run eval/run_finetuned.py --model scrubdata-ft --n 40
 
-FROM hf.co/ricalanis/scrubdata-qwen3-4b-v4-q8:Q8_0
+# v6 = mixA (more real paired data): hospital repair 0.475/0.185 (v4/v5 was 0/0.42)
+FROM hf.co/ricalanis/scrubdata-qwen3-4b-v6-q8:Q8_0
 TEMPLATE """{{- if .System }}<|im_start|>system
 {{ .System }}<|im_end|>
 {{ end }}{{- range .Messages }}<|im_start|>{{ .Role }}

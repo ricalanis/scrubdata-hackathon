@@ -59,7 +59,7 @@ uv sync
 uv run server.py                                   # gr.Server + custom UI (grounded heuristic)
 
 # fine-tuned model as planner (needs Ollama + the GGUF, see notebooks/Modelfile):
-ollama pull hf.co/ricalanis/scrubdata-qwen3-4b-v4-q8:Q8_0
+ollama pull hf.co/ricalanis/scrubdata-qwen3-4b-v6-q8:Q8_0
 ollama create scrubdata-ft -f notebooks/Modelfile
 SCRUBDATA_MODEL=scrubdata-ft uv run server.py      # model planner, heuristic fallback
 
