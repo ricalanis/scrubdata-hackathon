@@ -108,3 +108,29 @@ Cleaning *large* tables doesn't mean bigger prompts — it means reasoning over 
 **Validated** on the real Raha hospital table (1000×20) with a *vanilla* model (no retrain):
 **repair_recall 0.509** (fixed 259/509 typos), vs **0.000** for the old one-shot+sample-rows
 approach. The v4 fine-tune trains on this `value_counts` format.
+
+---
+
+## The wide suite (current north-star)
+
+The single-dataset hospital metric was retired as north-star (biased: one table,
+recall-only, convention-sensitive, abstain-blind). The current harness:
+
+- **`run_real_multi.py`** — 65-dataset suite (5 Raha real-error benchmarks + seeded
+  error injection over 15 harvested open-data domains), scored with a **churn-neutral**
+  metric (pure case/whitespace rewrites that don't restore gold count as nothing) and
+  aggregated as a **double macro** (error-type × domain, harmonic mean) so no single
+  table or error type dominates. Reports REAL vs INJECTED slices separately — injected
+  typos are in-distribution for frequency clustering by construction.
+- **`ablations.py`** — removes one grounding component at a time (reference, abstain,
+  ambiguity margin, case-match). Caught two metric artifacts (churn inflation,
+  reference-unsafe traps) now fixed and documented in the paper.
+- **`calibration.py`** — risk–coverage + ECE for the abstention confidence
+  (AURC 0.120; 90% precision at the default threshold, ≥95% at 0.91).
+- **`pii_leak.py`** — masking leak test: 0/360 residual detectable PII.
+- **`pii_slice.py`** — OOD PII column typing on Gretel test: 5/5 types, 0/7 FP.
+- **`inject.py`** — seeded, self-verifying error injectors (typo/OCR/case/whitespace)
+  that turn any clean table into validation data.
+
+Baselines include OpenRefine fingerprint + kNN clustering (`scrubdata/baselines.py`,
+with blocking, as the real tool uses). Full results & discussion: `docs/paper/`.
