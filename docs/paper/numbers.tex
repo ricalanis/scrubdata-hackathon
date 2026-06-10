@@ -26,9 +26,10 @@
 \newcommand{\damageGrounded}{0.118}
 \newcommand{\damageORKnn}{0.098}
 
-% Grounded MODEL on suite (overnight)
-\newcommand{\modelRealF}{0.093}
-\newcommand{\modelAbstain}{1.000}
+% SHIPPED system (verified union, v6 adapter) on suite — scripts/modal_eval_suite.py
+\newcommand{\modelRealF}{TBDSUITE}
+\newcommand{\modelDamage}{TBDSUITE}
+\newcommand{\modelAbstain}{TBDSUITE}
 
 % Ablations (corrected churn-neutral metric, seed 7)
 \newcommand{\ablFull}{0.189}
@@ -62,3 +63,21 @@
 \newcommand{\damageORFp}{0.001}
 \newcommand{\hospModelRecallVSix}{0.475}
 \newcommand{\hospModelPrecVSix}{0.185}
+
+% WS1 — plan-level selective prediction (verified union planner)
+% repro: uv run python -m eval.precision_curve --plan eval/results/v6_hospital_raw_plan.json --union
+\newcommand{\unionGatePrec}{0.905}
+\newcommand{\unionGateCov}{0.413}
+\newcommand{\modelGatePrec}{0.993}     % gated model plan alone, tau=0.5 (146/147 correct)
+\newcommand{\modelGateCov}{0.287}
+\newcommand{\unionChanged}{232}
+\newcommand{\unionFixed}{210}
+\newcommand{\hospErrors}{509}
+
+% WS4 — learned-repair baselines, Raha real slice only (eval/baselines_learned.py)
+\newcommand{\realFBaran}{0.811}        % oracle detection + 20 gold labels: upper bound
+\newcommand{\realFBaranCI}{0.018}      % 3 label-sampling seeds
+\newcommand{\damageBaran}{0.003}
+\newcommand{\precBaran}{0.824}
+\newcommand{\realFJelly}{TBDJELLY}     % Jellyfish-13B ED+DI (scripts/modal_jellyfish.py)
+\newcommand{\damageJelly}{TBDJELLY}
