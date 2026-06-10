@@ -130,10 +130,14 @@ def grounded_mapping(values, ctype: str, idx: ReferenceIndex | None = None,
     idx = idx or default_index()
     if not idx.has_type(ctype):
         return {}, []
+    from collections import Counter
+    freq = Counter(str(x).strip() for x in values if str(x).strip())
     style = _column_case(values)
     mapping: dict[str, str] = {}
     abstained: list[str] = []
     for v in dict.fromkeys(str(x).strip() for x in values if str(x).strip()):
+        if freq[v] >= 3:
+            continue          # errors are rare: a frequent surface is data, not a typo
         b = idx.best(v, ctype)
         if b is None:
             continue
