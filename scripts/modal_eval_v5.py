@@ -17,6 +17,10 @@ image = (
     .pip_install("torch", "transformers>=4.45", "peft", "accelerate",
                  "pandas", "jsonschema", "pycountry", "sentencepiece")
     .add_local_dir(".", "/root/repo", ignore=IGNORE, copy=True)
+    # harvested EVAL-ONLY pair (data/** is ignored above; Raha sets auto-download
+    # in-container, this one only exists locally via training/harvest_stage2.py)
+    .add_local_dir("data/real/ed2_restaurants",
+                   "/root/repo/data/real/ed2_restaurants", copy=True)
 )
 app = modal.App("scrubdata-eval-v5", image=image)
 adapter_vol = modal.Volume.from_name("scrubdata-v5-adapter")
@@ -25,7 +29,7 @@ results = modal.Dict.from_name("scrubdata-eval-v5-results", create_if_missing=Tr
 
 @app.function(gpu="A100-80GB", timeout=2400, volumes={"/vol": adapter_vol})
 def run_eval(n_synth: int = 20, adapter: str = "/vol/v5", skip_real: bool = False,
-             pair_profiles: bool = False):
+             pair_profiles: bool = False, capture: str = ""):
     import os, sys, torch
     os.chdir("/root/repo")
     sys.path.insert(0, "/root/repo")
@@ -93,6 +97,17 @@ def run_eval(n_synth: int = 20, adapter: str = "/vol/v5", skip_real: bool = Fals
         out["hospital_noop"] = _score(dirty, clean, dirty)
         out["hospital_plan"] = ft_plan          # raw plan for local precision-curve sweeps
 
+    if capture:
+        # capture raw grounded model plans for arbitrary eval datasets (GEN metric:
+        # plans are applied + scored locally with the full union pipeline). Tables
+        # are loaded FULL (same loader contract as eval/generalization.py).
+        from eval.run_real_multi import _fetch
+        out["plans"] = {}
+        for name in capture.split(","):
+            dirty, _clean = _fetch(name)
+            print(f"capturing plan: {name} ({len(dirty)} rows)", flush=True)
+            out["plans"][name] = make_batched_planner(base_planner, batch_size=4)(dirty)
+
     table = _format(out)
     print(table)
     key = adapter.rsplit("/", 1)[-1] if adapter != "/vol/v5" else "latest"
@@ -120,7 +135,7 @@ def _format(r) -> str:
 
 @app.local_entrypoint()
 def main(adapter: str = "/vol/v5", skip_real: bool = False, n_synth: int = 20,
-         pair_profiles: bool = False):
+         pair_profiles: bool = False, capture: str = ""):
     call = run_eval.spawn(adapter=adapter, skip_real=skip_real, n_synth=n_synth,
-                          pair_profiles=pair_profiles)
+                          pair_profiles=pair_profiles, capture=capture)
     print(f"Launched detached. call_id={call.object_id}")
