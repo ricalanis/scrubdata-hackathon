@@ -258,9 +258,14 @@ the same iteration found frequency-derived and algorithm-cleaned labels both
 \emph{reduce} quality, consistent with our grounding thesis.
 
 \subsection{Grounding vs.\ clustering}
-On hospital's real errors, grounded reconciliation beats frequency clustering on recall
-(\hospRecallGrounded{} vs \hospRecallFreq), nearly doubles precision
-(\hospPrecGrounded{} vs \hospPrecFreq), and cuts wrong changes by \hospWrongDelta.
+With the errors-are-rare frequency gates now in both paths, grounding and frequency
+clustering are comparable on hospital alone (repairs-only, churn-neutral:
+\hospPrecGrounded{} precision at \hospRecallGrounded{} recall grounded vs
+\hospPrecFreq{} at \hospRecallFreq{} clustering---hospital's dominant errors are
+in-column typos, clustering's best case). Grounding's margin appears where references
+matter: across the five-benchmark real-error macro it reaches \ablFullRealF{} versus
+\ablNoGroundRealF{} for the frequency-clustering ablation ($+29\%$), and it carries
+the behavioral guarantees below.
 On the full suite against OpenRefine (Table~\ref{tab:money}), the result splits
 cleanly by regime, and we report both. On the \emph{real-error} slice---the regime the
 tool exists for---grounded cleaning reaches REAL-F1 \realFGrounded{}, $3.0\times$
@@ -275,11 +280,11 @@ verified-union system's suite row (REAL-F1 \modelRealF, damage \modelDamage) sho
 grounding wrapper and heuristic union carry entity canonicalization on these datasets ---
 the model's contribution concentrates on the synthetic regime and hospital repair
 (\S\ref{sec:ws1results}), and the verifier keeps its damage below the grounded
-heuristic's. Within our own
-ablations, removing grounding leaves real-error F1 unchanged within noise
-(\ablNoGroundRealF) but forfeits the behavioral guarantees: perfect abstention on
-adversarial traps (\ablFullAbstain) versus \ablNoAbstainAbstain{} without abstention,
-and reference-vetoed wrong merges (e.g.\ \texttt{guntxrsvillx}$\to$\texttt{huntsville}).
+heuristic's. Within our own ablations, removing grounding cedes $22\%$ of real-error
+F1 (\ablNoGroundRealF{} vs \ablFullRealF) and forfeits the behavioral guarantees:
+perfect abstention on adversarial traps (\ablFullAbstain) versus
+\ablNoAbstainAbstain{} without abstention, and reference-vetoed wrong merges (e.g.\
+\texttt{guntxrsvillx}$\to$\texttt{huntsville}).
 
 \begin{table}[t]
 \centering
@@ -352,13 +357,14 @@ operating point ($\tau{=}0.5$) is annotated.}
 \end{figure}
 
 \subsection{Ablations}
-All ablations are 3-seed means (CIs $\le\pm0.003$). Removing abstention costs $-0.038$ NORTH, raises damage to \ablNoAbstainDamage{} (from
-\ablFullDamage), and collapses trap abstention to \ablNoAbstainAbstain. Removing the
-ambiguity margin costs $-0.018$ with $+0.007$ damage. Removing case matching costs
-$-0.008$ under the churn-neutral metric (and \emph{gained} $+0.12$ under the uncorrected
-metric---the artifact). Replacing grounding with frequency clustering gains $+0.049$
-NORTH, all of it from the injected slice (\S\ref{sec:eval}); real-error F1 is unchanged
-within noise.
+All ablations are 3-seed means (CIs $\le\pm0.003$). Removing abstention costs $-0.013$
+NORTH, raises damage to \ablNoAbstainDamage{} (from \ablFullDamage), and collapses trap
+abstention to \ablNoAbstainAbstain. Removing the ambiguity margin costs $-0.005$ with
+$+0.001$ damage. Removing case matching costs $-0.002$ under the churn-neutral metric
+(and \emph{gained} $+0.12$ under the uncorrected metric---the artifact). Replacing
+grounding with frequency clustering gains $+0.021$ NORTH, all of it from the injected
+slice (\S\ref{sec:eval}), while ceding $-0.039$ real-error F1---the trade the system
+refuses by design.
 
 \subsection{Learned-repair baselines under disclosed protocols}
 \label{sec:ws4}

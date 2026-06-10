@@ -1,0 +1,19 @@
+
+=== Ablation suite (wide validation suite, 3 seeds) — each removes ONE grounding component ===
+
+variant                        NORTH*  REAL-F1  INJ-F1   damage  abstain
+------------------------------------------------------------------------
+full (grounded)                 0.203    0.174   0.214    0.104    1.000
+- grounding (freq-cluster)      0.223    0.135   0.260    0.108    1.000
+- abstain (map nearest)         0.190    0.173   0.197    0.108    0.250
+- ambiguity check               0.197    0.174   0.207    0.105    1.000
+- case match                    0.201    0.174   0.211    0.104    1.000
+
+Deltas vs full (what each component buys):
+  - grounding (freq-cluster)   ΔNORTH=+0.021  Δdamage=+0.003  Δabstain=+0.000
+  - abstain (map nearest)      ΔNORTH=-0.013  Δdamage=+0.004  Δabstain=-0.750
+  - ambiguity check            ΔNORTH=-0.005  Δdamage=+0.001  Δabstain=+0.000
+  - case match                 ΔNORTH=-0.002  Δdamage=+0.000  Δabstain=+0.000
+rows written to eval/results/ablations.json
+
+Grounding lifts F1; abstain + ambiguity-check cut DAMAGE; case-match avoids convention damage. The combination is the contribution.

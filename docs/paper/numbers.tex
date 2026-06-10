@@ -8,12 +8,11 @@
 \newcommand{\opFOurs}{0.957}
 \newcommand{\jsonValidOurs}{0.950}
 
-% Real-data head-to-head (Raha hospital, real char-substitution typos)
+% Hospital head-to-head, repairs-only churn-neutral (both paths incl. errors-are-rare gates)
 \newcommand{\hospRecallGrounded}{0.257}
-\newcommand{\hospRecallFreq}{0.193}
-\newcommand{\hospPrecGrounded}{0.053}
-\newcommand{\hospPrecFreq}{0.028}
-\newcommand{\hospWrongDelta}{62\%}     % reduction in wrong-changes vs freq clustering
+\newcommand{\hospRecallFreq}{0.293}
+\newcommand{\hospPrecGrounded}{0.845}
+\newcommand{\hospPrecFreq}{0.871}
 \newcommand{\hospModelRecall}{0.424}   % fine-tuned v5, repair_recall (vs 0.000 synthetic-only)
 
 % Wide-suite comparison (3 seeds, churn-neutral metric) — money table (overnight)
@@ -31,16 +30,16 @@
 \newcommand{\modelDamage}{TBDSUITE}
 \newcommand{\modelAbstain}{TBDSUITE}
 
-% Ablations (corrected churn-neutral metric, seed 7)
-\newcommand{\ablFull}{0.189}
-\newcommand{\ablNoGround}{0.237}
-\newcommand{\ablNoAbstain}{0.151}
-\newcommand{\ablNoMargin}{0.171}
-\newcommand{\ablNoCase}{0.181}
-\newcommand{\ablFullRealF}{0.137}
+% Ablations (churn-neutral metric, 3 seeds — eval/results/ablations.json)
+\newcommand{\ablFull}{0.203}
+\newcommand{\ablNoGround}{0.223}
+\newcommand{\ablNoAbstain}{0.190}
+\newcommand{\ablNoMargin}{0.197}
+\newcommand{\ablNoCase}{0.201}
+\newcommand{\ablFullRealF}{0.174}
 \newcommand{\ablNoGroundRealF}{0.135}
-\newcommand{\ablNoAbstainDamage}{0.138}
-\newcommand{\ablFullDamage}{0.118}
+\newcommand{\ablNoAbstainDamage}{0.108}
+\newcommand{\ablFullDamage}{0.104}
 \newcommand{\ablFullAbstain}{1.000}
 \newcommand{\ablNoAbstainAbstain}{0.250}
 
@@ -87,5 +86,5 @@
 \newcommand{\realFBaranCI}{0.018}      % 3 label-sampling seeds
 \newcommand{\damageBaran}{0.003}
 \newcommand{\precBaran}{0.824}
-\newcommand{\realFJelly}{TBDJELLY}     % Jellyfish-13B ED+DI (scripts/modal_jellyfish.py)
-\newcommand{\damageJelly}{TBDJELLY}
+\newcommand{\realFJelly}{0.074}     % Jellyfish-13B ED+DI (scripts/modal_jellyfish.py)
+\newcommand{\damageJelly}{0.027}

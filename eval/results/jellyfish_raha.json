@@ -1,0 +1,50 @@
+{
+ "system": "Jellyfish ED+DI (NECOUDBFM/Jellyfish-13B)",
+ "real_f1": 0.07384318609150761,
+ "damage": 0.026809914099572434,
+ "precision": 0.10790570226083367,
+ "recall": 0.06402094384816577,
+ "per_dataset": {
+  "hospital": {
+   "f1": 0.22504892367906068,
+   "precision": 0.22417153996101363,
+   "recall": 0.22593320235756384,
+   "damage": 0.0033348725052588374,
+   "n_flagged": 518,
+   "n_cells": 20000
+  },
+  "beers": {
+   "f1": 0.10505752116344694,
+   "precision": 0.2439516129032258,
+   "recall": 0.0669432918395574,
+   "damage": 0.02181125917867827,
+   "n_flagged": 992,
+   "n_cells": 22000
+  },
+  "flights": {
+   "f1": 0.0026157467957101757,
+   "precision": 0.002948982601002654,
+   "recall": 0.0023501762632197414,
+   "damage": 0.041867624422780914,
+   "n_flagged": 3392,
+   "n_cells": 14000
+  },
+  "rayyan": {
+   "f1": 0.0,
+   "precision": 0.0,
+   "recall": 0.0,
+   "damage": 0.06287306008754477,
+   "n_flagged": 1461,
+   "n_cells": 11000
+  },
+  "movies_1": {
+   "f1": 0.036493738819320214,
+   "precision": 0.06845637583892618,
+   "recall": 0.024878048780487806,
+   "damage": 0.004162754303599374,
+   "n_flagged": 773,
+   "n_cells": 34000
+  }
+ },
+ "protocol_note": "ED+DI composition (ours \u2014 Jellyfish publishes no repair task); card-recommended decoding; hospital seen in its training data, flights/rayyan in its eval suite. Single seed."
+}
