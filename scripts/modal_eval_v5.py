@@ -81,6 +81,7 @@ def run_eval(n_synth: int = 20, adapter: str = "/vol/v5", skip_real: bool = Fals
         cleaned, _ = apply_plan(dirty, ft_plan)
         out["hospital_ft"] = _score(dirty, clean, cleaned)
         out["hospital_noop"] = _score(dirty, clean, dirty)
+        out["hospital_plan"] = ft_plan          # raw plan for local precision-curve sweeps
 
     table = _format(out)
     print(table)
