@@ -30,7 +30,10 @@ example is kept only if executing its plan provably recovers the known-clean tab
 reconciled against type-scoped reference taxonomies (GeoNames, ISO) with fuzzy retrieval.
 (3)~\emph{Calibrated abstention}: below a confidence threshold the system declines to act
 and flags values for review; we show the confidence is selective-prediction-grade
-(AURC \aurc, precision rises monotonically with threshold). On alias-level
+(AURC \aurc, precision rises monotonically with threshold). Extending abstention to the
+plan itself --- a deterministic verifier that gates every proposed mapping --- yields a
+zero-configuration, zero-label system that repairs 41\% of a real benchmark's errors at
+\unionGatePrec{} precision, with every declined merge surfaced for review. On alias-level
 canonicalization, our fine-tuned 4B planner reaches micro-F1 \canonFOursBest{} versus
 \canonFBig{} for a much larger zero-shot model and \canonFHeur{} for a rule heuristic.
 On a 65-dataset validation suite with a churn-neutral metric, grounding with abstention
@@ -414,6 +417,20 @@ become review flags rather than silent corruptions; and the evaluation itself is
 to resist gaming. We believe the recipe---propose/execute decomposition,
 verification-by-execution, retrieval-grounded outputs, and selective prediction---is a
 template for deploying small specialized models on other structured tasks.
+
+\section*{Reproducibility}
+Code, evaluation suite, result artifacts, and the fine-tuned weights are public
+(repository linked from the demo Space). Each reported number regenerates from one
+command at the released revision: the money table
+(\texttt{python -m eval.run\_real\_multi --out ...}), the precision--coverage curve and
+shipped operating point (\texttt{python -m eval.precision\_curve --plan
+eval/results/v6\_hospital\_raw\_plan.json --union}), Baran
+(\texttt{python eval/run\_baran.py} in the pinned environment documented in that file,
+then \texttt{python -m eval.baselines\_learned --score-baran}), Jellyfish
+(\texttt{modal run scripts/modal\_jellyfish.py}), ablations
+(\texttt{python -m eval.ablations}), calibration (\texttt{python -m eval.calibration}),
+and the PII leak test (\texttt{python -m eval.pii\_leak}). The shipped product planner
+is the identical code path measured here (\texttt{scrubdata/active.py}).
 
 \begin{thebibliography}{20}
 \bibitem{raha} M.~Mahdavi et al. Raha: A configuration-free error detection system.
