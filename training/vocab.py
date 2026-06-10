@@ -214,8 +214,27 @@ def currency_vocab() -> dict[str, list[str]]:
     return _cached("currency", lambda: _currency_entries(60))
 
 
-def _alias_file(name: str, limit: int, seed: int = 3) -> dict[str, list[str]]:
-    """Load a harvested {canonical, aliases} jsonl (GeoNames/Wikidata/ROR) if present."""
+def _learnable_alias(alias: str, canon: str) -> bool:
+    """Keep only aliases the model can LEARN as a string skill, not memorize as a lookup:
+    variants (edit-similar), substrings/abbreviations, or acronyms. MEASURED: unfiltered
+    arbitrary-knowledge aliases (BIA SAIGON->Sabeco) dilute training (-0.18 canon_f1)."""
+    import difflib
+    na = "".join(c.lower() for c in alias if c.isalnum())
+    nc = "".join(c.lower() for c in canon if c.isalnum())
+    if not na or not nc:
+        return False
+    if na in nc or nc in na:                                  # substring/abbreviation
+        return True
+    initials = "".join(w[0].lower() for w in canon.split() if w and w[0].isalpha())
+    if len(na) >= 2 and na == initials:                       # acronym
+        return True
+    return difflib.SequenceMatcher(None, na, nc).ratio() >= 0.6   # variant
+
+
+def _alias_file(name: str, limit: int, seed: int = 3,
+                learnable_only: bool = True) -> dict[str, list[str]]:
+    """Load a harvested {canonical, aliases} jsonl (GeoNames/Wikidata/ROR) if present,
+    gated to learnable aliases by default."""
     import json as _json
     from pathlib import Path
     p = Path(__file__).resolve().parent.parent / "data" / name
@@ -228,6 +247,8 @@ def _alias_file(name: str, limit: int, seed: int = 3) -> dict[str, list[str]]:
     for r in rows:
         canon = r["canonical"].strip()
         aliases = [a for a in r.get("aliases", []) if a and a != canon]
+        if learnable_only:
+            aliases = [a for a in aliases if _learnable_alias(a, canon)]
         if aliases and 3 <= len(canon) <= 60:
             out[canon] = aliases[:4]
             if len(out) >= limit:
