@@ -253,6 +253,27 @@ def test_active_planner_is_verified_union(monkeypatch):
     assert is_valid(plan)
 
 
+def test_pair_profile_candidates_and_constraint():
+    from scrubdata.pair_profile import candidate_pairs, constrain_plan
+    col = ["Boston"] * 8 + ["Chicago"] * 6 + ["Bostn", "Chcago", "Qwortelby"]
+    pairs = candidate_pairs(col)
+    by_raw = {p["raw"]: [c["canon"] for c in p["candidates"]] for p in pairs}
+    assert "Boston" in by_raw.get("Bostn", [])
+    assert "Chicago" in by_raw.get("Chcago", [])
+    assert "Qwortelby" not in by_raw                  # garbage gets no candidates
+    assert "Boston" not in by_raw                     # frequent values are not suspicious
+    plan = {"columns": [{"name": "city", "operations": [{
+        "op": "canonicalize_categories", "rationale": "typos",
+        "mapping": {"Bostn": "Boston", "Chcago": "Dallas", "Qwortelby": "Boston"}}]}],
+        "flags": []}
+    out = constrain_plan(plan, {"city": [{"raw": p["raw"],
+                                          "candidates": [c["canon"] for c in p["candidates"]]}
+                                         for p in pairs]})
+    kept = out["columns"][0]["operations"][0]["mapping"]
+    assert kept == {"Bostn": "Boston"}                # off-candidate + garbage dropped
+    assert out["flags"] and out["flags"][0]["issue"] == "outside_candidate_pairs"
+
+
 def test_jellyfish_prompt_construction():
     from eval.baselines_learned import di_prompt, ed_prompt, parse_di, parse_ed
     rec = {"city": "Bostn", "state": "MA"}

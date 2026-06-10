@@ -24,7 +24,8 @@ results = modal.Dict.from_name("scrubdata-eval-v5-results", create_if_missing=Tr
 
 
 @app.function(gpu="A100-80GB", timeout=2400, volumes={"/vol": adapter_vol})
-def run_eval(n_synth: int = 20, adapter: str = "/vol/v5", skip_real: bool = False):
+def run_eval(n_synth: int = 20, adapter: str = "/vol/v5", skip_real: bool = False,
+             pair_profiles: bool = False):
     import os, sys, torch
     os.chdir("/root/repo")
     sys.path.insert(0, "/root/repo")
@@ -51,8 +52,14 @@ def run_eval(n_synth: int = 20, adapter: str = "/vol/v5", skip_real: bool = Fals
     eos_ids = [tok.eos_token_id, im_end] if im_end is not None else tok.eos_token_id
 
     def base_planner(df, *_):
+        pairs = None
+        if pair_profiles:
+            from scrubdata.pair_profile import pairs_for_df
+            pairs = pairs_for_df(df)
         msgs = [{"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": build_user_prompt(profile_dataframe(df), df)}]
+                {"role": "user",
+                 "content": build_user_prompt(profile_dataframe(df), df,
+                                              candidate_pairs=pairs)}]
         enc = tok.apply_chat_template(msgs, add_generation_prompt=True,
                                       return_tensors="pt", return_dict=True)
         ids = enc["input_ids"].to(model.device)
@@ -68,6 +75,9 @@ def run_eval(n_synth: int = 20, adapter: str = "/vol/v5", skip_real: bool = Fals
         plan.setdefault("table_operations", [])
         plan.setdefault("columns", [])
         plan.setdefault("flags", [])
+        if pairs is not None:
+            from scrubdata.pair_profile import constrain_plan
+            plan = constrain_plan(plan, pairs)
         return plan
 
     out = {}
@@ -85,7 +95,10 @@ def run_eval(n_synth: int = 20, adapter: str = "/vol/v5", skip_real: bool = Fals
 
     table = _format(out)
     print(table)
-    results[adapter.rsplit("/",1)[-1] if adapter != "/vol/v5" else "latest"] = {"out": out, "table": table}
+    key = adapter.rsplit("/", 1)[-1] if adapter != "/vol/v5" else "latest"
+    if pair_profiles:
+        key += "_pairs"
+    results[key] = {"out": out, "table": table}
     return out
 
 
@@ -106,6 +119,8 @@ def _format(r) -> str:
 
 
 @app.local_entrypoint()
-def main(adapter: str = "/vol/v5", skip_real: bool = False, n_synth: int = 20):
-    call = run_eval.spawn(adapter=adapter, skip_real=skip_real, n_synth=n_synth)
+def main(adapter: str = "/vol/v5", skip_real: bool = False, n_synth: int = 20,
+         pair_profiles: bool = False):
+    call = run_eval.spawn(adapter=adapter, skip_real=skip_real, n_synth=n_synth,
+                          pair_profiles=pair_profiles)
     print(f"Launched detached. call_id={call.object_id}")

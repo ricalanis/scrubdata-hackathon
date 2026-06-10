@@ -51,17 +51,23 @@ def make_ollama_planner(model: str = "glm-5.1", max_tokens: int = 8000,
 
 
 def make_local_ollama_planner(model: str, host: str = "http://localhost:11434",
-                              timeout: int = 300):
+                              timeout: int = 300, pair_profiles: bool = False):
     """Planner backed by a LOCAL Ollama model (e.g. the fine-tuned GGUF pulled from HF).
 
     Uses the /api/chat endpoint with format=json so output is always syntactically
     valid JSON — we then score schema/op/canon/recovery to measure the fine-tune.
+    `pair_profiles` (WS2, off by default): prompt lists evidence-backed repair
+    candidates and the output is constrained to them (constrain_plan).
     """
     import urllib.request
 
     def planner(dirty_df, *_):
         profile = profile_dataframe(dirty_df)
-        user = build_user_prompt(profile, dirty_df)
+        pairs = None
+        if pair_profiles:
+            from .pair_profile import pairs_for_df
+            pairs = pairs_for_df(dirty_df)
+        user = build_user_prompt(profile, dirty_df, candidate_pairs=pairs)
         # No format=json: Qwen3-Instruct emits an empty <think></think> prefix that a
         # strict JSON constraint rejects. _extract_json pulls the plan out of the text.
         payload = {
@@ -86,6 +92,9 @@ def make_local_ollama_planner(model: str, host: str = "http://localhost:11434",
         plan.setdefault("table_operations", [])
         plan.setdefault("columns", [])
         plan.setdefault("flags", [])
+        if pairs is not None:
+            from .pair_profile import constrain_plan
+            plan = constrain_plan(plan, pairs)
         return plan
     return planner
 

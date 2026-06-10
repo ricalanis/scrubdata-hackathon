@@ -34,7 +34,10 @@ def get_planner():
 
     from .model_planner import make_local_ollama_planner, make_batched_planner
 
-    raw = make_local_ollama_planner(model)
+    # WS2 pair-profiles: candidate-constrained canonicalization (opt-in; ships
+    # default-on only if it clears the WS1 gate on hospital)
+    pair_profiles = os.environ.get("SCRUBDATA_PAIR_PROFILES") == "1"
+    raw = make_local_ollama_planner(model, pair_profiles=pair_profiles)
 
     def model_or_heuristic(df, *_):
         # per column-batch: try the model, fall back to the heuristic on any failure

@@ -65,15 +65,27 @@ def _profile_for_prompt(profile: dict) -> dict:
     }
 
 
-def build_user_prompt(profile: dict, sample_rows: pd.DataFrame, n_sample: int = 3) -> str:
+def build_user_prompt(profile: dict, sample_rows: pd.DataFrame, n_sample: int = 3,
+                      candidate_pairs: dict | None = None) -> str:
+    """`candidate_pairs` (WS2, optional): {col: [{"raw": v, "candidates": [c, ...]}]}.
+    Default None keeps the exact training-time prompt — parity is the contract."""
     sample = sample_rows.head(n_sample).to_dict(orient="records")
     payload = {
         "profile": _profile_for_prompt(profile),
         "sample_rows": sample,
     }
+    extra = ""
+    if candidate_pairs:
+        payload["candidate_pairs"] = candidate_pairs
+        extra = (
+            "\nCONSTRAINT: for canonicalize_categories, map a raw value ONLY to one of "
+            "its listed candidate_pairs candidates, or omit the entry entirely "
+            "(abstain). Never invent a canonical that is not listed for that value."
+        )
     return (
         "PROFILE AND SAMPLE:\n"
         + json.dumps(payload, ensure_ascii=False, indent=2, default=str)
+        + extra
         + "\n\nReturn the JSON cleaning plan."
     )
 
