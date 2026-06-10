@@ -225,7 +225,7 @@ def evaluate_suite(planner, seed: int = 7) -> dict:
             "n": len(rows), "by_et": {k: _mean(v) for k, v in by_et.items()}}
 
 
-def main(seeds=(7, 17, 27)) -> None:
+def main(seeds=(7, 17, 27), out: str | None = None) -> None:
     from scrubdata.baselines import openrefine_fingerprint_plan, openrefine_knn_plan
     systems = [("grounded (ours)", mock_plan),
                ("OpenRefine fingerprint", openrefine_fingerprint_plan),
@@ -236,6 +236,7 @@ def main(seeds=(7, 17, 27)) -> None:
     print(f"{'system':<24}{'NORTH*':>9}{'±95%CI':>9}{'REAL-F1':>9}{'INJ-F1':>8}"
           f"{'damage':>8}{'abstain':>9}")
     print("-" * 76)
+    table = []
     for name, planner in systems:
         norths, results = [], []
         for s in seeds:
@@ -246,14 +247,27 @@ def main(seeds=(7, 17, 27)) -> None:
         var = _mean([(x - mean_n) ** 2 for x in norths])
         ci = 1.96 * (var ** 0.5) / (len(norths) ** 0.5)
         last = results[-1]
-        print(f"{name:<24}{mean_n:>9.3f}{ci:>9.3f}{_mean(r['real'] for r in results):>9.3f}"
-              f"{_mean(r['injected'] for r in results):>8.3f}"
-              f"{_mean(r['damage'] for r in results):>8.3f}"
-              f"{_mean(r['abstain'] for r in results):>9.3f}")
+        row = {"system": name, "north": mean_n, "north_ci": ci,
+               "real_f1": _mean(r["real"] for r in results),
+               "real_f1_per_seed": [r["real"] for r in results],
+               "inj_f1": _mean(r["injected"] for r in results),
+               "damage": _mean(r["damage"] for r in results),
+               "abstain": _mean(r["abstain"] for r in results),
+               "n_datasets": last["n"], "seeds": list(seeds)}
+        table.append(row)
+        print(f"{name:<24}{mean_n:>9.3f}{ci:>9.3f}{row['real_f1']:>9.3f}"
+              f"{row['inj_f1']:>8.3f}{row['damage']:>8.3f}{row['abstain']:>9.3f}", flush=True)
+    if out:
+        import json
+        json.dump(table, open(out, "w"), indent=1)
+        print(f"rows written to {out}")
     print(f"\nNORTH* = harmonic mean(error-type macro, domain macro) over {last['n']} datasets. "
           "Double-macro + damage + abstain = un-gameable; hospital is 1 dataset of many. "
           "The money result: grounded vs the tool people actually use (OpenRefine).")
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", type=str, default=None, help="write table rows to JSON")
+    main(out=ap.parse_args().out)

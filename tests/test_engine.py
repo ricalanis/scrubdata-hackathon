@@ -253,6 +253,22 @@ def test_active_planner_is_verified_union(monkeypatch):
     assert is_valid(plan)
 
 
+def test_jellyfish_prompt_construction():
+    from eval.baselines_learned import di_prompt, ed_prompt, parse_di, parse_ed
+    rec = {"city": "Bostn", "state": "MA"}
+    ed = ed_prompt(rec, "city")
+    assert "Record [city: Bostn, state: MA]" in ed
+    assert "Attribute for Verification: [city: Bostn]" in ed
+    assert ed.endswith("### Response:\n\n")
+    di = di_prompt(rec, "city", "geography")
+    assert "Record: [state: MA]" in di          # flagged attribute removed
+    assert "city" in di and "Bostn" not in di   # model infers, never copies
+    assert parse_ed("Yes, there is an error") and not parse_ed("No.")
+    assert parse_di(" Boston ", "Bostn") == "Boston"
+    assert parse_di("", "Bostn") == "Bostn"                      # abstain on empty
+    assert parse_di("The value is\nBoston", "Bostn") == "Bostn"  # abstain on rambling
+
+
 def test_value_counts_profile():
     df = pd.DataFrame({"country": ["USA", "USA", "usa", "Canada"]})
     prof = profile_dataframe(df)

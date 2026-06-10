@@ -1,12 +1,15 @@
-"""Evaluate the GROUNDED fine-tuned model on the wide validation suite (corrected,
-churn-neutral metric) — the model row for the paper's money table.
+"""Evaluate the SHIPPED system (verified union planner) on the wide validation suite
+(churn-neutral metric) — the model row for the paper's money table.
 
-Loads the v5 adapter (Modal volume) merged into bf16, wraps it batched + RACOON-grounded
-(make_grounded_planner), and runs the suite's REAL slice (5 Raha benchmarks) plus the
-typo-injected slice (one per harvested domain) — the canonicalization regime the model is
-for. Single seed (the CI row comes from the cheap heuristic systems); scoped honestly.
+Loads the adapter (Modal volume, default /vol/v5_seed21 = v6) merged into bf16 and wraps
+it in EXACTLY the active.py composition: batched + RACOON-grounded, then per-entry
+verifier (tau=0.5), then union with the grounded heuristic — paper-product identity.
+Runs the suite's REAL slice (5 Raha benchmarks) plus the typo-injected slice (the
+canonicalization regime the model is for). Single seed (the CI row comes from the cheap
+heuristic systems); scoped honestly.
 
-    uv run modal run --detach scripts/modal_eval_suite.py
+    uv run modal run --detach scripts/modal_eval_suite.py                # shipped (v6+union)
+    uv run modal run --detach scripts/modal_eval_suite.py --no-union    # bare grounded model
 """
 
 import modal
@@ -29,7 +32,7 @@ results = modal.Dict.from_name("scrubdata-suite-results", create_if_missing=True
 
 
 @app.function(gpu="A100-80GB", timeout=7200, volumes={"/vol": adapter_vol})
-def run_suite(seed: int = 7):
+def run_suite(seed: int = 7, adapter: str = "/vol/v5_seed21", union: bool = True):
     import os, sys, torch
     os.chdir("/root/repo")
     sys.path.insert(0, "/root/repo")
@@ -47,7 +50,7 @@ def run_suite(seed: int = 7):
     tok = AutoTokenizer.from_pretrained(base_id)
     base = AutoModelForCausalLM.from_pretrained(base_id, torch_dtype=torch.bfloat16,
                                                 device_map="cuda")
-    model = PeftModel.from_pretrained(base, "/vol/v5").merge_and_unload()
+    model = PeftModel.from_pretrained(base, adapter).merge_and_unload()
     model.eval()
     model.config.use_cache = True
     im_end = tok.convert_tokens_to_ids("<|im_end|>")
@@ -73,7 +76,15 @@ def run_suite(seed: int = 7):
         plan.setdefault("flags", [])
         return plan
 
-    planner = make_grounded_planner(make_batched_planner(base_planner, batch_size=4))
+    grounded = make_grounded_planner(make_batched_planner(base_planner, batch_size=4))
+    if union:                       # the SHIPPED active.py composition (WS1)
+        from scrubdata.planner import mock_plan
+        from scrubdata.verifier import union_plans, verify_plan
+
+        def planner(df, *_):
+            return union_plans(verify_plan(df, grounded(df), tau=0.5), mock_plan(df))
+    else:
+        planner = grounded
 
     # scoped slice: all REAL + the typo-injected datasets (the canonicalization regime)
     specs = [s for s in build_suite(seed=seed)
@@ -111,13 +122,16 @@ def run_suite(seed: int = 7):
         "abstain_accuracy": ab["abstain_accuracy"], "typo_recall": ab["typo_recall"],
         "n_datasets": len(rows), "rows": rows,
     }
-    print("\nGROUNDED MODEL (v5+RACOON) on suite:", {k: round(v, 3) for k, v in summary.items()
-                                                    if isinstance(v, float)})
+    label = ("union_" if union else "grounded_") + adapter.rsplit("/", 1)[-1]
+    summary["system"] = label
+    print(f"\n{label} on suite:", {k: round(v, 3) for k, v in summary.items()
+                                   if isinstance(v, float)})
+    results[label] = summary
     results["latest"] = summary
     return summary
 
 
 @app.local_entrypoint()
-def main():
-    call = run_suite.spawn()
+def main(seed: int = 7, adapter: str = "/vol/v5_seed21", union: bool = True):
+    call = run_suite.spawn(seed=seed, adapter=adapter, union=union)
     print(f"Launched detached. call_id={call.object_id}")
