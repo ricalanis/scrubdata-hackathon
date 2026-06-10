@@ -275,7 +275,27 @@ def clean_data(file_path: str) -> dict:
         "report_md": report_md,
         "csv_text": csv_text,
         "summary": summary,
+        # structured plan for the card UI: applied ops, review flags, PII, audit signals
+        "plan_columns": [
+            {"name": c.get("name"), "semantic_type": c.get("detected_semantic_type"),
+             "operations": [
+                 {"op": o.get("op"), "rationale": o.get("rationale", ""),
+                  "pii_type": o.get("pii_type"),
+                  "mapping_sample": dict(list(o.get("mapping", {}).items())[:6]) or None,
+                  "mapping_size": len(o.get("mapping", {})) or None}
+                 for o in c.get("operations", [])]}
+            for c in plan.get("columns", [])],
+        "flags": plan.get("flags", []),
+        "monitor": _monitor(plan, change_log),
     }
+
+
+def _monitor(plan: dict, change_log) -> dict:
+    try:
+        from scrubdata.observability import monitor_summary
+        return monitor_summary(plan, change_log)
+    except Exception:  # noqa: BLE001
+        return {}
 
 
 _PLACEHOLDER_HTML = """<!doctype html>

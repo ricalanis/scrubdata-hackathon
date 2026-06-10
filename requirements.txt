@@ -1,3 +1,4 @@
 # Hugging Face Space installs from this file (the gr.Server app = server.py).
 gradio>=6.16.0
 pandas
+pycountry
