@@ -24,7 +24,7 @@ results = modal.Dict.from_name("scrubdata-eval-v5-results", create_if_missing=Tr
 
 
 @app.function(gpu="A100-80GB", timeout=2400, volumes={"/vol": adapter_vol})
-def run_eval(n_synth: int = 20):
+def run_eval(n_synth: int = 20, adapter: str = "/vol/v5", skip_real: bool = False):
     import os, sys, torch
     os.chdir("/root/repo")
     sys.path.insert(0, "/root/repo")
@@ -43,7 +43,7 @@ def run_eval(n_synth: int = 20):
     base_id = "unsloth/Qwen3-4B-Instruct-2507"
     tok = AutoTokenizer.from_pretrained(base_id)
     base = AutoModelForCausalLM.from_pretrained(base_id, torch_dtype=torch.bfloat16, device_map="cuda")
-    model = PeftModel.from_pretrained(base, "/vol/v5").merge_and_unload()  # bf16-native merge
+    model = PeftModel.from_pretrained(base, adapter).merge_and_unload()  # bf16-native merge
     model.eval()
     model.config.use_cache = True
 
@@ -74,16 +74,17 @@ def run_eval(n_synth: int = 20):
     gold = load_gold()[:n_synth]
     out["layer1"] = {name: evaluate(fn, gold) for name, fn in {
         "HEURISTIC": lambda df, gp: mock_plan(df), "FT_v5": base_planner}.items()}
-    _ensure_data()
-    dirty, clean = _load()
-    ft_plan = make_batched_planner(base_planner, batch_size=4)(dirty)
-    cleaned, _ = apply_plan(dirty, ft_plan)
-    out["hospital_ft"] = _score(dirty, clean, cleaned)
-    out["hospital_noop"] = _score(dirty, clean, dirty)
+    if not skip_real:
+        _ensure_data()
+        dirty, clean = _load()
+        ft_plan = make_batched_planner(base_planner, batch_size=4)(dirty)
+        cleaned, _ = apply_plan(dirty, ft_plan)
+        out["hospital_ft"] = _score(dirty, clean, cleaned)
+        out["hospital_noop"] = _score(dirty, clean, dirty)
 
     table = _format(out)
     print(table)
-    results["latest"] = {"out": out, "table": table}
+    results[adapter.rsplit("/",1)[-1] if adapter != "/vol/v5" else "latest"] = {"out": out, "table": table}
     return out
 
 
@@ -93,6 +94,8 @@ def _format(r) -> str:
     L.append(f"{'system':<12}" + "".join(f"{c:>11}" for c in cols))
     for name, m in r["layer1"].items():
         L.append(f"{name:<12}" + "".join(f"{m[c]:>11.3f}" for c in cols))
+    if "hospital_ft" not in r:
+        return "\n".join(L)
     L.append("\n=== Real hospital ===")
     for k in ("hospital_noop", "hospital_ft"):
         m = r[k]
@@ -102,6 +105,6 @@ def _format(r) -> str:
 
 
 @app.local_entrypoint()
-def main():
-    call = run_eval.spawn()
+def main(adapter: str = "/vol/v5", skip_real: bool = False, n_synth: int = 20):
+    call = run_eval.spawn(adapter=adapter, skip_real=skip_real, n_synth=n_synth)
     print(f"Launched detached. call_id={call.object_id}")
