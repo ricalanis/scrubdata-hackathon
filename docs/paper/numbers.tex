@@ -1,4 +1,4 @@
-% Result macros — filled by the overnight runs; placeholders marked TBD.
+% Result macros — every value regenerates from one command (see Reproducibility section).
 % Headline fine-tune (synthetic frozen gold, Layer 1)
 \newcommand{\canonFOurs}{0.815}        % v5 bf16, n=20 (single run; multi-seed below)
 \newcommand{\canonFOursBest}{0.901}    % v4 Q8 measurement
@@ -26,9 +26,9 @@
 \newcommand{\damageORKnn}{0.096}
 
 % SHIPPED system (verified union, v6 adapter) on suite — scripts/modal_eval_suite.py
-\newcommand{\modelRealF}{TBDSUITE}
-\newcommand{\modelDamage}{TBDSUITE}
-\newcommand{\modelAbstain}{TBDSUITE}
+\newcommand{\modelRealF}{0.142}
+\newcommand{\modelDamage}{0.015}
+\newcommand{\modelAbstain}{1.000}
 
 % Ablations (churn-neutral metric, 3 seeds — eval/results/ablations.json)
 \newcommand{\ablFull}{0.203}

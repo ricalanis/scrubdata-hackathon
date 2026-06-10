@@ -1,0 +1,163 @@
+{
+ "real_f1": 0.14158693768731165,
+ "injected_typo_f1": 0.5464000228275355,
+ "damage": 0.01477931482584202,
+ "abstain_accuracy": 1.0,
+ "typo_recall": 1.0,
+ "n_datasets": 19,
+ "rows": [
+  {
+   "name": "hospital",
+   "source": "real",
+   "f1": 0.49647390691114235,
+   "recall": 0.34577603143418467,
+   "precision": 0.88,
+   "damage": 0.0010261146170027192
+  },
+  {
+   "name": "beers",
+   "source": "real",
+   "f1": 0.03487124463519313,
+   "recall": 0.017980636237897647,
+   "precision": 0.5752212389380531,
+   "damage": 0.0006527060103345119
+  },
+  {
+   "name": "flights",
+   "source": "real",
+   "f1": 0.03500259920291111,
+   "recall": 0.02373678025851939,
+   "precision": 0.06662269129287599,
+   "damage": 0.08045151359671626
+  },
+  {
+   "name": "rayyan",
+   "source": "real",
+   "f1": 0.0,
+   "recall": 0.0,
+   "precision": 0.0,
+   "damage": 0.045463589335455634
+  },
+  {
+   "name": "restaurants:typo",
+   "source": "injected",
+   "f1": 0.5766423357664234,
+   "recall": 0.5895522388059702,
+   "precision": 0.5642857142857143,
+   "damage": 0.0036723515498568405
+  },
+  {
+   "name": "business:typo",
+   "source": "injected",
+   "f1": 0.46050870147255685,
+   "recall": 0.819047619047619,
+   "precision": 0.3202979515828678,
+   "damage": 0.01957585644371941
+  },
+  {
+   "name": "jobs:typo",
+   "source": "injected",
+   "f1": 0.49812734082397003,
+   "recall": 0.6616915422885572,
+   "precision": 0.3993993993993994,
+   "damage": 0.0195019501950195
+  },
+  {
+   "name": "complaints:typo",
+   "source": "injected",
+   "f1": 0.5255972696245734,
+   "recall": 0.5661764705882353,
+   "precision": 0.49044585987261147,
+   "damage": 0.007540781779008926
+  },
+  {
+   "name": "film:typo",
+   "source": "injected",
+   "f1": 0.8439024390243902,
+   "recall": 0.729957805907173,
+   "precision": 1.0,
+   "damage": 0.0
+  },
+  {
+   "name": "transport:typo",
+   "source": "injected",
+   "f1": 0.5198776758409785,
+   "recall": 0.45698924731182794,
+   "precision": 0.6028368794326241,
+   "damage": 0.0032319670926986926
+  },
+  {
+   "name": "education:typo",
+   "source": "injected",
+   "f1": 0.3396537510305029,
+   "recall": 0.7463768115942029,
+   "precision": 0.2198505869797225,
+   "damage": 0.029518171353395822
+  },
+  {
+   "name": "food-inspections:typo",
+   "source": "injected",
+   "f1": 0.6195121951219511,
+   "recall": 0.7341040462427746,
+   "precision": 0.5358649789029536,
+   "damage": 0.01077091851999601
+  },
+  {
+   "name": "contractors:typo",
+   "source": "injected",
+   "f1": 0.5941422594142259,
+   "recall": 0.7208121827411168,
+   "precision": 0.505338078291815,
+   "damage": 0.0019595694710603287
+  },
+  {
+   "name": "sf-business:typo",
+   "source": "injected",
+   "f1": 0.34934497816593885,
+   "recall": 0.272108843537415,
+   "precision": 0.4878048780487805,
+   "damage": 0.0014126164304948572
+  },
+  {
+   "name": "real-estate:typo",
+   "source": "injected",
+   "f1": 0.08401084010840108,
+   "recall": 0.5486725663716814,
+   "precision": 0.04548789435069699,
+   "damage": 0.04725870411467239
+  },
+  {
+   "name": "la-business:typo",
+   "source": "injected",
+   "f1": 0.7738693467336684,
+   "recall": 0.6581196581196581,
+   "precision": 0.9390243902439024,
+   "damage": 0.0005272593061267532
+  },
+  {
+   "name": "alcohol-bars:typo",
+   "source": "injected",
+   "f1": 0.4462809917355372,
+   "recall": 0.421875,
+   "precision": 0.47368421052631576,
+   "damage": 0.0017438616071428572
+  },
+  {
+   "name": "vehicles:typo",
+   "source": "injected",
+   "f1": 0.6298568507157465,
+   "recall": 0.5855513307984791,
+   "precision": 0.6814159292035398,
+   "damage": 0.006426046910142444
+  },
+  {
+   "name": "music:typo",
+   "source": "injected",
+   "f1": 0.9346733668341709,
+   "recall": 0.9117647058823529,
+   "precision": 0.9587628865979382,
+   "damage": 7.30033581544751e-05
+  }
+ ],
+ "system": "union_v5_seed21"
+}
