@@ -1,13 +1,22 @@
-"""The active planner used by the app/server/CLI — model with heuristic fallback.
+"""The active planner used by the app/server/CLI — the verified union planner.
 
-`get_planner()` returns the fine-tuned model planner when a backend is configured
+`get_planner()` returns the WS1 pipeline when a model backend is configured
 (env `SCRUBDATA_MODEL`, e.g. a local Ollama model id), otherwise the deterministic
-heuristic. The model handles the fuzzy canonicalization it was trained for; the
-heuristic covers any column-batch the model errors/times out on — so the app is never
-left without a plan (the trust contract from PRODUCT.md).
+grounded heuristic. The model pipeline is:
 
-    SCRUBDATA_MODEL=scrubdata-ft-v4q8 uv run server.py   # use the fine-tune (local Ollama)
-    uv run server.py                                     # heuristic only (always works)
+    grounded model plan -> per-entry verifier (tau, default 0.5; dropped merges
+    become review flags) -> union with the grounded heuristic's mappings
+    (model wins per surface form)
+
+Measured on hospital (509 real errors): 0.905 precision @ 0.413 coverage — the
+verifier kills the model's low-confidence merges (model alone gated: 0.993 @ 0.287),
+the heuristic union buys back coverage. The heuristic also still covers any
+column-batch the model errors/times out on, so the app is never left without a plan
+(the trust contract from PRODUCT.md).
+
+    SCRUBDATA_MODEL=scrubdata-ft-v6 uv run server.py   # use the fine-tune (local Ollama)
+    SCRUBDATA_TAU=0.7 ...                              # stricter verifier (optional)
+    uv run server.py                                   # grounded heuristic (always works)
 """
 
 from __future__ import annotations
@@ -40,12 +49,18 @@ def get_planner():
     # batching makes it scale to wide tables (each call sees a few columns)
     batched = make_batched_planner(model_or_heuristic, batch_size=4)
 
-    def tagged(df, *_):
-        plan = batched(df)
-        plan["_generated_by"] = f"model:{model}"
-        return plan
-
     # RACOON: ground the model's canonicalization against reference taxonomies — the
     # model never free-generates a canonical for a reference-typed column.
     from scrubdata.grounded import make_grounded_planner
-    return make_grounded_planner(tagged)
+    grounded = make_grounded_planner(batched)
+
+    from scrubdata.verifier import union_plans, verify_plan
+    tau = float(os.environ.get("SCRUBDATA_TAU", "0.5"))
+
+    def verified_union(df, *_):
+        plan = verify_plan(df, grounded(df), tau=tau)
+        plan = union_plans(plan, mock_plan(df))
+        plan["_generated_by"] = f"verified-union(model:{model}, tau={tau})"
+        return plan
+
+    return verified_union

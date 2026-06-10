@@ -223,6 +223,36 @@ def test_active_planner_defaults_to_heuristic(monkeypatch):
     assert get_planner() is mock_plan
 
 
+def test_union_plans_model_wins_and_heuristic_extends():
+    from scrubdata.verifier import union_plans
+    primary = {"columns": [{"name": "city", "operations": [
+        {"op": "canonicalize_categories", "mapping": {"bostn": "Boston"}}]}], "flags": []}
+    secondary = {"columns": [
+        {"name": "city", "operations": [{"op": "canonicalize_categories",
+                                         "mapping": {"bostn": "BOSTON", "chcago": "Chicago"}}]},
+        {"name": "state", "operations": [{"op": "canonicalize_categories",
+                                          "mapping": {"texs": "Texas"}}]},
+    ]}
+    out = union_plans(primary, secondary)
+    maps = {c["name"]: c["operations"][0]["mapping"] for c in out["columns"]}
+    assert maps["city"]["bostn"] == "Boston"          # primary wins on conflict
+    assert maps["city"]["chcago"] == "Chicago"        # secondary extends coverage
+    assert maps["state"] == {"texs": "Texas"}         # secondary-only column added
+    assert primary["columns"][0]["operations"][0]["mapping"] == {"bostn": "Boston"}  # no mutation
+
+
+def test_active_planner_is_verified_union(monkeypatch):
+    monkeypatch.setenv("SCRUBDATA_MODEL", "test-model")
+    from scrubdata.active import get_planner
+    planner = get_planner()
+    # the model backend isn't reachable in tests -> per-batch heuristic fallback kicks
+    # in; the plan must still come out tagged as the verified union pipeline
+    df = pd.DataFrame({"city": ["Boston", "Boston", "Bostn", "Chicago", "Chicago"]})
+    plan = planner(df)
+    assert plan["_generated_by"] == "verified-union(model:test-model, tau=0.5)"
+    assert is_valid(plan)
+
+
 def test_value_counts_profile():
     df = pd.DataFrame({"country": ["USA", "USA", "usa", "Canada"]})
     prof = profile_dataframe(df)

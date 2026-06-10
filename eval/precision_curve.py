@@ -10,6 +10,7 @@ the plan level, contract-preserving (dropped entries become review flags).
 
     uv run python -m eval.precision_curve                 # grounded heuristic planner
     uv run python -m eval.precision_curve --plan plan.json # pre-captured model plan
+    uv run python -m eval.precision_curve --plan plan.json --union  # production pipeline
 """
 
 from __future__ import annotations
@@ -19,7 +20,7 @@ import json
 
 from scrubdata.executor import apply_plan
 from scrubdata.planner import mock_plan
-from scrubdata.verifier import verify_plan
+from scrubdata.verifier import union_plans, verify_plan
 
 from .run_real import _ensure_data, _load
 from .run_real_multi import score as _cn_score          # churn-neutral scoring
@@ -42,13 +43,17 @@ def _repairs_only(plan: dict) -> dict:
     return out
 
 
-def curve(dirty, clean, base_plan: dict, label: str) -> list[dict]:
+def curve(dirty, clean, base_plan: dict, label: str, union: bool = False) -> list[dict]:
     rows = []
+    heuristic = mock_plan(dirty) if union else None
     print(f"\n=== precision-coverage: {label} (hospital, 509 real errors) ===")
     print(f"{'tau':>5}{'precision':>11}{'coverage':>10}{'changed':>9}{'fixed':>7}")
     print("-" * 44)
     for tau in TAUS:
-        plan = _repairs_only(verify_plan(dirty, base_plan, tau=tau))
+        plan = verify_plan(dirty, base_plan, tau=tau)
+        if union:                       # the production (active.py) composition
+            plan = union_plans(plan, heuristic)
+        plan = _repairs_only(plan)
         cleaned, _ = apply_plan(dirty, plan)
         m = _cn_score(dirty, clean, cleaned)
         rows.append({"tau": tau, "precision": m["precision"], "coverage": m["recall"],
@@ -72,6 +77,9 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan", type=str, default=None,
                     help="path to a captured raw plan JSON (e.g. the v6 model's)")
+    ap.add_argument("--union", action="store_true",
+                    help="union each verified plan with the grounded heuristic "
+                         "(the shipped active.py pipeline)")
     ap.add_argument("--out", type=str, default=None, help="write curve rows to JSON")
     args = ap.parse_args()
 
@@ -79,11 +87,11 @@ def main() -> None:
     dirty, clean = _load()
     if args.plan:
         base_plan = json.load(open(args.plan))
-        label = f"model plan ({args.plan})"
+        label = f"model plan ({args.plan})" + (" + heuristic union" if args.union else "")
     else:
         base_plan = mock_plan(dirty)
         label = "grounded heuristic"
-    rows = curve(dirty, clean, base_plan, label)
+    rows = curve(dirty, clean, base_plan, label, union=args.union)
     if args.out:
         json.dump(rows, open(args.out, "w"), indent=1)
         print(f"curve written to {args.out}")
