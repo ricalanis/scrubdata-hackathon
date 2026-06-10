@@ -214,15 +214,46 @@ def currency_vocab() -> dict[str, list[str]]:
     return _cached("currency", lambda: _currency_entries(60))
 
 
+def _alias_file(name: str, limit: int, seed: int = 3) -> dict[str, list[str]]:
+    """Load a harvested {canonical, aliases} jsonl (GeoNames/Wikidata/ROR) if present."""
+    import json as _json
+    from pathlib import Path
+    p = Path(__file__).resolve().parent.parent / "data" / name
+    if not p.exists():
+        return {}
+    rows = [_json.loads(l) for l in p.open(encoding="utf-8")]
+    rng = random.Random(seed)
+    rng.shuffle(rows)
+    out: dict[str, list[str]] = {}
+    for r in rows:
+        canon = r["canonical"].strip()
+        aliases = [a for a in r.get("aliases", []) if a and a != canon]
+        if aliases and 3 <= len(canon) <= 60:
+            out[canon] = aliases[:4]
+            if len(out) >= limit:
+                break
+    return out
+
+
 def _city_entries() -> dict[str, list[str]]:
     # Curated cities carry valuable aliases (NYC->New York); the fetched open-data
-    # list (training/cities.txt) adds breadth as canonical-only entries.
+    # list (training/cities.txt) adds breadth; harvested GeoNames English aliases
+    # (data/geonames_city_aliases.jsonl, 80k cities / 152k aliases) add REAL variety.
     from pathlib import Path
     cities = list(CITIES)
     extra = Path(__file__).parent / "cities.txt"
     if extra.exists():
         cities += [c.strip() for c in extra.read_text(encoding="utf-8").splitlines() if c.strip()]
-    return {c: list(_CITY_ALIASES.get(c, [])) for c in dict.fromkeys(cities)}
+    out = {c: list(_CITY_ALIASES.get(c, [])) for c in dict.fromkeys(cities)}
+    for canon, aliases in _alias_file("geonames_city_aliases.jsonl", limit=4000).items():
+        merged = list(dict.fromkeys(out.get(canon, []) + aliases))
+        out[canon] = merged[:5]
+    return out
+
+
+def company_vocab() -> dict[str, list[str]]:
+    """Real company alias->canonical pairs (Wikidata skos:altLabel, CC0)."""
+    return _cached("company", lambda: _alias_file("wikidata_company_aliases.jsonl", limit=2500))
 
 
 def city_vocab() -> dict[str, list[str]]:

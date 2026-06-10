@@ -382,6 +382,12 @@ ARCHETYPES: list[Field] = [
     VocabField(["department", "dept", "team"], "categorical", V.department_vocab(), max_card=4),
     VocabField(["job_title", "title", "role", "position"], "categorical", V.job_title_vocab(), max_card=4),
     VocabField(["industry", "sector", "vertical"], "categorical", V.industry_vocab(), max_card=4),
+    # real Wikidata companies (alias -> canonical: 'AB InBev' -> 'Anheuser-Busch InBev')
+    *([VocabField(["company", "vendor", "account", "supplier"], "categorical",
+                  V.company_vocab(), max_card=5),
+       VocabField(["company", "vendor", "account"], "categorical",
+                  V.company_vocab(), min_card=25, max_card=60, high_card=True)]
+      if V.company_vocab() else []),
     # real ROR organizations (alias/acronym -> canonical): both low-card and the
     # hospital-style high-cardinality long-tail regime. Skipped if harvest absent.
     *([VocabField(["organization", "institution", "affiliation", "employer"], "categorical",
