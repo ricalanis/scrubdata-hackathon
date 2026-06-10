@@ -111,20 +111,31 @@ def make_verified_planner(base_planner, tau: float = 0.6):
 
 def union_plans(primary: dict, secondary: dict) -> dict:
     """Merge `secondary`'s canonicalize mappings into `primary` (primary wins per
-    surface form). Non-canonicalize ops come from `primary` only.
+    surface form), and inherit `secondary`'s DETERMINISTIC format ops at op-name
+    level for ops the primary did not emit on that column (the model can only emit
+    ops from its trained vocabulary; issue-driven deterministic ops like
+    normalize_punctuation must still reach the shipped plan).
 
     This is the WS1 gate recipe: primary = verifier-gated model plan (tau=0.5),
     secondary = grounded heuristic plan — measured 0.905 precision @ 0.413 coverage
-    on hospital (vs 0.993 @ 0.287 for the gated model alone)."""
+    on hospital (vs 0.993 @ 0.287 for the gated model alone; repairs-only scoring
+    strips format ops, so op-level inheritance does not move the gate point)."""
     import copy
     out = copy.deepcopy(primary)
     by_col = {c.get("name"): c for c in out.setdefault("columns", [])}
+    # deterministic, issue-driven ops the heuristic may know that the model's trained
+    # vocabulary cannot express — inherited per column unless primary already emitted
+    # the same op there. PII and judgment ops are NOT inherited.
+    INHERIT_OPS = {"normalize_punctuation", "strip_whitespace", "normalize_disguised_nulls"}
     for sc in secondary.get("columns", []):
         smap: dict = {}
+        inherit = []
         for sop in sc.get("operations", []):
             if sop.get("op") == "canonicalize_categories":
                 smap.update(sop.get("mapping", {}))
-        if not smap:
+            elif sop.get("op") in INHERIT_OPS:
+                inherit.append(sop)
+        if not smap and not inherit:
             continue
         col = by_col.get(sc.get("name"))
         if col is None:
@@ -133,13 +144,18 @@ def union_plans(primary: dict, secondary: dict) -> dict:
                    "issues": list(sc.get("issues", [])), "operations": []}
             out["columns"].append(col)
             by_col[col["name"]] = col
-        target = next((o for o in col.setdefault("operations", [])
-                       if o.get("op") == "canonicalize_categories"), None)
-        if target is None:
-            target = {"op": "canonicalize_categories", "mapping": {},
-                      "rationale": "grounded heuristic (union)"}
-            col["operations"].append(target)
-        merged = dict(smap)
-        merged.update(target.get("mapping", {}))          # primary wins on conflict
-        target["mapping"] = merged
+        have = {o.get("op") for o in col.setdefault("operations", [])}
+        for sop in inherit:
+            if sop["op"] not in have:
+                col["operations"].insert(0, copy.deepcopy(sop))
+        if smap:
+            target = next((o for o in col["operations"]
+                           if o.get("op") == "canonicalize_categories"), None)
+            if target is None:
+                target = {"op": "canonicalize_categories", "mapping": {},
+                          "rationale": "grounded heuristic (union)"}
+                col["operations"].append(target)
+            merged = dict(smap)
+            merged.update(target.get("mapping", {}))      # primary wins on conflict
+            target["mapping"] = merged
     return out

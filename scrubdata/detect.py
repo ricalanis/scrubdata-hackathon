@@ -137,6 +137,27 @@ def has_whitespace_issues(values) -> bool:
     return False
 
 
+_UNICODE_PUNCT = set(
+    "\u2018\u2019\u201a\u2032\u00b4"   # curly/prime/acute single quotes
+    "\u201c\u201d\u201e\u2033"          # curly double quotes
+    "\u2013\u2014\u2012\u2015\u2212"   # en/em/figure/h-bar/minus dashes
+    "\u00a0\u2009\u202f"                 # NBSP / thin / narrow no-break
+    "\u200b\u200c\u200d\ufeff"          # zero-width characters
+    "\u2026"                               # ellipsis
+)
+
+
+def has_unicode_punctuation(values) -> bool:
+    """True if any value carries unicode punctuation artifacts (curly quotes, long
+    dashes, NBSP, zero-width chars) — normalizable deterministically to ASCII."""
+    for v in values:
+        if is_missing(v):
+            continue
+        if any(c in _UNICODE_PUNCT for c in str(v)):
+            return True
+    return False
+
+
 def casing_variants(values) -> bool:
     """True if the same token appears with different casing (=> needs casing fix)."""
     seen: dict[str, set] = {}

@@ -17,6 +17,8 @@ def _column_issues(series: pd.Series, semantic_type: str) -> list[str]:
     issues: list[str] = []
     if detect.has_whitespace_issues(values):
         issues.append("whitespace")
+    if detect.has_unicode_punctuation(values):
+        issues.append("unicode_punctuation")
     if detect.casing_variants(values):
         issues.append("casing")
     # disguised nulls present but column isn't all-empty

@@ -253,6 +253,21 @@ def test_active_planner_is_verified_union(monkeypatch):
     assert is_valid(plan)
 
 
+def test_normalize_punctuation_op():
+    df = pd.DataFrame({"name": ["palm’s thai", "joe‘s “grill”", "a–b — c", "plain's ok"]})
+    plan = mock_plan(df)
+    ops = [o["op"] for c in plan["columns"] for o in c["operations"]]
+    assert "normalize_punctuation" in ops
+    cleaned, _ = apply_plan(df, plan)
+    assert cleaned["name"][0] == "palm's thai"
+    assert cleaned["name"][1] == 'joe\'s "grill"'
+    assert cleaned["name"][2] == "a-b - c"
+    # a clean column must NOT get the op
+    plan2 = mock_plan(pd.DataFrame({"name": ["plain's ok", "also fine"]}))
+    ops2 = [o["op"] for c in plan2["columns"] for o in c["operations"]]
+    assert "normalize_punctuation" not in ops2
+
+
 def test_pair_profile_candidates_and_constraint():
     from scrubdata.pair_profile import candidate_pairs, constrain_plan
     col = ["Boston"] * 8 + ["Chicago"] * 6 + ["Bostn", "Chcago", "Qwortelby"]

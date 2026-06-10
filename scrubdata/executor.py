@@ -128,12 +128,37 @@ def _standardize_case(v, case):
     return fn(str(v).strip())
 
 
+# Unicode punctuation -> canonical ASCII. The high-cardinality regime fix: unique-value
+# columns (names, addresses, titles) carry curly quotes / long dashes / NBSP artifacts
+# that frequency-based canonicalization structurally cannot reach (no repeated surface
+# to vote with) — but a deterministic, information-preserving normalization can.
+_PUNCT_MAP = str.maketrans({
+    "\u2018": "'", "\u2019": "'", "\u201a": "'", "\u2032": "'", "\u00b4": "'",
+    "\u201c": '"', "\u201d": '"', "\u201e": '"', "\u2033": '"',
+    "\u2013": "-", "\u2014": "-", "\u2012": "-", "\u2015": "-", "\u2212": "-",
+    "\u00a0": " ", "\u2009": " ", "\u202f": " ",
+    "\u200b": None, "\u200c": None, "\u200d": None, "\ufeff": None,
+    "\u2026": "...",
+})
+
+
+def _normalize_punctuation(v):
+    if detect.is_missing(v):
+        return v
+    out = str(v).translate(_PUNCT_MAP)
+    while "  " in out:
+        out = out.replace("  ", " ")
+    return out
+
+
 # ---- operation dispatch -----------------------------------------------------
 
 def _apply_column_op(series: pd.Series, op: dict) -> pd.Series:
     name = op["op"]
     if name == "strip_whitespace":
         return series.map(_strip_ws)
+    if name == "normalize_punctuation":
+        return series.map(_normalize_punctuation)
     if name == "normalize_disguised_nulls":
         return series.map(_to_missing_if_disguised)
     if name == "parse_currency":

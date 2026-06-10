@@ -129,6 +129,10 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
     if "whitespace" in issues:
         ops.append({"op": "strip_whitespace",
                     "rationale": "Trimmed leading/trailing and doubled spaces."})
+    if "unicode_punctuation" in issues:
+        ops.append({"op": "normalize_punctuation",
+                    "rationale": "Normalized curly quotes / long dashes / NBSP "
+                                 "artifacts to plain ASCII punctuation."})
     if "disguised_nulls" in issues:
         ops.append({"op": "normalize_disguised_nulls",
                     "rationale": "Converted N/A, '-', 'null' etc. to true missing."})
