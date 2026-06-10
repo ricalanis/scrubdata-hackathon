@@ -9,71 +9,81 @@ app_file: server.py
 pinned: true
 license: mit
 ---
-
-# ScrubData — hands-off data cleaning
+# ScrubData — hands-off data cleaning, with the receipts
 
 Entry for the **Build Small Hackathon** (Gradio · Hugging Face), 🏡 Backyard AI track.
 
-> **Upload your dirty spreadsheet. Get clean data back. No config.**
+> **Drop a messy export. Get clean data back — every change named, reversible, and
+> explained. Anything sensitive is protected locally. The judgment calls stay yours.**
 >
 > For the office/ops person trying to do their job while their data is a mess.
 
+**Live Space:** https://huggingface.co/spaces/build-small-hackathon/scrubdata
+
 ## How it works
 
-The small model is the **planner**, not a row-by-row workhorse:
+A small local model is the **planner**, never a row-by-row editor:
 
-1. **Profile** the data deterministically in pandas (dtypes, nulls, duplicates,
-   whitespace, cardinality, sample values).
-2. **Plan** — the model reads the profile + a sample and emits a structured
-   cleaning plan: semantic column types, ID/date/categorical detection, and the
-   fuzzy work rules can't do — canonicalizing messy categories
-   (`USA` / `U.S.A` / `united states` → `United States`), anomalies, formats.
-3. **Execute** the plan deterministically in pandas (reliable, fast, auditable).
-4. **Narrate** a plain-English "what was wrong / what I fixed" report.
+1. **Profile** — pandas aggregates each column into a value–frequency distribution
+   (scale-invariant: a million rows profile like a hundred).
+2. **Plan** — the model reads the profile and emits a structured JSON cleaning plan:
+   canonicalization mappings, format fixes, dedup, anomaly flags.
+3. **Ground** — canonical forms are never invented: values reconcile against reference
+   taxonomies (GeoNames 196k cities, ISO countries/states) with fuzzy retrieval; ambiguous
+   matches **abstain** and surface for human review (calibrated: 90% precision at the
+   default threshold, ≥95% at 0.91).
+4. **Protect** — PII is detected locally (Luhn/IBAN checksums + a 44M OpenMed-PII
+   classifier): cards/SSNs masked format-preservingly, contacts flagged, **0/360 residual
+   PII** after masking in our leak test.
+5. **Execute** — deterministic pandas applies the plan. No silent edits, by construction;
+   every run exports an audit trail (OpenTelemetry-GenAI spans + open traces).
 
-**Model:** `Qwen3-4B-Instruct-2507` (4.0B → Tiny Titan), fine-tuned via QLoRA, run via
-llama.cpp (GGUF). The deterministic `scrubdata.executor` applies the plan.
+**Model:** `Qwen3-4B-Instruct-2507` (Tiny Titan), QLoRA fine-tuned on **execution-verified**
+synthetic + real-derived data (every training plan provably recovers the clean table),
+runnable via llama.cpp GGUF.
+
+## Measured (not vibes)
+
+- **Canonicalization micro-F1 0.90** (4B fine-tune) vs **0.45** for a much larger generic
+  model vs **0.13** for rules — small-specialized beats big-generic on this task.
+- Real hospital typos: grounding beats frequency clustering (recall 0.257 vs 0.193,
+  ~2× precision, −62% wrong changes); the fine-tune lifts real repair recall 0.00 → 0.42.
+- Evaluated on a **65-dataset suite** (Raha benchmarks + seeded error injection over 20
+  open-data domains) with a churn-neutral metric that can't be gamed by mass rewriting.
+- Full write-up: `docs/paper/` (preprint draft) · details in `eval/README.md`.
 
 ## Run it
 
 ```bash
-uv sync                                            # install deps
-uv run server.py                                   # gr.Server + custom UI (heuristic planner)
+uv sync
+uv run server.py                                   # gr.Server + custom UI (grounded heuristic)
 
-# use the fine-tuned model as the planner (needs Ollama + the GGUF, see notebooks/Modelfile):
+# fine-tuned model as planner (needs Ollama + the GGUF, see notebooks/Modelfile):
 ollama pull hf.co/ricalanis/scrubdata-qwen3-4b-v4-q8:Q8_0
 ollama create scrubdata-ft -f notebooks/Modelfile
 SCRUBDATA_MODEL=scrubdata-ft uv run server.py      # model planner, heuristic fallback
 
-uv run python -m scrubdata.cli messy.csv -o clean.csv --plan plan.json   # CLI
-uv run pytest tests/                               # engine tests (18)
+SCRUBDATA_PII_NER=1 uv run server.py               # +44M NER for name/address columns
+uv run python -m scrubdata.cli messy.csv -o clean.csv --plan plan.json
+uv run pytest tests/                               # engine tests (25)
 ```
 
-The planner is pluggable (`scrubdata/active.py`): set `SCRUBDATA_MODEL` to a local Ollama
-model id to use the fine-tune (alias-level canonicalization), else it runs the deterministic
-heuristic. Per column-batch it falls back to the heuristic if the model errors, so the app
-never breaks.
-
 ## Repo map
-- `scrubdata/` — the engine: `profiler` · `planner` (heuristic; swaps for the model) ·
-  `executor` (deterministic) · `report` · `trace` (Open-trace) · `cli` · `model_planner`.
-- `training/` — self-verified synthetic data generator (`build_dataset.py`) backed by real
-  vocabularies; pushes to `ricalanis/scrubdata-sft`.
-- `eval/` — harness with a **frozen gold set** (`gold.jsonl`): validity + op/canon F1 +
-  executor recovery (`run_eval.py`), real OOD slice (`run_real.py`, Raha hospital),
-  one-command model eval vs goalposts (`run_finetuned.py`). See `eval/README.md`.
-- `notebooks/` — Colab QLoRA training (`train_qlora.py`, `train_colab.ipynb`) + model card.
-- `frontend/` — custom `gr.Server` UI.
-
-## How good is it
-Measured on a frozen held-out gold set (heuristic = rule baseline; oracle = perfect plan):
-the heuristic does the easy work (op_f1 0.96, real-typo repair_recall 0.29) but is ~blind
-to alias-level canonicalization (canon_f1 0.13). The fine-tune's job is to close that —
-goalpost **canon_f1 ≥ 0.85, recovery ≥ 0.95**. Full numbers in `eval/README.md`.
+- `scrubdata/` — `profiler` · `planner` · `reconcile` (reference grounding + abstain) ·
+  `grounded` (RACOON wrapper) · `pii` (checksum + NER tiers, mask/hash/pseudonymize) ·
+  `executor` · `observability` · `trace` · `baselines` (OpenRefine) · `cli`.
+- `training/` — execution-verified synthetic generator + real-data derivation
+  (`real_data.py`: paired benchmarks + frequency-derived unpaired open data).
+- `eval/` — frozen gold · wide suite + double-macro north-star (`run_real_multi.py`) ·
+  ablations · calibration (risk–coverage) · PII leak test.
+- `docs/paper/` — preprint: *Small fine-tuned planners with execution-verified data and
+  calibrated abstention for tabular canonicalization*.
+- `scripts/` — Modal train/eval (headless GPU loop), trace publishing.
 
 ## Submission checklist
 - [x] Model ≤ 4B (Tiny Titan) — `Qwen3-4B-Instruct-2507`
-- [x] Custom `gr.Server` UI (Off-Brand) · agent traces (`scrubdata/trace.py`, Open-trace)
-- [x] Fine-tune published (Well-Tuned) · llama.cpp GGUF (Llama Champion)
-- [ ] Gradio app live on a HF Space under `build-small-hackathon`
-- [ ] Short demo video · social post · field-notes write-up
+- [x] Custom `gr.Server` UI (Off-Brand) — warm, plain-English, audit-first
+- [x] Fine-tune published (Well-Tuned) — `ricalanis/scrubdata-qwen3-4b` (+GGUF, Llama Champion)
+- [x] Agent traces published (Open-trace) — `build-small-hackathon/scrubdata-traces`
+- [x] Gradio app live on a HF Space under `build-small-hackathon`
+- [ ] Short demo video · social post
