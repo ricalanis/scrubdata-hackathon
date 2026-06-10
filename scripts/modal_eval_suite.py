@@ -31,7 +31,7 @@ adapter_vol = modal.Volume.from_name("scrubdata-v5-adapter")
 results = modal.Dict.from_name("scrubdata-suite-results", create_if_missing=True)
 
 
-@app.function(gpu="A100-80GB", timeout=7200, volumes={"/vol": adapter_vol})
+@app.function(gpu="A100-80GB", timeout=4 * 3600, volumes={"/vol": adapter_vol})
 def run_suite(seed: int = 7, adapter: str = "/vol/v5_seed21", union: bool = True):
     import os, sys, torch
     os.chdir("/root/repo")
@@ -108,6 +108,7 @@ def run_suite(seed: int = 7, adapter: str = "/vol/v5_seed21", union: bool = True
         rows.append({"name": spec["name"], "source": spec.get("source", "injected"),
                      "f1": m["f1"], "recall": m["recall"], "precision": m["precision"],
                      "damage": m["damage"]})
+        results["_partial"] = rows          # survive a timeout: per-spec checkpoint
         print(f"  {spec['name']:<26} F1={m['f1']:.3f} P={m['precision']:.3f} "
               f"R={m['recall']:.3f} dmg={m['damage']:.3f}", flush=True)
 
