@@ -430,6 +430,7 @@
     const audit = $("auditGrid"); audit.innerHTML = "";
     [["columns_touched","columns touched"],["canonicalizations","values unified"],
      ["grounded_columns","reference-grounded"],["abstentions","abstained → review"],
+     ["pii_columns_protected","PII columns protected"],
      ["changes_applied","changes logged"],["silent_edits","silent edits"]]
       .forEach(([k,lbl])=>{
         const v = (m[k] === null || m[k] === undefined) ? "—" : m[k];

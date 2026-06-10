@@ -21,6 +21,9 @@ def monitor_summary(plan: dict, change_log: list | None = None) -> dict:
                         and "reference taxonomy" in o.get("rationale", ""))
     abst = [f for f in plan.get("flags", []) if f.get("issue") == "uncertain_canonicalization"]
     abstained = sum(len(f.get("values", [])) for f in abst)
+    pii_flagged = sum(1 for c in cols if any(o.get("op") == "flag_pii" for o in c.get("operations", [])))
+    pii_protected = sum(1 for c in cols if any(o.get("op") in ("mask_pii", "hash_pii", "pseudonymize_pii")
+                                               for o in c.get("operations", [])))
     table_ops = [o.get("op") for o in plan.get("table_operations", [])]
     return {
         "columns_touched": len(cols),
@@ -28,6 +31,8 @@ def monitor_summary(plan: dict, change_log: list | None = None) -> dict:
         "grounded_columns": grounded_cols,
         "abstentions": abstained,
         "abstain_rate": round(abstained / (canon_total + abstained), 4) if (canon_total + abstained) else 0.0,
+        "pii_columns_flagged": pii_flagged,
+        "pii_columns_protected": pii_protected,
         "table_operations": table_ops,
         "changes_applied": len(change_log) if change_log is not None else None,
         "silent_edits": 0,                         # by construction: every change is in the plan
