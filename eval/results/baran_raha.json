@@ -1,0 +1,182 @@
+{
+ "system": "Baran (oracle detection, 20 gold labels)",
+ "real_f1": 0.8112648181611645,
+ "real_f1_ci": 0.018112281404822416,
+ "real_f1_per_seed": [
+  0.8040668443404699,
+  0.7962783024115705,
+  0.8334493077314529
+ ],
+ "damage": 0.0028413685155219844,
+ "precision": 0.8241466549166585,
+ "recall": 0.8040067881621286,
+ "n_seeds": 3,
+ "per_dataset": [
+  {
+   "name": "beers",
+   "seed": 0,
+   "f1": 0.981401202629003,
+   "recall": 0.9706777316735823,
+   "precision": 0.9923642533936652,
+   "damage": 5.439216752787599e-05,
+   "_errors": 3615,
+   "_changed": 3536,
+   "_fixed": 3509
+  },
+  {
+   "name": "beers",
+   "seed": 1,
+   "f1": 0.8853547227216152,
+   "recall": 0.8854771784232365,
+   "precision": 0.8852323008849557,
+   "damage": 5.439216752787599e-05,
+   "_errors": 3615,
+   "_changed": 3616,
+   "_fixed": 3201
+  },
+  {
+   "name": "beers",
+   "seed": 2,
+   "f1": 0.88767200224656,
+   "recall": 0.8744121715076072,
+   "precision": 0.9013401767892786,
+   "damage": 5.439216752787599e-05,
+   "_errors": 3615,
+   "_changed": 3507,
+   "_fixed": 3161
+  },
+  {
+   "name": "flights",
+   "seed": 0,
+   "f1": 1.0,
+   "recall": 1.0,
+   "precision": 1.0,
+   "damage": 0.0,
+   "_errors": 4255,
+   "_changed": 4255,
+   "_fixed": 4255
+  },
+  {
+   "name": "flights",
+   "seed": 1,
+   "f1": 1.0,
+   "recall": 1.0,
+   "precision": 1.0,
+   "damage": 0.0,
+   "_errors": 4255,
+   "_changed": 4255,
+   "_fixed": 4255
+  },
+  {
+   "name": "flights",
+   "seed": 2,
+   "f1": 1.0,
+   "recall": 1.0,
+   "precision": 1.0,
+   "damage": 0.0,
+   "_errors": 4255,
+   "_changed": 4255,
+   "_fixed": 4255
+  },
+  {
+   "name": "hospital",
+   "seed": 0,
+   "f1": 0.88268156424581,
+   "recall": 0.931237721021611,
+   "precision": 0.8389380530973451,
+   "damage": 0.004001847006310605,
+   "_errors": 509,
+   "_changed": 565,
+   "_fixed": 474
+  },
+  {
+   "name": "hospital",
+   "seed": 1,
+   "f1": 0.8065693430656936,
+   "recall": 0.8683693516699411,
+   "precision": 0.7529812606473595,
+   "damage": 0.004001847006310605,
+   "_errors": 509,
+   "_changed": 587,
+   "_fixed": 442
+  },
+  {
+   "name": "hospital",
+   "seed": 2,
+   "f1": 0.7913533834586466,
+   "recall": 0.8271119842829077,
+   "precision": 0.7585585585585586,
+   "damage": 0.004001847006310605,
+   "_errors": 509,
+   "_changed": 555,
+   "_fixed": 421
+  },
+  {
+   "name": "movies_1",
+   "seed": 0,
+   "f1": 0.908817635270541,
+   "recall": 0.8848780487804878,
+   "precision": 0.9340885684860968,
+   "damage": 0.0005007824726134585,
+   "_errors": 2050,
+   "_changed": 1942,
+   "_fixed": 1814
+  },
+  {
+   "name": "movies_1",
+   "seed": 1,
+   "f1": 0.9082174462705437,
+   "recall": 0.8760975609756098,
+   "precision": 0.9427821522309712,
+   "damage": 0.0005007824726134585,
+   "_errors": 2050,
+   "_changed": 1905,
+   "_fixed": 1796
+  },
+  {
+   "name": "movies_1",
+   "seed": 2,
+   "f1": 0.9097291875626881,
+   "recall": 0.8848780487804878,
+   "precision": 0.936016511867905,
+   "damage": 0.0005007824726134585,
+   "_errors": 2050,
+   "_changed": 1938,
+   "_fixed": 1814
+  },
+  {
+   "name": "rayyan",
+   "seed": 0,
+   "f1": 0.24743381955699623,
+   "recall": 0.24156118143459915,
+   "precision": 0.25359911406423036,
+   "damage": 0.009649820931157979,
+   "_errors": 948,
+   "_changed": 903,
+   "_fixed": 229
+  },
+  {
+   "name": "rayyan",
+   "seed": 1,
+   "f1": 0.38125,
+   "recall": 0.3217299578059072,
+   "precision": 0.4677914110429448,
+   "damage": 0.009649820931157979,
+   "_errors": 948,
+   "_changed": 652,
+   "_fixed": 305
+  },
+  {
+   "name": "rayyan",
+   "seed": 2,
+   "f1": 0.5784919653893696,
+   "recall": 0.4936708860759494,
+   "precision": 0.6985074626865672,
+   "damage": 0.009649820931157979,
+   "_errors": 948,
+   "_changed": 670,
+   "_fixed": 468
+  }
+ ],
+ "protocol_note": "upper bound: oracle error positions + 20 gold-labeled tuples (its package default); damage=0 by construction"
+}
