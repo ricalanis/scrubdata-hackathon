@@ -32,15 +32,20 @@ from scrubdata.planner import mock_plan
 from training.real_data import _is_variant
 
 from .metrics import _cell_equal
-from .run_real_multi import _cell_only, _raha_pair, _sem_equal, score
+from .run_real_multi import _cell_only, _fetch, _sem_equal, score
 
 # pairs used to train the current champion (v6 = mixA) — anything here is OFF-LIMITS
 # for generalization scoring of that model. Update per training run.
 TRAIN_SOURCES = {"v6": {"hospital", "beers", "movies_1"}}
 
-# held-out real-error sources (Raha tax is huge + numeric-heavy; added when fetched).
-# Harvested D1 sources get appended here OR to the training side — never both.
-EVAL_SOURCES = ["flights", "rayyan"]
+# held-out real-error sources. Harvested D1 sources get appended here OR to the
+# training side — never both. ed2_restaurants (stage-2 harvest): real NYC-restaurant
+# typos, in-regime, EVAL-ONLY — its sibling domain source (fodors_zagats) trains, so
+# this measures cross-source same-domain transfer. dblp_scholar was REJECTED as an
+# eval source: its gold systematically prefers the opposite case convention from the
+# dirty side (Scholar lowercase vs DBLP Title Case), which measures convention
+# preference, not cleaning — the artifact this metric is designed against.
+EVAL_SOURCES = ["flights", "rayyan", "ed2_restaurants"]
 
 
 def variant_breakdown(dirty, clean, out) -> dict:
@@ -77,7 +82,9 @@ def evaluate_generalization(planner, sources=None, label: str = "system") -> dic
     sources = sources or EVAL_SOURCES
     rows = []
     for name in sources:
-        dirty, clean = _raha_pair(name)
+        # FULL tables, no truncation — ed2_restaurants' real errors are concentrated
+        # outside the first 2k rows (_raha_pair's head(2000) hid 473 of 477).
+        dirty, clean = _fetch(name)
         cleaned, _ = apply_plan(dirty, _cell_only(planner(dirty)))
         m = score(dirty, clean, cleaned)
         b = variant_breakdown(dirty, clean, cleaned)

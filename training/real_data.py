@@ -55,6 +55,14 @@ DATASETS = {
     "flights":  {"keep": True, "sample": None},    # ~250K
     "tax":      {"keep": False, "sample": 4000},   # ~30MB raw -> sample then DELETE
     "movies_1": {"keep": True, "sample": 2500},    # real errors: titles/years/cast
+    # stage-2 harvest (training/harvest_stage2.py pre-materializes data/real/<name>/;
+    # _download is a no-op when the files exist). EVAL-ONLY sources (generalization
+    # contract, eval/generalization.py) must NEVER appear here: ed2_restaurants.
+    # dblp_acm/dblp_scholar: rejected — unique-value title columns are out-of-regime
+    # (canonicalizable_columns distinct-ratio gate; per-cell fixes = memorization).
+    "fodors_zagats":   {"keep": True, "sample": None},   # EM gold pairs -> aligned table
+    "cleanml_company": {"keep": True, "sample": 8000},   # org names/cities
+    "cleanml_movie":   {"keep": True, "sample": 4000},   # movie metadata (8 typo cells)
 }
 
 
@@ -455,12 +463,20 @@ def iter_examples(dirty_df, clean_df, rng, n_examples: int, *,
     if not cols:
         return
     n = min(len(dirty_df), len(clean_df))
+    # error-centered window starts: sparse real tables (e.g. 477 diff cells in 28k
+    # rows) yield nothing under uniform sampling — most windows contain no error.
+    diff_rows = sorted({i for j in cols for i in range(n)
+                        if not _cell_equal(dirty_df.iat[i, j], clean_df.iat[i, j])})
     tries = 0
     made = 0
     while made < n_examples and tries < n_examples * 6:
         tries += 1
         k = rng.randint(min_rows, min(max_rows, n))
-        start = rng.randint(0, max(0, n - k))
+        if diff_rows and rng.random() < 0.8:           # center a window on an error
+            anchor = rng.choice(diff_rows)
+            start = max(0, min(anchor - rng.randint(0, k - 1), n - k))
+        else:
+            start = rng.randint(0, max(0, n - k))
         hi = min(max_cols, len(cols))
         kc = rng.randint(min(min_cols, hi), hi)
         chosen = sorted(rng.sample(cols, kc))
