@@ -256,6 +256,11 @@ def company_vocab() -> dict[str, list[str]]:
     return _cached("company", lambda: _alias_file("wikidata_company_aliases.jsonl", limit=2500))
 
 
+def nickname_vocab() -> dict[str, list[str]]:
+    """Unambiguous nickname->formal first-name pairs (carltonnorthern/nicknames, Apache-2.0)."""
+    return _cached("nickname", lambda: _alias_file("nickname_aliases.jsonl", limit=600))
+
+
 def city_vocab() -> dict[str, list[str]]:
     return _cached("city", _city_entries)
 

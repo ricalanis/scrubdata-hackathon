@@ -381,6 +381,20 @@ ARCHETYPES: list[Field] = [
     VocabField(["city", "location", "hq_city"], "city", V.city_vocab(), max_card=5),
     VocabField(["department", "dept", "team"], "categorical", V.department_vocab(), max_card=4),
     VocabField(["job_title", "title", "role", "position"], "categorical", V.job_title_vocab(), max_card=4),
+    # real O*NET occupations (alternate title -> canonical, CC BY 4.0): 1,016 canonicals
+    *([VocabField(["job_title", "occupation", "role"], "categorical",
+                  V._cached("onet", lambda: V._alias_file("onet_jobtitle_aliases.jsonl", limit=1016)),
+                  max_card=5),
+       VocabField(["job_title", "occupation"], "categorical",
+                  V._cached("onet", lambda: V._alias_file("onet_jobtitle_aliases.jsonl", limit=1016)),
+                  min_card=25, max_card=60, high_card=True)]
+      if V._alias_file("onet_jobtitle_aliases.jsonl", limit=2) else []),
+    # real nickname->formal first names (Bill -> William; Apache-2.0)
+    *([VocabField(["first_name", "given_name", "contact_first"], "categorical",
+                  V.nickname_vocab(), max_card=5),
+       VocabField(["first_name", "given_name"], "categorical",
+                  V.nickname_vocab(), min_card=25, max_card=60, high_card=True)]
+      if V.nickname_vocab() else []),
     VocabField(["industry", "sector", "vertical"], "categorical", V.industry_vocab(), max_card=4),
     # real Wikidata companies (alias -> canonical: 'AB InBev' -> 'Anheuser-Busch InBev')
     *([VocabField(["company", "vendor", "account", "supplier"], "categorical",
