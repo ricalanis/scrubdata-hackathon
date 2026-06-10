@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.11)  9 JUN 2026 21:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.11)  9 JUN 2026 21:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -325,17 +325,17 @@ s canon-i-cal-iza-tion micro-F1 0.901 (operation-
 <fig_risk_coverage.pdf, id=26, 375.804pt x 245.718pt>
 File: fig_risk_coverage.pdf Graphic file (type pdf)
 <use fig_risk_coverage.pdf>
-Package pdftex.def Info: fig_risk_coverage.pdf  used on input line 280.
+Package pdftex.def Info: fig_risk_coverage.pdf  used on input line 292.
 (pdftex.def)             Requested size: 291.2458pt x 190.44072pt.
- [5 <./fig_risk_coverage.pdf>] [6] [7] (./main.aux) ) 
+ [5] [6 <./fig_risk_coverage.pdf>] [7] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 4374 strings out of 480445
- 59831 string characters out of 5892391
- 362030 words of memory out of 5000000
- 21585 multiletter control sequences out of 15000+600000
+ 4378 strings out of 480445
+ 59870 string characters out of 5892391
+ 364074 words of memory out of 5000000
+ 21589 multiletter control sequences out of 15000+600000
  415421 words of font info for 73 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
- 72i,9n,78p,300b,293s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 72i,10n,78p,300b,293s stack positions out of 5000i,500n,10000p,200000b,80000s
  </Users/ricalanis/Library
 /texlive/2021basic/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1095.600pk></usr/l
 ocal/texlive/2021basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></u
@@ -347,12 +347,14 @@ cm/cmr10.pfb></usr/local/texlive/2021basic/texmf-dist/fonts/type1/public/amsfon
 ts/cm/cmr12.pfb></usr/local/texlive/2021basic/texmf-dist/fonts/type1/public/ams
 fonts/cm/cmr17.pfb></usr/local/texlive/2021basic/texmf-dist/fonts/type1/public/
 amsfonts/cm/cmsy10.pfb></usr/local/texlive/2021basic/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmti10.pfb></usr/local/texlive/2021basic/texmf-dist/fonts/type1
-/public/amsfonts/cm/cmtt10.pfb>
-Output written on main.pdf (7 pages, 169739 bytes).
+lic/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2021basic/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2021basic/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2021basic/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on main.pdf (7 pages, 185554 bytes).
 PDF statistics:
- 120 PDF objects out of 1000 (max. 8388607)
- 57 compressed objects within 1 object stream
+ 128 PDF objects out of 1000 (max. 8388607)
+ 63 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

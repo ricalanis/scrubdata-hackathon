@@ -231,13 +231,21 @@ real-derived supervision lifts it to \hospModelRecall---real data is what transf
 \subsection{Grounding vs.\ clustering}
 On hospital's real errors, grounded reconciliation beats frequency clustering on recall
 (\hospRecallGrounded{} vs \hospRecallFreq), nearly doubles precision
-(\hospPrecGrounded{} vs \hospPrecFreq), and cuts wrong changes by \hospWrongDelta. On
-the full suite (Table~\ref{tab:money}), grounded cleaning is statistically tied with
-clustering on real-error F1 (\realFGrounded{} vs \ablNoGroundRealF) while clustering
-wins the injected slice---its home regime. The behavioral difference is where grounding
-earns its place: perfect abstention on adversarial traps (\ablFullAbstain) versus
-\ablNoAbstainAbstain{} when abstention is removed, and reference-vetoed wrong merges
-that clustering commits (e.g.\ \texttt{guntxrsvillx}$\to$\texttt{huntsville}).
+(\hospPrecGrounded{} vs \hospPrecFreq), and cuts wrong changes by \hospWrongDelta.
+On the full suite against OpenRefine (Table~\ref{tab:money}), the result splits
+cleanly by regime, and we report both. On the \emph{real-error} slice---the regime the
+tool exists for---grounded cleaning reaches REAL-F1 \realFGrounded{}, $2.4\times$
+OpenRefine kNN (\realFORKnn) and $3.5\times$ fingerprint (\realFORFp), with seed CIs of
+$\pm$\northGroundedCI. On the \emph{injected} slice, fingerprint clustering wins
+(\injFORFp{} vs \injFGrounded) at near-zero damage: our case/whitespace injectors are
+exactly the perturbations key-collision normalizes away, so this is its home game and
+we say so. kNN clustering---the method that, like us, attempts typo repair---loses on
+both slices while incurring the highest damage among baselines (\damageORKnn), the
+no-reference over-merging failure the grounding was built to prevent. Within our own
+ablations, removing grounding leaves real-error F1 unchanged within noise
+(\ablNoGroundRealF) but forfeits the behavioral guarantees: perfect abstention on
+adversarial traps (\ablFullAbstain) versus \ablNoAbstainAbstain{} without abstention,
+and reference-vetoed wrong merges (e.g.\ \texttt{guntxrsvillx}$\to$\texttt{huntsville}).
 
 \begin{table}[t]
 \centering
@@ -245,16 +253,20 @@ that clustering commits (e.g.\ \texttt{guntxrsvillx}$\to$\texttt{huntsville}).
 double-macro harmonic mean; REAL-F1 is the real-error slice. (Filled from the final
 run.)}
 \label{tab:money}
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccccc}
 \toprule
-System & NORTH & $\pm$95\%CI & REAL-F1 & damage & abstain \\
+System & NORTH & $\pm$95\%CI & REAL-F1 & INJ-F1 & damage & abstain \\
 \midrule
-Grounded (ours) & \northGrounded & \northGroundedCI & \realFGrounded & \damageGrounded & \ablFullAbstain \\
-OpenRefine fingerprint & \northORFp & -- & -- & -- & -- \\
-OpenRefine kNN & \northORKnn & -- & \realFORKnn & \damageORKnn & -- \\
-Grounded 4B model & -- & -- & \modelRealF & -- & \modelAbstain \\
+Grounded (ours) & \northGrounded & \northGroundedCI & \textbf{\realFGrounded} & \injFGrounded & \damageGrounded & \ablFullAbstain \\
+OpenRefine fingerprint & \northORFp & 0.000 & \realFORFp & \injFORFp & \damageORFp & 1.000 \\
+OpenRefine kNN & \northORKnn & 0.002 & \realFORKnn & 0.148 & \damageORKnn & 1.000 \\
+Grounded 4B model$^{\dagger}$ & -- & -- & \modelRealF & -- & -- & \modelAbstain \\
 \bottomrule
 \end{tabular}
+
+\smallskip
+{\small $^{\dagger}$single seed, REAL + typo-injected slice only (GPU cost); other rows
+are 3-seed means.}
 \end{table}
 
 \subsection{Ablations}
