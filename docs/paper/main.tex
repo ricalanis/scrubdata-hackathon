@@ -283,13 +283,17 @@ annotated; the confidence supports thresholded abstention.}
 \label{fig:rc}
 \end{figure}
 
-\subsection{PII transfer}
+\subsection{PII transfer and detection}
 The 44M OpenMed-PII classifier, trained on sentence-level clinical text, transfers to
 bare cell values without templates: \piiNameBare{} detection on person-name cells and
 \piiAddrBare{} on addresses. Raw entity hits on non-PII columns (\piiNegRate) are
 quasi-identifier typings (\texttt{city}, \texttt{occupation}) eliminated by the
-sensitive-type allowlist and coverage vote. After deterministic masking, re-running all
-validators over the output finds \piiLeakRate{} residual detectable PII.
+sensitive-type allowlist and coverage vote. The deterministic validator tier, evaluated
+out-of-distribution on per-type columns built from the Gretel PII test split (chosen
+specifically because OpenMed trains on Nemotron-PII), types \textbf{5/5} covered PII
+types correctly with \textbf{0/7} false positives on negative columns drawn from real
+open data. After deterministic masking, re-running all validators over the output finds
+\piiLeakRate{} residual detectable PII.
 
 \section{Limitations}
 Reference coverage is the recall ceiling: entities absent from the taxonomy abstain by
