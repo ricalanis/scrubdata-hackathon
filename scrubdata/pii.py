@@ -64,6 +64,8 @@ def _is_iban(v: str) -> bool:
 
 
 def _is_phone(v: str) -> bool:
+    if _SSN_RE.match(v):          # specific beats generic: a dashed SSN is not a phone
+        return False
     return bool(_PHONE_RE.match(v)) and 7 <= sum(c.isdigit() for c in v) <= 15
 
 
