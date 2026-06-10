@@ -57,5 +57,5 @@ tool people actually use (OpenRefine) on a wide validation suite at far lower da
 - Some benchmark sources gated (CleanML/TableEG behind Dropbox/Drive; licenses noted).
 
 ## To-do before submission
-multi-seed CIs (running) · −ablations · OpenRefine table with CIs · cs.AI endorser · selective-
+multi-seed CIs (running) · −ablations · OpenRefine table with CIs · cs.DB endorser (primary cs.DB, cross-list cs.CL+cs.LG; endorser targets = the data-cleaning authors we cite) · selective-
 prediction figure · keep the eval README's convention-vs-error honesty.
