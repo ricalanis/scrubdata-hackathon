@@ -222,9 +222,9 @@ report the real-error and injected slices separately.
 
 \subsection{Small fine-tuned planner vs.\ large generic model}
 On frozen synthetic gold, the fine-tuned 4B planner reaches canonicalization micro-F1
-\canonFOursBest{} (operation-F1 \opFOurs, JSON validity \jsonValidOurs), versus
-\canonFBig{} for a much larger zero-shot generalist prompted identically and
-\canonFHeur{} for the rule heuristic. Multi-seed: \canonFMultiSeed. On real hospital
+\canonFMultiSeed{} --- versus \canonFBig{} for a much larger zero-shot generalist
+prompted identically and \canonFHeur{} for the rule heuristic (best single run
+\canonFOursBest; operation-F1 \opFOurs, JSON validity \jsonValidOurs). On real hospital
 typos the synthetic-only fine-tune scores 0.000 repair recall; adding 20\%
 real-derived supervision lifts it to \hospModelRecall---real data is what transfers.
 
@@ -241,7 +241,10 @@ $\pm$\northGroundedCI. On the \emph{injected} slice, fingerprint clustering wins
 exactly the perturbations key-collision normalizes away, so this is its home game and
 we say so. kNN clustering---the method that, like us, attempts typo repair---loses on
 both slices while incurring the highest damage among baselines (\damageORKnn), the
-no-reference over-merging failure the grounding was built to prevent. Within our own
+no-reference over-merging failure the grounding was built to prevent. The wrapped 4B model's suite row (REAL-F1 \modelRealF, damage 0.041) shows the
+grounding wrapper, not the model, carries entity canonicalization on these datasets ---
+the model's contribution concentrates on the synthetic regime and hospital repair, and
+notably it \emph{lowers} damage versus the grounded heuristic. Within our own
 ablations, removing grounding leaves real-error F1 unchanged within noise
 (\ablNoGroundRealF) but forfeits the behavioral guarantees: perfect abstention on
 adversarial traps (\ablFullAbstain) versus \ablNoAbstainAbstain{} without abstention,

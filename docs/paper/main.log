@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.11)  9 JUN 2026 22:23
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.11)  9 JUN 2026 22:43
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -315,23 +315,17 @@ Overfull \hbox (16.88716pt too wide) in paragraph at lines 126--129
 -Re-fine's key-collision (fin-ger-print) and nearest-neighbour
  []
 
-[2] [3]
-Overfull \hbox (14.38647pt too wide) in paragraph at lines 224--230
-\OT1/cmr/m/n/10.95 On frozen syn-thetic gold, the fine-tuned 4B plan-ner reache
-s canon-i-cal-iza-tion micro-F1 0.901 (operation-
- []
-
-[4]
+[2] [3] [4]
 <fig_risk_coverage.pdf, id=26, 375.804pt x 245.718pt>
 File: fig_risk_coverage.pdf Graphic file (type pdf)
 <use fig_risk_coverage.pdf>
-Package pdftex.def Info: fig_risk_coverage.pdf  used on input line 292.
+Package pdftex.def Info: fig_risk_coverage.pdf  used on input line 295.
 (pdftex.def)             Requested size: 291.2458pt x 190.44072pt.
  [5] [6 <./fig_risk_coverage.pdf>] [7] (./main.aux) ) 
 Here is how much of TeX's memory you used:
  4378 strings out of 480445
  59870 string characters out of 5892391
- 364074 words of memory out of 5000000
+ 364116 words of memory out of 5000000
  21589 multiletter control sequences out of 15000+600000
  415421 words of font info for 73 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
@@ -351,7 +345,7 @@ lic/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2021basic/texmf-dist/fonts/type1/
 public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2021basic/texmf-dist/fonts/typ
 e1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2021basic/texmf-dist/fonts
 /type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on main.pdf (7 pages, 185621 bytes).
+Output written on main.pdf (7 pages, 186134 bytes).
 PDF statistics:
  128 PDF objects out of 1000 (max. 8388607)
  63 compressed objects within 1 object stream
