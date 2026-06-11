@@ -45,17 +45,28 @@ def candidate_pairs(values, idx=None, ctype=None, max_candidates: int = 3,
     if ctype is None:
         idx = idx or default_index()
         ctype = infer_reference_type(vals, idx)
-    frequent = [(v, n) for v, n in freq.most_common(60) if n >= 2]
+    frequent = [(v, _norm(v), n) for v, n in freq.most_common(60) if n >= 2]
     out = []
-    for raw in freq:
+    # bounded work: full-table columns can carry tens of thousands of unique rare
+    # surfaces (measured: 28k uniques -> ~25M SequenceMatcher calls -> Modal eval
+    # timeout). Cap the rare values examined; cheap prefilters before any ratio().
+    rare = [r for r in freq if freq[r] < 3 and _norm(r)]
+    MAX_RARE = 4000
+    if len(rare) > MAX_RARE:
+        rare = rare[:MAX_RARE]
+    for raw in rare:
         n_raw = freq[raw]
-        if n_raw >= 3 or not _norm(raw):
-            continue
+        nr = _norm(raw)
         cands = []
-        for canon, n_canon in frequent:
+        for canon, nc, n_canon in frequent:
             if canon == raw or n_canon < max(2, 2 * n_raw):
                 continue
-            sim = difflib.SequenceMatcher(None, _norm(raw), _norm(canon)).ratio()
+            if not nc or nc[0] != nr[0] or abs(len(nc) - len(nr)) > max(2, len(nc) // 4):
+                continue                              # cheap gates before ratio()
+            m = difflib.SequenceMatcher(None, nr, nc)
+            if m.real_quick_ratio() < min_sim or m.quick_ratio() < min_sim:
+                continue
+            sim = m.ratio()
             if sim >= min_sim:
                 cands.append({"canon": canon, "sim": round(sim, 3),
                               "support": n_canon, "source": "frequency"})

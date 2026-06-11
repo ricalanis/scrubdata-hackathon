@@ -40,7 +40,7 @@ adapter_vol = modal.Volume.from_name("scrubdata-v5-adapter")
 results = modal.Dict.from_name("scrubdata-eval-v5-results", create_if_missing=True)
 
 
-@app.function(gpu="A100-80GB", timeout=2400, volumes={"/vol": adapter_vol})
+@app.function(gpu="A100-80GB", timeout=7200, volumes={"/vol": adapter_vol})
 def run_eval(n_synth: int = 20, adapter: str = "/vol/v5", skip_real: bool = False,
              pair_profiles: bool = False, capture: str = ""):
     import os, sys, torch
