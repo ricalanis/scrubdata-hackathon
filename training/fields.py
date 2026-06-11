@@ -416,6 +416,31 @@ ARCHETYPES: list[Field] = [
        VocabField(["first_name", "given_name"], "categorical",
                   V.nickname_vocab(), min_card=25, max_card=60, high_card=True)]
       if V.nickname_vocab() else []),
+    # ToughTables gold-anchored entity misspellings (SemTab 2T, CC-BY-4.0): 49.6k real
+    # variant aliases across people/films/places — the grouped-entity regime
+    *([VocabField(["name", "entity", "person", "artist"], "categorical",
+                  V._cached("tt", lambda: V._alias_file("toughtables_aliases.jsonl", limit=3000)),
+                  max_card=5),
+       VocabField(["name", "entity", "player"], "categorical",
+                  V._cached("tt", lambda: V._alias_file("toughtables_aliases.jsonl", limit=3000)),
+                  min_card=25, max_card=60, high_card=True)]
+      if V._alias_file("toughtables_aliases.jsonl", limit=2) else []),
+    # RxNorm prescribable drugs (public domain): synonym/TTY variants -> ingredient
+    *([VocabField(["drug", "medication", "drug_name", "prescription"], "categorical",
+                  V._cached("rxnorm", lambda: V._alias_file("rxnorm_aliases.jsonl", limit=1500)),
+                  max_card=5),
+       VocabField(["drug", "medication"], "categorical",
+                  V._cached("rxnorm", lambda: V._alias_file("rxnorm_aliases.jsonl", limit=1500)),
+                  min_card=25, max_card=60, high_card=True)]
+      if V._alias_file("rxnorm_aliases.jsonl", limit=2) else []),
+    # MusicBrainz search-hint aliases (CC0): community-recorded artist misspellings
+    *([VocabField(["artist", "performer", "band", "composer"], "categorical",
+                  V._cached("mbhint", lambda: V._alias_file("musicbrainz_hint_aliases.jsonl", limit=2000)),
+                  max_card=5),
+       VocabField(["artist", "performer"], "categorical",
+                  V._cached("mbhint", lambda: V._alias_file("musicbrainz_hint_aliases.jsonl", limit=2000)),
+                  min_card=25, max_card=60, high_card=True)]
+      if V._alias_file("musicbrainz_hint_aliases.jsonl", limit=2) else []),
     VocabField(["industry", "sector", "vertical"], "categorical", V.industry_vocab(), max_card=4),
     # real Wikidata companies (alias -> canonical: 'AB InBev' -> 'Anheuser-Busch InBev')
     *([VocabField(["company", "vendor", "account", "supplier"], "categorical",
