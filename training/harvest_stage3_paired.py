@@ -38,6 +38,22 @@ DGOV_TABLES = [
     "2.10_Budget_Presentation_Award_(summary)",
     "3.09_Census_ACS_Post_Secondary_Education_(detail)",
     "Access_Control",
+    # cycle-3 widening: diverse domains/sizes from the 128-table DGov_Typo lake
+    "Allegheny_County_Tobacco_Vendors",
+    "Grocery_Stores_-_2013",
+    "Illinois_Obesity_By_County",
+    "Jefferson_County_KY_Post_Offices",
+    "LA_County_COVID_Cases",
+    "Legislative_Bridge_Names",
+    "Louisville_Metro_KY_-_Inspection_Results_Pools",
+    "Louisville_Metro_KY_-_Permitted_Hotels_and_Motels",
+    "MVA_Vehicle_Sales_Counts_by_Month_for_Calendar_Year_2002_through_August_2022",
+    "Median_Household_Income",
+    "Medicare_Part_D_Opioid_Prescribing_Rates_-_by_Geography",
+    "National_Obesity_By_State_1",
+    "Emergency_Operating_Center_Tools",
+    "Field_Listings",
+    "Health_conditions_among_children_under_age_18__by_selected_characteristics__United_States",
 ]
 
 
