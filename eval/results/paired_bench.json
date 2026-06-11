@@ -11,7 +11,7 @@
   "recall": 0.019,
   "damage": 0.0041,
   "variant_recall": 0.117,
-  "sec": 19.7
+  "sec": 18.7
  },
  {
   "name": "cleanml_company",
@@ -25,7 +25,7 @@
   "recall": 0.708,
   "damage": 0.0013,
   "variant_recall": 0.708,
-  "sec": 29.8
+  "sec": 28.8
  },
  {
   "name": "cleanml_movie",
@@ -39,7 +39,7 @@
   "recall": 0.0,
   "damage": 0.0001,
   "variant_recall": 0.0,
-  "sec": 9.3
+  "sec": 9.0
  },
  {
   "name": "dblp_acm",
@@ -53,7 +53,7 @@
   "recall": 0.0,
   "damage": 0.0001,
   "variant_recall": 0.0,
-  "sec": 1.8
+  "sec": 1.7
  },
  {
   "name": "dblp_scholar",
@@ -67,7 +67,7 @@
   "recall": 0.0,
   "damage": 0.2307,
   "variant_recall": 0.0,
-  "sec": 6.0
+  "sec": 5.6
  },
  {
   "name": "dgov_2_10_budget_presentation_award_summary",
@@ -95,7 +95,7 @@
   "recall": 0.437,
   "damage": 0.0139,
   "variant_recall": 0.455,
-  "sec": 14.9
+  "sec": 14.4
  },
  {
   "name": "dgov_3_09_census_acs_post_secondary_education",
@@ -109,7 +109,7 @@
   "recall": 0.341,
   "damage": 0.0,
   "variant_recall": 0.341,
-  "sec": 0.8
+  "sec": 0.7
  },
  {
   "name": "dgov_access_control",
@@ -123,7 +123,7 @@
   "recall": 0.383,
   "damage": 0.0,
   "variant_recall": 0.385,
-  "sec": 45.8
+  "sec": 44.1
  },
  {
   "name": "dgov_ah_provisional_diabetes_death_counts_for",
@@ -151,7 +151,7 @@
   "recall": 0.026,
   "damage": 0.0716,
   "variant_recall": 0.105,
-  "sec": 32.4
+  "sec": 32.1
  },
  {
   "name": "flights",
@@ -165,7 +165,7 @@
   "recall": 0.03,
   "damage": 0.082,
   "variant_recall": 0.142,
-  "sec": 6.8
+  "sec": 6.7
  },
  {
   "name": "fodors_zagats",
@@ -193,7 +193,7 @@
   "recall": 0.394,
   "damage": 0.0296,
   "variant_recall": 0.666,
-  "sec": 14.7
+  "sec": 14.3
  },
  {
   "name": "hospital",
@@ -207,7 +207,7 @@
   "recall": 0.257,
   "damage": 0.1078,
   "variant_recall": 0.346,
-  "sec": 14.2
+  "sec": 13.8
  },
  {
   "name": "movies_1",
@@ -221,7 +221,7 @@
   "recall": 0.786,
   "damage": 0.0222,
   "variant_recall": 0.989,
-  "sec": 29.2
+  "sec": 28.8
  },
  {
   "name": "rayyan",
@@ -235,7 +235,119 @@
   "recall": 0.0,
   "damage": 0.1445,
   "variant_recall": 0.0,
-  "sec": 6.5
+  "sec": 6.3
+ },
+ {
+  "name": "tt_00e2h310",
+  "seen_in_training": false,
+  "rows": 12285,
+  "cols": 3,
+  "errors": 12433,
+  "variant_errors": 12433,
+  "f1": 0.0,
+  "precision": 1.0,
+  "recall": 0.0,
+  "damage": 0.0,
+  "variant_recall": 0.0,
+  "sec": 3.6
+ },
+ {
+  "name": "tt_2zwsmotj",
+  "seen_in_training": false,
+  "rows": 10855,
+  "cols": 3,
+  "errors": 10977,
+  "variant_errors": 10977,
+  "f1": 0.0,
+  "precision": 1.0,
+  "recall": 0.0,
+  "damage": 0.0,
+  "variant_recall": 0.0,
+  "sec": 2.4
+ },
+ {
+  "name": "tt_3n6s2fcx",
+  "seen_in_training": false,
+  "rows": 9396,
+  "cols": 3,
+  "errors": 9510,
+  "variant_errors": 9510,
+  "f1": 0.0,
+  "precision": 1.0,
+  "recall": 0.0,
+  "damage": 0.0,
+  "variant_recall": 0.0,
+  "sec": 2.1
+ },
+ {
+  "name": "tt_8yinkydr",
+  "seen_in_training": false,
+  "rows": 14008,
+  "cols": 3,
+  "errors": 14188,
+  "variant_errors": 14188,
+  "f1": 0.0,
+  "precision": 1.0,
+  "recall": 0.0,
+  "damage": 0.0,
+  "variant_recall": 0.0,
+  "sec": 2.8
+ },
+ {
+  "name": "tt_cn5wvwhh",
+  "seen_in_training": false,
+  "rows": 8302,
+  "cols": 5,
+  "errors": 370,
+  "variant_errors": 370,
+  "f1": 0.0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "damage": 0.0005,
+  "variant_recall": 0.0,
+  "sec": 9.9
+ },
+ {
+  "name": "tt_co23z7go",
+  "seen_in_training": false,
+  "rows": 15477,
+  "cols": 4,
+  "errors": 33542,
+  "variant_errors": 33542,
+  "f1": 0.174,
+  "precision": 0.872,
+  "recall": 0.096,
+  "damage": 0.0004,
+  "variant_recall": 0.096,
+  "sec": 13.1
+ },
+ {
+  "name": "tt_dvnkv0xu",
+  "seen_in_training": false,
+  "rows": 15477,
+  "cols": 4,
+  "errors": 15676,
+  "variant_errors": 15676,
+  "f1": 0.0,
+  "precision": 1.0,
+  "recall": 0.0,
+  "damage": 0.0,
+  "variant_recall": 0.0,
+  "sec": 4.7
+ },
+ {
+  "name": "tt_uma1dnf6",
+  "seen_in_training": false,
+  "rows": 8302,
+  "cols": 5,
+  "errors": 5080,
+  "variant_errors": 5080,
+  "f1": 0.408,
+  "precision": 0.824,
+  "recall": 0.271,
+  "damage": 0.0035,
+  "variant_recall": 0.271,
+  "sec": 9.4
  },
  {
   "name": "zeroed_billionaire",
@@ -249,7 +361,7 @@
   "recall": 0.066,
   "damage": 0.0007,
   "variant_recall": 0.303,
-  "sec": 37.4
+  "sec": 36.4
  },
  {
   "name": "zeroed_tax100k",
@@ -263,6 +375,6 @@
   "recall": 0.006,
   "damage": 0.0822,
   "variant_recall": 0.051,
-  "sec": 495.5
+  "sec": 475.3
  }
 ]

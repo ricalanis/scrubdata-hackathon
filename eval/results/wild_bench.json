@@ -1,5 +1,145 @@
 [
  {
+  "name": "restaurants_nyc",
+  "domain": "restaurants",
+  "rows": 800,
+  "cols": 27,
+  "plan_valid": true,
+  "ops": 6,
+  "cells_changed": 8520,
+  "review_flags": 1,
+  "pii_protected_or_flagged": 4,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 13.84,
+  "inject": {
+   "typo": 0.072,
+   "ocr": 0.08,
+   "case": 0.086,
+   "whitespace": 0.196,
+   "mean": 0.108
+  }
+ },
+ {
+  "name": "pawnbrokers_nyc",
+  "domain": "business",
+  "rows": 800,
+  "cols": 31,
+  "plan_valid": true,
+  "ops": 6,
+  "cells_changed": 9266,
+  "review_flags": 2,
+  "pii_protected_or_flagged": 2,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 22.14,
+  "inject": {
+   "typo": 0.058,
+   "ocr": 0.073,
+   "case": 0.05,
+   "whitespace": 0.115,
+   "mean": 0.074
+  }
+ },
+ {
+  "name": "payroll_nyc",
+  "domain": "jobs",
+  "rows": 800,
+  "cols": 17,
+  "plan_valid": true,
+  "ops": 4,
+  "cells_changed": 4587,
+  "review_flags": 2,
+  "pii_protected_or_flagged": 2,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 51.75,
+  "inject": {
+   "typo": 0.447,
+   "ocr": 0.555,
+   "case": 0.405,
+   "whitespace": 0.728,
+   "mean": 0.534
+  }
+ },
+ {
+  "name": "svc311_nyc",
+  "domain": "complaints",
+  "rows": 800,
+  "cols": 44,
+  "plan_valid": true,
+  "ops": 7,
+  "cells_changed": 7161,
+  "review_flags": 1,
+  "pii_protected_or_flagged": 2,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 23.87,
+  "inject": {
+   "typo": 0.175,
+   "ocr": 0.232,
+   "case": 0.185,
+   "whitespace": 0.268,
+   "mean": 0.215
+  }
+ },
+ {
+  "name": "permits_nyc",
+  "domain": "construction",
+  "rows": 800,
+  "cols": 60,
+  "plan_valid": true,
+  "ops": 8,
+  "cells_changed": 21293,
+  "review_flags": 10,
+  "pii_protected_or_flagged": 3,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 84.48,
+  "inject": {
+   "typo": 0.022,
+   "ocr": 0.027,
+   "case": 0.03,
+   "whitespace": 0.085,
+   "mean": 0.041
+  }
+ },
+ {
+  "name": "film_nyc",
+  "domain": "film",
+  "rows": 800,
+  "cols": 14,
+  "plan_valid": true,
+  "ops": 2,
+  "cells_changed": 3849,
+  "review_flags": 0,
+  "pii_protected_or_flagged": 0,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 1.87,
+  "inject": {
+   "typo": 0.109,
+   "ocr": 0.134,
+   "case": 0.083,
+   "whitespace": 0.176,
+   "mean": 0.126
+  }
+ },
+ {
+  "name": "fhv_nyc",
+  "domain": "transport",
+  "rows": 800,
+  "cols": 23,
+  "plan_valid": true,
+  "ops": 7,
+  "cells_changed": 3774,
+  "review_flags": 0,
+  "pii_protected_or_flagged": 2,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 19.35,
+  "inject": {
+   "typo": 0.106,
+   "ocr": 0.305,
+   "case": 0.145,
+   "whitespace": 0.362,
+   "mean": 0.229
+  }
+ },
+ {
   "name": "schools_nyc",
   "domain": "education",
   "rows": 800,
@@ -10,13 +150,553 @@
   "review_flags": 1,
   "pii_protected_or_flagged": 5,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 24.51,
+  "sec_per_1k_rows": 20.69,
   "inject": {
    "typo": 0.093,
    "ocr": 0.145,
    "case": 0.131,
    "whitespace": 0.217,
    "mean": 0.146
+  }
+ },
+ {
+  "name": "food_chicago",
+  "domain": "food-inspections",
+  "rows": 800,
+  "cols": 17,
+  "plan_valid": true,
+  "ops": 4,
+  "cells_changed": 3584,
+  "review_flags": 0,
+  "pii_protected_or_flagged": 0,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 7.36,
+  "inject": {
+   "typo": 0.167,
+   "ocr": 0.204,
+   "case": 0.233,
+   "whitespace": 0.378,
+   "mean": 0.245
+  }
+ },
+ {
+  "name": "biz_chicago",
+  "domain": "business-licenses",
+  "rows": 800,
+  "cols": 37,
+  "plan_valid": true,
+  "ops": 7,
+  "cells_changed": 13601,
+  "review_flags": 3,
+  "pii_protected_or_flagged": 2,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 12.8,
+  "inject": {
+   "typo": 0.045,
+   "ocr": 0.05,
+   "case": 0.062,
+   "whitespace": 0.153,
+   "mean": 0.077
+  }
+ },
+ {
+  "name": "contractors_chi",
+  "domain": "contractors",
+  "rows": 800,
+  "cols": 116,
+  "plan_valid": true,
+  "ops": 8,
+  "cells_changed": 24996,
+  "review_flags": 6,
+  "pii_protected_or_flagged": 2,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 47.96,
+  "inject": {
+   "typo": 0.063,
+   "ocr": 0.076,
+   "case": 0.059,
+   "whitespace": 0.132,
+   "mean": 0.083
+  }
+ },
+ {
+  "name": "restaurants_sf",
+  "domain": "sf-restaurants",
+  "rows": 800,
+  "cols": 22,
+  "plan_valid": true,
+  "ops": 3,
+  "cells_changed": 6793,
+  "review_flags": 0,
+  "pii_protected_or_flagged": 2,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 7.35,
+  "inject": {
+   "typo": 0.148,
+   "ocr": 0.153,
+   "case": 0.184,
+   "whitespace": 0.254,
+   "mean": 0.185
+  }
+ },
+ {
+  "name": "biz_sf",
+  "domain": "sf-business",
+  "rows": 800,
+  "cols": 38,
+  "plan_valid": true,
+  "ops": 6,
+  "cells_changed": 9660,
+  "review_flags": 3,
+  "pii_protected_or_flagged": 1,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 12.89,
+  "inject": {
+   "typo": 0.016,
+   "ocr": 0.045,
+   "case": 0.016,
+   "whitespace": 0.064,
+   "mean": 0.035
+  }
+ },
+ {
+  "name": "proptax_sf",
+  "domain": "real-estate",
+  "rows": 800,
+  "cols": 46,
+  "plan_valid": true,
+  "ops": 4,
+  "cells_changed": 9302,
+  "review_flags": 0,
+  "pii_protected_or_flagged": 3,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 2.75,
+  "inject": {
+   "typo": 0.034,
+   "ocr": 0.045,
+   "case": 0.067,
+   "whitespace": 0.124,
+   "mean": 0.068
+  }
+ },
+ {
+  "name": "biz_la",
+  "domain": "la-business",
+  "rows": 800,
+  "cols": 16,
+  "plan_valid": true,
+  "ops": 7,
+  "cells_changed": 4316,
+  "review_flags": 2,
+  "pii_protected_or_flagged": 3,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 9.85,
+  "inject": {
+   "typo": 0.078,
+   "ocr": 0.048,
+   "case": 0.053,
+   "whitespace": 0.115,
+   "mean": 0.073
+  }
+ },
+ {
+  "name": "permits_seattle",
+  "domain": "seattle-permits",
+  "rows": 800,
+  "cols": 40,
+  "plan_valid": true,
+  "ops": 7,
+  "cells_changed": 7667,
+  "review_flags": 0,
+  "pii_protected_or_flagged": 2,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 6.53,
+  "inject": {
+   "typo": 0.08,
+   "ocr": 0.128,
+   "case": 0.087,
+   "whitespace": 0.141,
+   "mean": 0.109
+  }
+ },
+ {
+  "name": "alcohol_tx",
+  "domain": "alcohol-bars",
+  "rows": 800,
+  "cols": 24,
+  "plan_valid": true,
+  "ops": 5,
+  "cells_changed": 10115,
+  "review_flags": 1,
+  "pii_protected_or_flagged": 1,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 13.12,
+  "inject": {
+   "typo": 0.082,
+   "ocr": 0.06,
+   "case": 0.123,
+   "whitespace": 0.375,
+   "mean": 0.16
+  }
+ },
+ {
+  "name": "ev_wa",
+  "domain": "vehicles",
+  "rows": 800,
+  "cols": 16,
+  "plan_valid": true,
+  "ops": 3,
+  "cells_changed": 4885,
+  "review_flags": 3,
+  "pii_protected_or_flagged": 2,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 7.9,
+  "inject": {
+   "typo": 0.595,
+   "ocr": 0.665,
+   "case": 0.702,
+   "whitespace": 0.904,
+   "mean": 0.717
+  }
+ },
+ {
+  "name": "spotify",
+  "domain": "music",
+  "rows": 800,
+  "cols": 23,
+  "plan_valid": true,
+  "ops": 5,
+  "cells_changed": 4664,
+  "review_flags": 0,
+  "pii_protected_or_flagged": 1,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 9.03,
+  "inject": {
+   "typo": 0.205,
+   "ocr": 0.278,
+   "case": 0.3,
+   "whitespace": 0.362,
+   "mean": 0.286
+  }
+ },
+ {
+  "name": "billboard",
+  "domain": "music-billboard",
+  "rows": 317,
+  "cols": 83,
+  "plan_valid": true,
+  "ops": 6,
+  "cells_changed": 36222,
+  "review_flags": 1,
+  "pii_protected_or_flagged": 2,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 22.44,
+  "inject": {
+   "typo": 0.0,
+   "ocr": 0.0,
+   "case": 0.0,
+   "whitespace": 0.003,
+   "mean": 0.001
+  }
+ },
+ {
+  "name": "titanic",
+  "domain": "passengers",
+  "rows": 800,
+  "cols": 12,
+  "plan_valid": true,
+  "ops": 3,
+  "cells_changed": 5722,
+  "review_flags": 0,
+  "pii_protected_or_flagged": 0,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 4.65,
+  "inject": {
+   "typo": 0.0,
+   "ocr": 0.0,
+   "case": 0.093,
+   "whitespace": 0.401,
+   "mean": 0.123
+  }
+ },
+ {
+  "name": "worldcities",
+  "domain": "geography",
+  "rows": 800,
+  "cols": 4,
+  "plan_valid": true,
+  "ops": 3,
+  "cells_changed": 914,
+  "review_flags": 2,
+  "pii_protected_or_flagged": 0,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 12.84,
+  "inject": {
+   "typo": 0.414,
+   "ocr": 0.112,
+   "case": 0.224,
+   "whitespace": 0.687,
+   "mean": 0.359
+  }
+ },
+ {
+  "name": "airlines",
+  "domain": "aviation",
+  "rows": 56,
+  "cols": 8,
+  "plan_valid": true,
+  "ops": 2,
+  "cells_changed": 392,
+  "review_flags": 0,
+  "pii_protected_or_flagged": 1,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 50.09,
+  "inject": {
+   "typo": null,
+   "ocr": null,
+   "case": null,
+   "whitespace": null,
+   "mean": null
+  }
+ },
+ {
+  "name": "bx_books",
+  "domain": "books",
+  "rows": 800,
+  "cols": 8,
+  "plan_valid": true,
+  "ops": 4,
+  "cells_changed": 1609,
+  "review_flags": 0,
+  "pii_protected_or_flagged": 1,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 13.96,
+  "inject": {
+   "typo": 0.0,
+   "ocr": 0.0,
+   "case": 0.0,
+   "whitespace": 0.627,
+   "mean": 0.157
+  }
+ },
+ {
+  "name": "salary_survey",
+  "domain": "survey",
+  "rows": 800,
+  "cols": 18,
+  "plan_valid": true,
+  "ops": 5,
+  "cells_changed": 4128,
+  "review_flags": 2,
+  "pii_protected_or_flagged": 0,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 17.76,
+  "inject": {
+   "typo": 0.117,
+   "ocr": 0.196,
+   "case": 0.136,
+   "whitespace": 0.259,
+   "mean": 0.177
+  }
+ },
+ {
+  "name": "fec_indiv80",
+  "domain": "political-finance",
+  "rows": 800,
+  "cols": 21,
+  "plan_valid": true,
+  "ops": 4,
+  "cells_changed": 4841,
+  "review_flags": 1,
+  "pii_protected_or_flagged": 2,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 16.53,
+  "inject": {
+   "typo": 0.293,
+   "ocr": 0.222,
+   "case": 0.462,
+   "whitespace": 0.878,
+   "mean": 0.464
+  }
+ },
+ {
+  "name": "acnc_charities",
+  "domain": "nonprofits-au",
+  "rows": 800,
+  "cols": 69,
+  "plan_valid": true,
+  "ops": 6,
+  "cells_changed": 44865,
+  "review_flags": 1,
+  "pii_protected_or_flagged": 1,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 16.22,
+  "inject": {
+   "typo": 0.003,
+   "ocr": 0.001,
+   "case": 0.004,
+   "whitespace": 0.012,
+   "mean": 0.005
+  }
+ },
+ {
+  "name": "uk_price_paid",
+  "domain": "real-estate-uk",
+  "rows": 800,
+  "cols": 16,
+  "plan_valid": true,
+  "ops": 3,
+  "cells_changed": 1659,
+  "review_flags": 3,
+  "pii_protected_or_flagged": 0,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 31.39,
+  "inject": {
+   "typo": 0.139,
+   "ocr": 0.172,
+   "case": 0.256,
+   "whitespace": 0.426,
+   "mean": 0.248
+  }
+ },
+ {
+  "name": "irs_eo1",
+  "domain": "nonprofits-us",
+  "rows": 800,
+  "cols": 28,
+  "plan_valid": true,
+  "ops": 5,
+  "cells_changed": 16026,
+  "review_flags": 1,
+  "pii_protected_or_flagged": 3,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 15.3,
+  "inject": {
+   "typo": 0.096,
+   "ocr": 0.068,
+   "case": 0.076,
+   "whitespace": 0.346,
+   "mean": 0.146
+  }
+ },
+ {
+  "name": "glassdoor_jobs",
+  "domain": "job-listings",
+  "rows": 800,
+  "cols": 14,
+  "plan_valid": true,
+  "ops": 5,
+  "cells_changed": 1691,
+  "review_flags": 2,
+  "pii_protected_or_flagged": 0,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 33.71,
+  "inject": {
+   "typo": 0.181,
+   "ocr": 0.29,
+   "case": 0.217,
+   "whitespace": 0.436,
+   "mean": 0.281
+  }
+ },
+ {
+  "name": "paris_trees",
+  "domain": "urban-fr",
+  "rows": 800,
+  "cols": 16,
+  "plan_valid": true,
+  "ops": 5,
+  "cells_changed": 3291,
+  "review_flags": 3,
+  "pii_protected_or_flagged": 1,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 25.46,
+  "inject": {
+   "typo": 0.431,
+   "ocr": 0.537,
+   "case": 0.56,
+   "whitespace": 0.735,
+   "mean": 0.566
+  }
+ },
+ {
+  "name": "online_retail",
+  "domain": "ecommerce-uk",
+  "rows": 800,
+  "cols": 8,
+  "plan_valid": true,
+  "ops": 5,
+  "cells_changed": 3405,
+  "review_flags": 0,
+  "pii_protected_or_flagged": 0,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 2.87,
+  "inject": {
+   "typo": 0.267,
+   "ocr": 0.006,
+   "case": 0.007,
+   "whitespace": 0.311,
+   "mean": 0.148
+  }
+ },
+ {
+  "name": "bl_flickr_books",
+  "domain": "library",
+  "rows": 800,
+  "cols": 15,
+  "plan_valid": true,
+  "ops": 5,
+  "cells_changed": 1741,
+  "review_flags": 1,
+  "pii_protected_or_flagged": 1,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 17.43,
+  "inject": {
+   "typo": 0.2,
+   "ocr": 0.297,
+   "case": 0.238,
+   "whitespace": 0.45,
+   "mean": 0.296
+  }
+ },
+ {
+  "name": "open_food_facts",
+  "domain": "food-products",
+  "rows": 800,
+  "cols": 211,
+  "plan_valid": true,
+  "ops": 8,
+  "cells_changed": 25768,
+  "review_flags": 5,
+  "pii_protected_or_flagged": 5,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 48.85,
+  "inject": {
+   "typo": 0.016,
+   "ocr": 0.023,
+   "case": 0.017,
+   "whitespace": 0.034,
+   "mean": 0.022
+  }
+ },
+ {
+  "name": "ct_real_estate",
+  "domain": "real-estate-us",
+  "rows": 800,
+  "cols": 14,
+  "plan_valid": true,
+  "ops": 4,
+  "cells_changed": 3875,
+  "review_flags": 1,
+  "pii_protected_or_flagged": 0,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 5.74,
+  "inject": {
+   "typo": 0.234,
+   "ocr": 0.295,
+   "case": 0.237,
+   "whitespace": 0.399,
+   "mean": 0.291
   }
  }
 ]
