@@ -253,6 +253,39 @@ def test_active_planner_is_verified_union(monkeypatch):
     assert is_valid(plan)
 
 
+def test_suspects_visibility_high_cardinality():
+    from scrubdata.profiler import profile_column
+    # high-card "text" column: 60 unique names + one near-dup of a repeated one
+    names = [f"unique business {i}" for i in range(57)]
+    col = names + ["acme holdings", "acme holdings", "acme holdngs"]
+    prof = profile_column(pd.Series(col, name="business"))
+    assert prof["detected_semantic_type"] == "text"
+    sus = {s["raw"]: s["candidates"] for s in prof["suspect_values"]}
+    assert "acme holdngs" in sus and "acme holdings" in sus["acme holdngs"]
+    assert len(prof["suspect_values"]) <= 25            # bounded
+    # heuristic now repairs it (verifier-gated), where before it emitted nothing
+    df = pd.DataFrame({"business": col})
+    plan = mock_plan(df)
+    maps = {r: c for col_ in plan["columns"] for o in col_["operations"]
+            if o["op"] == "canonicalize_categories" for r, c in o["mapping"].items()}
+    assert maps.get("acme holdngs") == "acme holdings"
+    cleaned, _ = apply_plan(df, plan)
+    assert "acme holdngs" not in set(cleaned["business"])
+    # garbage suspect-free value stays put; plan still schema-valid
+    assert is_valid(plan)
+
+
+def test_suspects_garbage_flagged_not_mapped():
+    from scrubdata.profiler import profile_column
+    col = [f"item {i}" for i in range(40)] + ["it€m ’junk", "it€m ’junk"]
+    df = pd.DataFrame({"thing": col})
+    plan = mock_plan(df)
+    maps = {r for c in plan["columns"] for o in c["operations"]
+            if o["op"] == "canonicalize_categories" for r in o["mapping"]}
+    assert "it€m ’junk" not in maps                     # no invented target
+    assert is_valid(plan)
+
+
 def test_normalize_punctuation_op():
     df = pd.DataFrame({"name": ["palm’s thai", "joe‘s “grill”", "a–b — c", "plain's ok"]})
     plan = mock_plan(df)

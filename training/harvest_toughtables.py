@@ -52,7 +52,12 @@ def main() -> None:
     ap.add_argument("--top-tables", type=int, default=8,
                     help="emit the N largest tables as paired-bench pairs")
     ap.add_argument("--vocab-out", default="data/toughtables_aliases.jsonl")
+    ap.add_argument("--exclude-tables", default="",
+                    help="comma list of table stems EXCLUDED from the vocabulary "
+                         "(contamination guard: benchmark tables must not feed the "
+                         "reference used to clean them)")
     args = ap.parse_args()
+    excluded = {t.strip().lower() for t in args.exclude_tables.split(",") if t.strip()}
     zf = zipfile.ZipFile(args.zip)
     gt = load_cea(zf)
     print(f"CEA gold: {len(gt)} annotated cells")
@@ -73,6 +78,8 @@ def main() -> None:
             pass
     # collect surfaces (row in CEA is 1-based over data rows)
     for (tab, row, col), qid in gt.items():
+        if tab.lower() in excluded:
+            continue
         df = table_dfs.get(tab)
         if df is None or row - 1 >= len(df) or col >= df.shape[1]:
             continue

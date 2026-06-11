@@ -1,0 +1,56 @@
+[
+ {
+  "system": "v9 + entity-grounding system",
+  "sources": [
+   "flights",
+   "rayyan",
+   "ed2_restaurants"
+  ],
+  "gen_f1": 0.017926500503509666,
+  "variant_recall": 0.07343363589892375,
+  "variant_precision": 0.33114845938375354,
+  "other_recall": 0.0,
+  "damage": 0.045092536094738296,
+  "per_source": [
+   {
+    "source": "flights",
+    "f1": 0.0435927442949093,
+    "precision": 0.07776617954070981,
+    "recall": 0.030284552845528456,
+    "damage": 0.08196721311475409,
+    "variant_errors": 1049,
+    "variant_fixed": 149,
+    "variant_changed": 425,
+    "variant_good": 149,
+    "other_errors": 3871,
+    "other_fixed": 0
+   },
+   {
+    "source": "rayyan",
+    "f1": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "damage": 0.05033824114604059,
+    "variant_errors": 171,
+    "variant_fixed": 0,
+    "variant_changed": 67,
+    "variant_good": 0,
+    "other_errors": 777,
+    "other_fixed": 0
+   },
+   {
+    "source": "ed2_restaurants",
+    "f1": 0.010186757215619697,
+    "precision": 0.006928406466512702,
+    "recall": 0.019230769230769232,
+    "damage": 0.0029721540234202027,
+    "variant_errors": 115,
+    "variant_fixed": 9,
+    "variant_changed": 14,
+    "variant_good": 9,
+    "other_errors": 353,
+    "other_fixed": 0
+   }
+  ]
+ }
+]

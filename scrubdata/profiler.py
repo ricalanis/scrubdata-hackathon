@@ -81,6 +81,12 @@ def profile_column(series: pd.Series) -> dict:
         if os.environ.get("SCRUBDATA_PII_NER"):     # tier-2 NER: opt-in (needs transformers)
             from .pii import detect_column_pii_ner
             pii = detect_column_pii_ner(str(series.name), values)
+    # visibility for capped/high-card columns: rare anomalous surfaces + their
+    # evidence-backed repair candidates (bounded; the value_counts cap hides these)
+    suspects = []
+    if pii is None and semantic_type in ("text", "categorical", "country", "city"):
+        from .pair_profile import suspects_for_column
+        suspects = suspects_for_column(values)
     return {
         "name": str(series.name),
         "pandas_dtype": str(series.dtype),
@@ -90,6 +96,7 @@ def profile_column(series: pd.Series) -> dict:
         "n_unique": len(counts),
         "value_counts": value_counts,
         "truncated_values": max(0, len(counts) - VALUE_COUNTS_CAP),
+        "suspect_values": suspects,
         "issues": _column_issues(series, semantic_type),
         # PII typing: tier-1 regex+checksum always; tier-2 NER when opted in. None if not PII.
         "pii": pii,

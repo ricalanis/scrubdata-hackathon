@@ -82,20 +82,32 @@ class ReferenceIndex:
 
 
 def infer_reference_type(values, idx: ReferenceIndex | None = None,
-                         min_coverage: float = 0.55, sample: int = 80):
+                         min_coverage: float = 0.55, sample: int = 80,
+                         entity_exact_floor: float = 0.20):
     """Type a column by the reference itself (research's column-typing step): if most
     distinct values reconcile to a given taxonomy, that's the column's concept type.
-    Returns 'country'|'state'|'city' or None."""
+    Returns 'country'|'state'|'city'|'entity' or None.
+
+    The generic 'entity' reference is huge (~100k names), so fuzzy coverage alone
+    over-fires on arbitrary name-like columns (measured: vendor/tool columns took
+    0.2+ damage). Entity typing additionally requires that >= `entity_exact_floor`
+    of the column's distinct values EXACTLY match the reference — real entity
+    columns are mostly valid canonicals; lookalike columns are not."""
     idx = idx or default_index()
     distinct = list(dict.fromkeys(str(x).strip() for x in values if str(x).strip()))[:sample]
     if len(distinct) < 4:
         return None
     best_type, best_cov = None, 0.0
-    for ctype in ("country", "state", "city"):
+    for ctype in ("country", "state", "city", "entity"):
         if not idx.has_type(ctype):
             continue
         hits = sum(1 for v in distinct if (b := idx.best(v, ctype)) and b[1] >= 0.80)
         cov = hits / len(distinct)
+        if ctype == "entity":
+            exact = sum(1 for v in distinct
+                        if idx._exact.get("entity", {}).get(_norm(v)) is not None)
+            if exact / len(distinct) < entity_exact_floor:
+                continue
         if cov > best_cov:
             best_type, best_cov = ctype, cov
     return best_type if best_cov >= min_coverage else None
@@ -186,4 +198,27 @@ def default_index() -> ReferenceIndex:
                 name = line.strip()
                 if name:
                     idx.add("city", name)
+    # GENERIC ENTITY reference: harvested {canonical, aliases} vocabularies (people,
+    # films, artists, companies, orgs). This is what resolves the all-unique-surfaces
+    # regime (e.g. ToughTables: every row a different variant — no in-column frequency
+    # signal exists; only an external reference can vote). Contamination guard:
+    # toughtables_ref.jsonl is derived EXCLUDING the benchmark tables.
+    import json as _json
+    data_dir = os.path.join(os.path.dirname(__file__), "..", "data")
+    for fname, cap in (("toughtables_ref.jsonl", None),
+                       ("musicbrainz_hint_aliases.jsonl", None),
+                       ("wikidata_company_aliases.jsonl", None),
+                       ("ror_aliases.jsonl", 20000)):
+        p = os.path.join(data_dir, fname)
+        if not os.path.exists(p):
+            continue
+        with open(p, encoding="utf-8") as fh:
+            for i, line in enumerate(fh):
+                if cap is not None and i >= cap:
+                    break
+                try:
+                    r = _json.loads(line)
+                except Exception:  # noqa: BLE001
+                    continue
+                idx.add("entity", r["canonical"], r.get("aliases", []))
     return idx

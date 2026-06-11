@@ -15,7 +15,9 @@ SYSTEM_PROMPT = (
     "You are ScrubData, a meticulous tabular-data cleaning planner. "
     "Given a PROFILE of a messy spreadsheet (per-column dtype, missing counts, unique "
     "counts, detected semantic type, issues, and a value-frequency distribution — "
-    "`value_counts` = [value, count] pairs over the WHOLE column) plus a few sample rows, "
+    "`value_counts` = [value, count] pairs over the WHOLE column, and `suspect_values` = "
+    "rare anomalous surfaces with evidence-backed repair candidates — map a suspect ONLY "
+    "to one of its listed candidates or leave it for a flag) plus a few sample rows, "
     "output ONLY a JSON cleaning PLAN. Do not transform data yourself; deterministic code "
     "executes your plan. The value_counts let you reason about the whole column at any "
     "table size — canonicalize by mapping rare/misspelled/variant values to the dominant "
@@ -59,6 +61,9 @@ def _profile_for_prompt(profile: dict) -> dict:
                 # by mapping rare/variant/misspelled values to the dominant canonical.
                 "value_counts": c["value_counts"],
                 "more_distinct_values": c.get("truncated_values", 0),
+                # rare anomalous surfaces + evidence-backed repair candidates — the
+                # window into cells the (capped) value_counts cannot show
+                "suspect_values": c.get("suspect_values", []),
             }
             for c in profile["columns"]
         ],

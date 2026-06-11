@@ -178,6 +178,14 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
                     ops.append({"op": "canonicalize_categories", "mapping": mapping,
                                 "rationale": f"Unified {len(mapping)} inconsistent "
                                              f"spellings into canonical labels."})
+            elif stype == "text":
+                # VISIBILITY redesign: high-cardinality columns never reached
+                # canonicalization before. Suspects (profile section) propose rare
+                # anomalous surfaces + candidates; each entry must clear the
+                # verifier's deterministic confidence at a STRICT threshold (no
+                # model cross-check exists on these columns). Sub-threshold
+                # suspects become review flags — abstention stays first-class.
+                _suspect_canonicalize(col_profile, series, ops, flags_out, cfg)
             return ops
         mapping, abstained = grounded_mapping(
             series.tolist(), ref_type,
@@ -198,6 +206,45 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
                              f"not confidently match the reference — left unchanged for review.",
             })
     return ops
+
+
+def _suspect_canonicalize(col_profile, series, ops, flags_out, cfg) -> None:
+    """High-cardinality canonicalization from profile suspects, verifier-gated."""
+    import os
+
+    from .verifier import entry_confidence
+
+    suspects = col_profile.get("suspect_values") or []
+    if not suspects:
+        return
+    from collections import Counter
+
+    from . import detect
+    tau_hc = float(cfg.get("hc_tau", os.environ.get("SCRUBDATA_HC_TAU", 0.8)))
+    freq = Counter(str(v).strip() for v in series.tolist() if not detect.is_missing(v))
+    mapping, review = {}, []
+    for s in suspects:
+        raw = s["raw"]
+        best, best_conf = None, 0.0
+        for cand in s.get("candidates", []):
+            conf = entry_confidence(raw, cand, freq)
+            if conf > best_conf:
+                best, best_conf = cand, conf
+        if best is not None and best_conf >= tau_hc:
+            mapping[raw] = best
+        else:
+            review.append(raw)
+    if mapping:
+        ops.append({"op": "canonicalize_categories", "mapping": mapping,
+                    "rationale": f"Repaired {len(mapping)} rare anomalous value(s) to "
+                                 f"their evidence-backed candidates (confidence >= {tau_hc})."})
+    if review and flags_out is not None:
+        flags_out.append({
+            "column": col_profile["name"], "issue": "suspect_values",
+            "values": review[:20], "action": "left_for_review",
+            "rationale": f"{len(review)} rare anomalous value(s) without a "
+                         f"high-confidence repair candidate — left for review.",
+        })
 
 
 def mock_plan(df: pd.DataFrame, profile: dict | None = None,

@@ -71,6 +71,36 @@ def candidate_pairs(values, idx=None, ctype=None, max_candidates: int = 3,
     return out[:max_pairs]
 
 
+def suspects_for_column(values, max_suspects: int = 25) -> list[dict]:
+    """Profile-visibility section: rare anomalous surfaces with evidence-backed
+    repair candidates, for EVERY text column INCLUDING high-cardinality ones (where
+    value_counts truncation otherwise hides dirty cells from the planner entirely).
+
+    Two trigger classes:
+      * candidate-backed: a rare surface with a frequency-dominant / reference
+        near-match (candidate_pairs — the WS2 machinery)
+      * artifact carrier: a surface containing encoding/punctuation artifacts
+        (unicode quotes/dashes/NBSP) — candidates may be empty; the planner's
+        normalize_punctuation op or a review flag handles them
+
+    Output shape (compact, bounded): [{raw, count, candidates: [str, ...]}]."""
+    from . import detect
+
+    out = candidate_pairs(values, max_pairs=max_suspects)
+    listed = {p["raw"] for p in out}
+    suspects = [{"raw": p["raw"], "count": p["count"],
+                 "candidates": [c["canon"] for c in p["candidates"]]}
+                for p in out]
+    if len(suspects) < max_suspects:
+        freq = Counter(str(v).strip() for v in values if not detect.is_missing(v))
+        for raw, n in freq.items():
+            if len(suspects) >= max_suspects:
+                break
+            if n < 3 and raw not in listed and detect.has_unicode_punctuation([raw]):
+                suspects.append({"raw": raw, "count": n, "candidates": []})
+    return suspects
+
+
 def pairs_for_df(df) -> dict:
     """Per-column candidate pairs for every plausible text column (compact prompt
     payload: candidates collapse to their surface strings)."""
