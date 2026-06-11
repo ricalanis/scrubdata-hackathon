@@ -25,6 +25,15 @@ image = (
     .add_local_dir("data/real/tt_uma1dnf6", "/root/repo/data/real/tt_uma1dnf6", copy=True)
     .add_local_dir("data/real/zeroed_billionaire",
                    "/root/repo/data/real/zeroed_billionaire", copy=True)
+    # entity-reference vocabularies (reconcile.default_index loads from data/)
+    .add_local_file("training/harvests/toughtables_ref.jsonl",
+                    "/root/repo/data/toughtables_ref.jsonl", copy=True)
+    .add_local_file("training/harvests/musicbrainz_hint_aliases.jsonl",
+                    "/root/repo/data/musicbrainz_hint_aliases.jsonl", copy=True)
+    .add_local_file("training/harvests/wikidata_company_aliases.jsonl",
+                    "/root/repo/data/wikidata_company_aliases.jsonl", copy=True)
+    .add_local_file("training/harvests/ror_aliases.jsonl",
+                    "/root/repo/data/ror_aliases.jsonl", copy=True)
 )
 app = modal.App("scrubdata-eval-v5", image=image)
 adapter_vol = modal.Volume.from_name("scrubdata-v5-adapter")

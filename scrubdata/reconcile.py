@@ -204,12 +204,16 @@ def default_index() -> ReferenceIndex:
     # signal exists; only an external reference can vote). Contamination guard:
     # toughtables_ref.jsonl is derived EXCLUDING the benchmark tables.
     import json as _json
-    data_dir = os.path.join(os.path.dirname(__file__), "..", "data")
+    root = os.path.join(os.path.dirname(__file__), "..")
     for fname, cap in (("toughtables_ref.jsonl", None),
                        ("musicbrainz_hint_aliases.jsonl", None),
                        ("wikidata_company_aliases.jsonl", None),
                        ("ror_aliases.jsonl", 20000)):
-        p = os.path.join(data_dir, fname)
+        # data/ is the working location (gitignored); training/harvests/ is the
+        # committed bundle — the Space and fresh clones only have the latter.
+        p = os.path.join(root, "data", fname)
+        if not os.path.exists(p):
+            p = os.path.join(root, "training", "harvests", fname)
         if not os.path.exists(p):
             continue
         with open(p, encoding="utf-8") as fh:

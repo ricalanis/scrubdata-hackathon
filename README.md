@@ -29,9 +29,13 @@ A small local model is the **planner**, never a row-by-row editor:
 2. **Plan** — the model reads the profile and emits a structured JSON cleaning plan:
    canonicalization mappings, format fixes, dedup, anomaly flags.
 3. **Ground** — canonical forms are never invented: values reconcile against reference
-   taxonomies (GeoNames 196k cities, ISO countries/states) with fuzzy retrieval; ambiguous
-   matches **abstain** and surface for human review (calibrated: 90% precision at the
-   default threshold, ≥95% at 0.91).
+   taxonomies (GeoNames 196k cities, ISO countries/states, and a pluggable **entity
+   reference** built from harvested vocabularies — ToughTables/MusicBrainz/Wikidata/ROR,
+   ~100k entities) with fuzzy retrieval; ambiguous matches **abstain** and surface for
+   human review (calibrated: 90% precision at the default threshold, ≥95% at 0.91).
+   Profiles carry **suspect_values** — rare anomalous surfaces with evidence-backed
+   candidates — so high-cardinality columns are no longer invisible to the planner
+   (measured: five all-unique-surface benchmark tables went 0.0 → 0.96 F1 at zero damage).
 4. **Verify** — every model-proposed mapping is scored by deterministic evidence
    (errors-are-rare frequency gates, variant similarity, reference agreement); entries
    below the confidence threshold (`SCRUBDATA_TAU`, default 0.5) become review flags
