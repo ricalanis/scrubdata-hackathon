@@ -6,17 +6,17 @@
   "cols": 27,
   "plan_valid": true,
   "ops": 7,
-  "cells_changed": 8263,
+  "cells_changed": 7742,
   "review_flags": 6,
   "pii_protected_or_flagged": 4,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 21.85,
+  "sec_per_1k_rows": 22.41,
   "inject": {
-   "typo": 0.075,
-   "ocr": 0.083,
-   "case": 0.073,
-   "whitespace": 0.161,
-   "mean": 0.098
+   "typo": 0.074,
+   "ocr": 0.082,
+   "case": 0.089,
+   "whitespace": 0.202,
+   "mean": 0.112
   }
  },
  {
@@ -26,17 +26,17 @@
   "cols": 31,
   "plan_valid": true,
   "ops": 7,
-  "cells_changed": 9008,
+  "cells_changed": 8494,
   "review_flags": 8,
   "pii_protected_or_flagged": 2,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 30.78,
+  "sec_per_1k_rows": 31.22,
   "inject": {
-   "typo": 0.066,
-   "ocr": 0.077,
-   "case": 0.049,
-   "whitespace": 0.098,
-   "mean": 0.073
+   "typo": 0.058,
+   "ocr": 0.08,
+   "case": 0.053,
+   "whitespace": 0.114,
+   "mean": 0.076
   }
  },
  {
@@ -50,13 +50,13 @@
   "review_flags": 3,
   "pii_protected_or_flagged": 2,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 52.63,
+  "sec_per_1k_rows": 54.59,
   "inject": {
    "typo": 0.447,
    "ocr": 0.555,
    "case": 0.424,
-   "whitespace": 0.713,
-   "mean": 0.535
+   "whitespace": 0.728,
+   "mean": 0.538
   }
  },
  {
@@ -66,17 +66,17 @@
   "cols": 44,
   "plan_valid": true,
   "ops": 7,
-  "cells_changed": 7420,
-  "review_flags": 15,
+  "cells_changed": 6299,
+  "review_flags": 16,
   "pii_protected_or_flagged": 2,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 36.42,
+  "sec_per_1k_rows": 37.37,
   "inject": {
-   "typo": 0.198,
-   "ocr": 0.246,
-   "case": 0.182,
-   "whitespace": 0.25,
-   "mean": 0.219
+   "typo": 0.229,
+   "ocr": 0.3,
+   "case": 0.226,
+   "whitespace": 0.372,
+   "mean": 0.282
   }
  },
  {
@@ -86,17 +86,17 @@
   "cols": 60,
   "plan_valid": true,
   "ops": 8,
-  "cells_changed": 18138,
-  "review_flags": 22,
+  "cells_changed": 16762,
+  "review_flags": 25,
   "pii_protected_or_flagged": 3,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 97.82,
+  "sec_per_1k_rows": 101.39,
   "inject": {
-   "typo": 0.039,
-   "ocr": 0.052,
-   "case": 0.042,
-   "whitespace": 0.099,
-   "mean": 0.058
+   "typo": 0.034,
+   "ocr": 0.044,
+   "case": 0.038,
+   "whitespace": 0.127,
+   "mean": 0.061
   }
  },
  {
@@ -110,7 +110,7 @@
   "review_flags": 3,
   "pii_protected_or_flagged": 0,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 4.31,
+  "sec_per_1k_rows": 4.57,
   "inject": {
    "typo": 0.141,
    "ocr": 0.159,
@@ -130,7 +130,7 @@
   "review_flags": 4,
   "pii_protected_or_flagged": 2,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 26.34,
+  "sec_per_1k_rows": 27.15,
   "inject": {
    "typo": 0.105,
    "ocr": 0.301,
@@ -146,17 +146,17 @@
   "cols": 41,
   "plan_valid": true,
   "ops": 7,
-  "cells_changed": 15340,
+  "cells_changed": 14387,
   "review_flags": 7,
   "pii_protected_or_flagged": 5,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 32.28,
+  "sec_per_1k_rows": 33.18,
   "inject": {
    "typo": 0.081,
-   "ocr": 0.116,
+   "ocr": 0.145,
    "case": 0.117,
-   "whitespace": 0.179,
-   "mean": 0.123
+   "whitespace": 0.217,
+   "mean": 0.14
   }
  },
  {
@@ -166,17 +166,17 @@
   "cols": 17,
   "plan_valid": true,
   "ops": 5,
-  "cells_changed": 2939,
+  "cells_changed": 2790,
   "review_flags": 6,
   "pii_protected_or_flagged": 0,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 11.86,
+  "sec_per_1k_rows": 11.95,
   "inject": {
-   "typo": 0.161,
+   "typo": 0.167,
    "ocr": 0.25,
-   "case": 0.209,
-   "whitespace": 0.367,
-   "mean": 0.247
+   "case": 0.232,
+   "whitespace": 0.378,
+   "mean": 0.257
   }
  },
  {
@@ -186,17 +186,17 @@
   "cols": 37,
   "plan_valid": true,
   "ops": 8,
-  "cells_changed": 13548,
+  "cells_changed": 12808,
   "review_flags": 9,
   "pii_protected_or_flagged": 2,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 24.18,
+  "sec_per_1k_rows": 24.83,
   "inject": {
    "typo": 0.054,
    "ocr": 0.059,
-   "case": 0.064,
-   "whitespace": 0.132,
-   "mean": 0.077
+   "case": 0.062,
+   "whitespace": 0.152,
+   "mean": 0.082
   }
  },
  {
@@ -206,17 +206,17 @@
   "cols": 116,
   "plan_valid": true,
   "ops": 9,
-  "cells_changed": 21065,
+  "cells_changed": 20213,
   "review_flags": 22,
   "pii_protected_or_flagged": 2,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 65.77,
+  "sec_per_1k_rows": 68.33,
   "inject": {
-   "typo": 0.126,
-   "ocr": 0.173,
-   "case": 0.114,
-   "whitespace": 0.23,
-   "mean": 0.161
+   "typo": 0.168,
+   "ocr": 0.196,
+   "case": 0.162,
+   "whitespace": 0.325,
+   "mean": 0.213
   }
  },
  {
@@ -226,17 +226,17 @@
   "cols": 22,
   "plan_valid": true,
   "ops": 5,
-  "cells_changed": 6278,
+  "cells_changed": 6002,
   "review_flags": 6,
   "pii_protected_or_flagged": 2,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 14.67,
+  "sec_per_1k_rows": 15.04,
   "inject": {
-   "typo": 0.131,
-   "ocr": 0.134,
+   "typo": 0.149,
+   "ocr": 0.154,
    "case": 0.162,
-   "whitespace": 0.224,
-   "mean": 0.163
+   "whitespace": 0.256,
+   "mean": 0.18
   }
  },
  {
@@ -250,7 +250,7 @@
   "review_flags": 12,
   "pii_protected_or_flagged": 1,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 21.21,
+  "sec_per_1k_rows": 22.39,
   "inject": {
    "typo": 0.02,
    "ocr": 0.053,
@@ -266,17 +266,17 @@
   "cols": 46,
   "plan_valid": true,
   "ops": 6,
-  "cells_changed": 9755,
+  "cells_changed": 9302,
   "review_flags": 3,
   "pii_protected_or_flagged": 3,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 5.75,
+  "sec_per_1k_rows": 5.98,
   "inject": {
    "typo": 0.058,
    "ocr": 0.064,
    "case": 0.075,
-   "whitespace": 0.114,
-   "mean": 0.078
+   "whitespace": 0.124,
+   "mean": 0.08
   }
  },
  {
@@ -290,7 +290,7 @@
   "review_flags": 9,
   "pii_protected_or_flagged": 3,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 17.09,
+  "sec_per_1k_rows": 17.64,
   "inject": {
    "typo": 0.149,
    "ocr": 0.092,
@@ -306,17 +306,17 @@
   "cols": 40,
   "plan_valid": true,
   "ops": 9,
-  "cells_changed": 7485,
+  "cells_changed": 6878,
   "review_flags": 9,
   "pii_protected_or_flagged": 2,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 13.18,
+  "sec_per_1k_rows": 13.65,
   "inject": {
-   "typo": 0.076,
-   "ocr": 0.104,
-   "case": 0.081,
-   "whitespace": 0.115,
-   "mean": 0.094
+   "typo": 0.08,
+   "ocr": 0.128,
+   "case": 0.087,
+   "whitespace": 0.14,
+   "mean": 0.109
   }
  },
  {
@@ -330,7 +330,7 @@
   "review_flags": 9,
   "pii_protected_or_flagged": 1,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 19.0,
+  "sec_per_1k_rows": 19.4,
   "inject": {
    "typo": 0.143,
    "ocr": 0.094,
@@ -346,17 +346,17 @@
   "cols": 16,
   "plan_valid": true,
   "ops": 4,
-  "cells_changed": 4493,
+  "cells_changed": 4085,
   "review_flags": 5,
   "pii_protected_or_flagged": 2,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 11.94,
+  "sec_per_1k_rows": 11.74,
   "inject": {
    "typo": 0.498,
    "ocr": 0.56,
    "case": 0.483,
-   "whitespace": 0.648,
-   "mean": 0.547
+   "whitespace": 0.906,
+   "mean": 0.612
   }
  },
  {
@@ -366,17 +366,17 @@
   "cols": 23,
   "plan_valid": true,
   "ops": 7,
-  "cells_changed": 4822,
+  "cells_changed": 4669,
   "review_flags": 3,
   "pii_protected_or_flagged": 1,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 13.0,
+  "sec_per_1k_rows": 12.63,
   "inject": {
-   "typo": 0.181,
-   "ocr": 0.246,
-   "case": 0.262,
-   "whitespace": 0.32,
-   "mean": 0.252
+   "typo": 0.205,
+   "ocr": 0.277,
+   "case": 0.299,
+   "whitespace": 0.361,
+   "mean": 0.285
   }
  },
  {
@@ -386,11 +386,11 @@
   "cols": 83,
   "plan_valid": true,
   "ops": 8,
-  "cells_changed": 36291,
+  "cells_changed": 36222,
   "review_flags": 3,
   "pii_protected_or_flagged": 2,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 33.16,
+  "sec_per_1k_rows": 31.17,
   "inject": {
    "typo": 0.0,
    "ocr": 0.0,
@@ -406,17 +406,17 @@
   "cols": 12,
   "plan_valid": true,
   "ops": 4,
-  "cells_changed": 6516,
+  "cells_changed": 5722,
   "review_flags": 1,
   "pii_protected_or_flagged": 0,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 6.98,
+  "sec_per_1k_rows": 6.92,
   "inject": {
-   "typo": 0.028,
-   "ocr": 0.07,
-   "case": 0.047,
-   "whitespace": 0.153,
-   "mean": 0.074
+   "typo": 0.0,
+   "ocr": 0.0,
+   "case": 0.093,
+   "whitespace": 0.401,
+   "mean": 0.123
   }
  },
  {
@@ -430,7 +430,7 @@
   "review_flags": 2,
   "pii_protected_or_flagged": 0,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 14.1,
+  "sec_per_1k_rows": 14.01,
   "inject": {
    "typo": 0.414,
    "ocr": 0.112,
@@ -450,7 +450,7 @@
   "review_flags": 1,
   "pii_protected_or_flagged": 1,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 53.33,
+  "sec_per_1k_rows": 51.36,
   "inject": {
    "typo": null,
    "ocr": null,
@@ -470,7 +470,7 @@
   "review_flags": 3,
   "pii_protected_or_flagged": 1,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 20.17,
+  "sec_per_1k_rows": 20.39,
   "inject": {
    "typo": 0.217,
    "ocr": 0.22,
@@ -490,7 +490,7 @@
   "review_flags": 5,
   "pii_protected_or_flagged": 0,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 25.91,
+  "sec_per_1k_rows": 25.64,
   "inject": {
    "typo": 0.117,
    "ocr": 0.195,
@@ -510,13 +510,13 @@
   "review_flags": 4,
   "pii_protected_or_flagged": 2,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 20.71,
+  "sec_per_1k_rows": 20.87,
   "inject": {
    "typo": 0.201,
    "ocr": 0.242,
    "case": 0.346,
-   "whitespace": 0.588,
-   "mean": 0.344
+   "whitespace": 0.867,
+   "mean": 0.414
   }
  },
  {
@@ -530,7 +530,7 @@
   "review_flags": 4,
   "pii_protected_or_flagged": 1,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 23.21,
+  "sec_per_1k_rows": 23.07,
   "inject": {
    "typo": 0.003,
    "ocr": 0.001,
@@ -550,7 +550,7 @@
   "review_flags": 8,
   "pii_protected_or_flagged": 0,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 37.25,
+  "sec_per_1k_rows": 37.08,
   "inject": {
    "typo": 0.138,
    "ocr": 0.172,
@@ -570,7 +570,7 @@
   "review_flags": 5,
   "pii_protected_or_flagged": 3,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 20.91,
+  "sec_per_1k_rows": 21.18,
   "inject": {
    "typo": 0.035,
    "ocr": 0.025,
@@ -586,17 +586,17 @@
   "cols": 14,
   "plan_valid": true,
   "ops": 6,
-  "cells_changed": 1886,
+  "cells_changed": 1713,
   "review_flags": 6,
   "pii_protected_or_flagged": 0,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 43.49,
+  "sec_per_1k_rows": 43.58,
   "inject": {
-   "typo": 0.18,
-   "ocr": 0.269,
-   "case": 0.197,
-   "whitespace": 0.381,
-   "mean": 0.257
+   "typo": 0.202,
+   "ocr": 0.295,
+   "case": 0.224,
+   "whitespace": 0.43,
+   "mean": 0.288
   }
  },
  {
@@ -606,17 +606,17 @@
   "cols": 16,
   "plan_valid": true,
   "ops": 6,
-  "cells_changed": 3555,
+  "cells_changed": 3305,
   "review_flags": 5,
   "pii_protected_or_flagged": 1,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 31.6,
+  "sec_per_1k_rows": 31.65,
   "inject": {
-   "typo": 0.352,
-   "ocr": 0.473,
-   "case": 0.435,
-   "whitespace": 0.58,
-   "mean": 0.46
+   "typo": 0.428,
+   "ocr": 0.535,
+   "case": 0.554,
+   "whitespace": 0.726,
+   "mean": 0.561
   }
  },
  {
@@ -626,17 +626,17 @@
   "cols": 8,
   "plan_valid": true,
   "ops": 6,
-  "cells_changed": 3460,
+  "cells_changed": 3413,
   "review_flags": 1,
   "pii_protected_or_flagged": 0,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 5.1,
+  "sec_per_1k_rows": 5.17,
   "inject": {
-   "typo": 0.232,
-   "ocr": 0.005,
-   "case": 0.006,
-   "whitespace": 0.272,
-   "mean": 0.129
+   "typo": 0.262,
+   "ocr": 0.006,
+   "case": 0.007,
+   "whitespace": 0.304,
+   "mean": 0.145
   }
  },
  {
@@ -650,7 +650,7 @@
   "review_flags": 6,
   "pii_protected_or_flagged": 1,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 27.56,
+  "sec_per_1k_rows": 27.07,
   "inject": {
    "typo": 0.189,
    "ocr": 0.281,
@@ -666,17 +666,17 @@
   "cols": 211,
   "plan_valid": true,
   "ops": 9,
-  "cells_changed": 27727,
+  "cells_changed": 27115,
   "review_flags": 34,
   "pii_protected_or_flagged": 5,
   "silent_edit_columns": [],
-  "sec_per_1k_rows": 81.37,
+  "sec_per_1k_rows": 80.74,
   "inject": {
-   "typo": 0.017,
-   "ocr": 0.022,
-   "case": 0.018,
-   "whitespace": 0.03,
-   "mean": 0.022
+   "typo": 0.018,
+   "ocr": 0.023,
+   "case": 0.019,
+   "whitespace": 0.033,
+   "mean": 0.023
   }
  },
  {

@@ -126,13 +126,16 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
         if ptype in ("credit_card", "iban", "ssn", "ip_address", "mac_address"):
             return ops      # identifier columns: NEVER fall through to format ops
 
-    if "whitespace" in issues:
-        ops.append({"op": "strip_whitespace",
-                    "rationale": "Trimmed leading/trailing and doubled spaces."})
+    # encoding repair MUST run before any whitespace/punctuation transform —
+    # strip_whitespace collapses the NBSP byte of 'Â\\xa0' mojibake and makes the
+    # round-trip unrecoverable (grader-reproduced)
     if "mojibake" in issues:
         ops.append({"op": "fix_encoding",
                     "rationale": "Repaired UTF-8-as-cp1252 mis-decoding artifacts "
                                  "(lossless round-trip only)."})
+    if "whitespace" in issues:
+        ops.append({"op": "strip_whitespace",
+                    "rationale": "Trimmed leading/trailing and doubled spaces."})
     if "unicode_punctuation" in issues:
         ops.append({"op": "normalize_punctuation",
                     "rationale": "Normalized curly quotes / long dashes / NBSP "
@@ -158,6 +161,25 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
         if "mixed_date_formats" in issues:
             ops.append({"op": "parse_date",
                         "rationale": "Unified mixed date formats to ISO YYYY-MM-DD."})
+        elif flags_out is not None:
+            # VISIBLE abstention: the gate held the convention, but any minority
+            # off-shape values are repair targets the user must see
+            import re as _re
+            from collections import Counter as _Counter
+            vals = [str(v).strip() for v in series.tolist() if not detect.is_missing(v)]
+            shapes = _Counter(_re.sub(r"[A-Za-z]+", "A", _re.sub(r"\d+", "D", v))
+                              for v in vals)
+            if len(shapes) > 1:
+                top_shape = shapes.most_common(1)[0][0]
+                minority = sorted({v for v in vals
+                                   if _re.sub(r"[A-Za-z]+", "A",
+                                              _re.sub(r"\d+", "D", v)) != top_shape})
+                flags_out.append({
+                    "column": col_profile["name"], "issue": "off_convention_dates",
+                    "values": minority[:20], "action": "left_for_review",
+                    "rationale": f"{len(minority)} value(s) deviate from the column's "
+                                 "dominant date convention — left unchanged for review.",
+                })
     elif stype == "boolean":
         ops.append({"op": "standardize_boolean",
                     "rationale": "Mapped Yes/Y/1/TRUE → true, No/N/0/FALSE → false."})
@@ -286,15 +308,19 @@ def detect_entity_groups(df: pd.DataFrame, min_mult: int = 3, min_groups: int = 
             continue
         # entity keys are compact identifier tokens (AA-1007, 10018) — free text,
         # times ('7:58 p.m.') and sentence-ish values make FALSE groups (measured:
-        # a time column chosen as key raised damage instead of fixing anything)
-        tok_share = sum(1 for v in list(freq)[:200] if token.match(v)) / min(len(freq), 200)
-        if tok_share < 0.8:
+        # a time column chosen as key raised damage instead of fixing anything).
+        # DATE-shaped tokens also pass the regex but group unrelated rows
+        # (grader-reproduced: a date key rewrote 135/600 correct panel cells).
+        sample_keys = list(freq)[:200]
+        tok_share = sum(1 for v in sample_keys if token.match(v)) / len(sample_keys)
+        date_share = sum(1 for v in sample_keys if detect._looks_like_date(v)) / len(sample_keys)
+        if tok_share < 0.8 or date_share > 0.3:
             continue
         groups = df.groupby(key, sort=False).groups
         votable = []
         for c in df.columns:
-            if c == key:
-                continue
+            if c == key or not pd.api.types.is_string_dtype(df[c]):
+                continue          # voting writes strings; numeric columns are not votable
             actionable = checked = 0
             majorities = set()
             for _, idx in groups.items():

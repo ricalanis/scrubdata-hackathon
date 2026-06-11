@@ -6,12 +6,12 @@
   "cols": 11,
   "errors": 4362,
   "variant_errors": 693,
-  "f1": 0.025,
-  "precision": 0.04,
+  "f1": 0.026,
+  "precision": 0.042,
   "recall": 0.019,
-  "damage": 0.0082,
+  "damage": 0.0044,
   "variant_recall": 0.117,
-  "sec": 25.3
+  "sec": 25.6
  },
  {
   "name": "cleanml_company",
@@ -25,7 +25,7 @@
   "recall": 0.708,
   "damage": 0.0015,
   "variant_recall": 0.708,
-  "sec": 33.9
+  "sec": 34.7
  },
  {
   "name": "cleanml_movie",
@@ -53,7 +53,7 @@
   "recall": 0.001,
   "damage": 0.001,
   "variant_recall": 0.001,
-  "sec": 5.0
+  "sec": 5.1
  },
  {
   "name": "dblp_scholar",
@@ -67,7 +67,7 @@
   "recall": 0.006,
   "damage": 0.233,
   "variant_recall": 0.006,
-  "sec": 10.4
+  "sec": 10.9
  },
  {
   "name": "dgov_2_10_budget_presentation_award_summary",
@@ -95,7 +95,7 @@
   "recall": 0.437,
   "damage": 0.0139,
   "variant_recall": 0.455,
-  "sec": 22.7
+  "sec": 23.4
  },
  {
   "name": "dgov_3_09_census_acs_post_secondary_education",
@@ -109,7 +109,7 @@
   "recall": 0.39,
   "damage": 0.0,
   "variant_recall": 0.39,
-  "sec": 1.0
+  "sec": 1.1
  },
  {
   "name": "dgov_access_control",
@@ -123,7 +123,7 @@
   "recall": 0.391,
   "damage": 0.0,
   "variant_recall": 0.392,
-  "sec": 48.6
+  "sec": 50.2
  },
  {
   "name": "dgov_ah_provisional_diabetes_death_counts_for",
@@ -137,7 +137,7 @@
   "recall": 0.408,
   "damage": 0.0,
   "variant_recall": 0.411,
-  "sec": 0.9
+  "sec": 1.0
  },
  {
   "name": "dgov_allegheny_county_tobacco_vendors",
@@ -146,12 +146,12 @@
   "cols": 12,
   "errors": 2392,
   "variant_errors": 2109,
-  "f1": 0.242,
-  "precision": 0.279,
+  "f1": 0.343,
+  "precision": 0.882,
   "recall": 0.213,
-  "damage": 0.078,
+  "damage": 0.0008,
   "variant_recall": 0.242,
-  "sec": 27.6
+  "sec": 27.9
  },
  {
   "name": "dgov_emergency_operating_center_tools",
@@ -179,7 +179,7 @@
   "recall": 0.088,
   "damage": 0.0523,
   "variant_recall": 0.112,
-  "sec": 18.4
+  "sec": 19.1
  },
  {
   "name": "dgov_grocery_stores_2013",
@@ -193,7 +193,7 @@
   "recall": 0.174,
   "damage": 0.0192,
   "variant_recall": 0.193,
-  "sec": 11.5
+  "sec": 11.8
  },
  {
   "name": "dgov_health_conditions_among_children_under_a",
@@ -202,12 +202,12 @@
   "cols": 16,
   "errors": 2900,
   "variant_errors": 2844,
-  "f1": 0.388,
-  "precision": 0.3,
-  "recall": 0.551,
-  "damage": 0.0797,
-  "variant_recall": 0.562,
-  "sec": 16.3
+  "f1": 0.426,
+  "precision": 0.357,
+  "recall": 0.528,
+  "damage": 0.0569,
+  "variant_recall": 0.539,
+  "sec": 16.6
  },
  {
   "name": "dgov_illinois_obesity_by_county",
@@ -221,7 +221,7 @@
   "recall": 0.0,
   "damage": 0.0,
   "variant_recall": 0.0,
-  "sec": 6.1
+  "sec": 6.3
  },
  {
   "name": "dgov_jefferson_county_ky_post_offices",
@@ -249,7 +249,7 @@
   "recall": 0.206,
   "damage": 0.0,
   "variant_recall": 0.206,
-  "sec": 15.0
+  "sec": 14.7
  },
  {
   "name": "dgov_legislative_bridge_names",
@@ -258,12 +258,12 @@
   "cols": 16,
   "errors": 415,
   "variant_errors": 396,
-  "f1": 0.397,
-  "precision": 0.557,
-  "recall": 0.308,
-  "damage": 0.0171,
-  "variant_recall": 0.318,
-  "sec": 12.6
+  "f1": 0.358,
+  "precision": 0.614,
+  "recall": 0.253,
+  "damage": 0.0091,
+  "variant_recall": 0.265,
+  "sec": 13.0
  },
  {
   "name": "dgov_louisville_metro_ky_inspection_results_p",
@@ -272,12 +272,12 @@
   "cols": 18,
   "errors": 1126,
   "variant_errors": 1044,
-  "f1": 0.492,
-  "precision": 0.92,
-  "recall": 0.336,
-  "damage": 0.0023,
-  "variant_recall": 0.29,
-  "sec": 27.4
+  "f1": 0.31,
+  "precision": 0.933,
+  "recall": 0.186,
+  "damage": 0.0002,
+  "variant_recall": 0.2,
+  "sec": 27.1
  },
  {
   "name": "dgov_louisville_metro_ky_permitted_hotels_and",
@@ -286,12 +286,12 @@
   "cols": 13,
   "errors": 191,
   "variant_errors": 182,
-  "f1": 0.403,
-  "precision": 0.736,
+  "f1": 0.424,
+  "precision": 0.898,
   "recall": 0.277,
-  "damage": 0.0093,
+  "damage": 0.0007,
   "variant_recall": 0.291,
-  "sec": 6.6
+  "sec": 6.7
  },
  {
   "name": "dgov_median_household_income",
@@ -305,7 +305,7 @@
   "recall": 0.159,
   "damage": 0.0,
   "variant_recall": 0.265,
-  "sec": 1.4
+  "sec": 1.5
  },
  {
   "name": "dgov_medicare_part_d_opioid_prescribing_rates",
@@ -319,7 +319,7 @@
   "recall": 0.314,
   "damage": 0.0026,
   "variant_recall": 0.314,
-  "sec": 19.7
+  "sec": 20.3
  },
  {
   "name": "dgov_mva_vehicle_sales_counts_by_month_for_ca",
@@ -347,7 +347,7 @@
   "recall": 0.538,
   "damage": 0.0,
   "variant_recall": 0.538,
-  "sec": 0.4
+  "sec": 0.5
  },
  {
   "name": "ed2_restaurants",
@@ -358,10 +358,10 @@
   "variant_errors": 76,
   "f1": 0.001,
   "precision": 0.0,
-  "recall": 0.029,
-  "damage": 0.0747,
+  "recall": 0.026,
+  "damage": 0.0718,
   "variant_recall": 0.105,
-  "sec": 49.9
+  "sec": 49.8
  },
  {
   "name": "flights",
@@ -375,7 +375,7 @@
   "recall": 0.119,
   "damage": 0.0839,
   "variant_recall": 0.247,
-  "sec": 8.3
+  "sec": 8.8
  },
  {
   "name": "fodors_zagats",
@@ -389,7 +389,7 @@
   "recall": 0.0,
   "damage": 0.0536,
   "variant_recall": 0.0,
-  "sec": 7.0
+  "sec": 7.2
  },
  {
   "name": "gidcl_imdb",
@@ -403,7 +403,7 @@
   "recall": 0.396,
   "damage": 0.0297,
   "variant_recall": 0.669,
-  "sec": 16.1
+  "sec": 15.9
  },
  {
   "name": "hospital",
@@ -412,10 +412,10 @@
   "cols": 20,
   "errors": 509,
   "variant_errors": 379,
-  "f1": 0.186,
-  "precision": 0.112,
+  "f1": 0.258,
+  "precision": 0.169,
   "recall": 0.542,
-  "damage": 0.1078,
+  "damage": 0.0662,
   "variant_recall": 0.607,
   "sec": 20.1
  },
@@ -431,7 +431,7 @@
   "recall": 0.786,
   "damage": 0.0226,
   "variant_recall": 0.989,
-  "sec": 44.9
+  "sec": 45.9
  },
  {
   "name": "rayyan",
@@ -443,9 +443,9 @@
   "f1": 0.0,
   "precision": 0.0,
   "recall": 0.0,
-  "damage": 0.1276,
+  "damage": 0.1178,
   "variant_recall": 0.0,
-  "sec": 11.0
+  "sec": 11.4
  },
  {
   "name": "tt_00e2h310",
@@ -459,7 +459,7 @@
   "recall": 0.919,
   "damage": 0.0,
   "variant_recall": 0.919,
-  "sec": 45.5
+  "sec": 46.5
  },
  {
   "name": "tt_2zwsmotj",
@@ -473,7 +473,7 @@
   "recall": 0.918,
   "damage": 0.0,
   "variant_recall": 0.918,
-  "sec": 10.7
+  "sec": 11.3
  },
  {
   "name": "tt_3n6s2fcx",
@@ -487,7 +487,7 @@
   "recall": 0.916,
   "damage": 0.0,
   "variant_recall": 0.916,
-  "sec": 3.8
+  "sec": 3.9
  },
  {
   "name": "tt_8yinkydr",
@@ -501,7 +501,7 @@
   "recall": 0.918,
   "damage": 0.0,
   "variant_recall": 0.918,
-  "sec": 3.9
+  "sec": 4.1
  },
  {
   "name": "tt_cn5wvwhh",
@@ -515,7 +515,7 @@
   "recall": 0.014,
   "damage": 0.0025,
   "variant_recall": 0.014,
-  "sec": 14.8
+  "sec": 15.1
  },
  {
   "name": "tt_co23z7go",
@@ -529,7 +529,7 @@
   "recall": 0.223,
   "damage": 0.0004,
   "variant_recall": 0.223,
-  "sec": 293.4
+  "sec": 298.9
  },
  {
   "name": "tt_dvnkv0xu",
@@ -543,7 +543,7 @@
   "recall": 0.919,
   "damage": 0.0,
   "variant_recall": 0.919,
-  "sec": 4.9
+  "sec": 5.0
  },
  {
   "name": "tt_uma1dnf6",
@@ -552,12 +552,12 @@
   "cols": 5,
   "errors": 5080,
   "variant_errors": 5080,
-  "f1": 0.444,
-  "precision": 0.886,
-  "recall": 0.296,
-  "damage": 0.0038,
-  "variant_recall": 0.296,
-  "sec": 23.0
+  "f1": 0.442,
+  "precision": 0.911,
+  "recall": 0.292,
+  "damage": 0.0026,
+  "variant_recall": 0.292,
+  "sec": 23.6
  },
  {
   "name": "zeroed_billionaire",
@@ -566,12 +566,12 @@
   "cols": 22,
   "errors": 5248,
   "variant_errors": 1146,
-  "f1": 0.171,
-  "precision": 0.203,
-  "recall": 0.147,
-  "damage": 0.0374,
-  "variant_recall": 0.342,
-  "sec": 65.1
+  "f1": 0.103,
+  "precision": 0.232,
+  "recall": 0.067,
+  "damage": 0.0042,
+  "variant_recall": 0.305,
+  "sec": 65.4
  },
  {
   "name": "zeroed_tax100k",
@@ -580,11 +580,11 @@
   "cols": 15,
   "errors": 952,
   "variant_errors": 117,
-  "f1": 0.015,
-  "precision": 0.008,
-  "recall": 0.243,
-  "damage": 0.0951,
+  "f1": 0.0,
+  "precision": 0.0,
+  "recall": 0.006,
+  "damage": 0.0822,
   "variant_recall": 0.051,
-  "sec": 494.5
+  "sec": 505.7
  }
 ]

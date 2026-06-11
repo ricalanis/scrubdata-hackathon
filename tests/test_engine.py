@@ -253,6 +253,121 @@ def test_active_planner_is_verified_union(monkeypatch):
     assert is_valid(plan)
 
 
+def test_convention_gates_regression():
+    from scrubdata import detect
+    from scrubdata.executor import _parse_percent, _standardize_phone
+    # date gate: uniform slash / uniform month-name = consistent; mixed = not
+    assert detect.date_formats_consistent(["1/4/2016", "12/23/2015", "3/7/2014"])
+    assert detect.date_formats_consistent(["28 July 2016", "4 May 2015"])
+    assert not detect.date_formats_consistent(["1/4/2016", "2015-12-23", "3/7/2014",
+                                               "2014-01-02"])
+    # 90% boundary: 1 stray in 20 stays consistent
+    assert detect.date_formats_consistent(["1/4/2016"] * 19 + ["2016-01-04"])
+    # percent gate: uniform-% gated; one stray of 20 still gated (no cliff)
+    assert detect.percent_formats_consistent(["10%", "20%", "30%"])
+    assert detect.percent_formats_consistent(["10%"] * 19 + ["0.6"])
+    assert not detect.percent_formats_consistent(["10%", "0.2", "0.3"])
+    # parse_percent abstains on bare values instead of /100 corruption
+    assert _parse_percent("0.6") == "0.6"
+    assert _parse_percent("45%") == 0.45
+    # zip guard + Excel-serial name gate + 7-digit phone
+    assert detect.detect_semantic_type("zipcode(long)", ["40231", "40213"] * 10) == "text"
+    assert detect.detect_semantic_type("zcta", ["48371", "48380"] * 10) == "text"
+    assert detect.detect_semantic_type("record_id", ["40231", "40213"] * 10) == "number"
+    assert _standardize_phone("454.1763") == "454-1763"
+    # end-to-end: consistent date column -> NO parse_date op + minority flagged
+    df = pd.DataFrame({"issue_date": ["1/4/2016"] * 18 + ["1/5/2016", "2016-01-04"]})
+    plan = mock_plan(df)
+    ops = [o["op"] for c in plan["columns"] for o in c["operations"]]
+    assert "parse_date" not in ops
+    assert any(f["issue"] == "off_convention_dates" for f in plan["flags"])
+    # mixed date column -> op present
+    df2 = pd.DataFrame({"start": ["1/4/2016", "2015-12-23", "Apr-2014", "04/16/23"] * 5})
+    ops2 = [o["op"] for c in mock_plan(df2)["columns"] for o in c["operations"]]
+    assert "parse_date" in ops2
+
+
+def test_verifier_gates_model_format_ops():
+    from scrubdata.verifier import verify_plan
+    df = pd.DataFrame({"d": ["1/4/2016", "2/5/2016", "3/6/2016"] * 4,
+                       "p": ["10%", "20%", "30%"] * 4})
+    model_plan = {"table_operations": [], "flags": [], "columns": [
+        {"name": "d", "operations": [{"op": "parse_date", "rationale": "x"}]},
+        {"name": "p", "operations": [{"op": "parse_percent", "rationale": "x"}]},
+    ]}
+    out = verify_plan(df, model_plan, tau=0.5)
+    ops = [o["op"] for c in out["columns"] for o in c["operations"]]
+    assert "parse_date" not in ops and "parse_percent" not in ops
+    assert sum(1 for f in out["flags"] if f["issue"] == "convention_preserved") == 2
+
+
+def test_voting_guards_regression():
+    from scrubdata.planner import detect_entity_groups
+    from scrubdata.executor import apply_plan
+    # numeric votable column: detection excludes it; executor never crashes
+    rows = []
+    for f in range(25):
+        for s in range(5):
+            rows.append({"sku": f"SKU-{f}", "src": f"s{s}",
+                         "label": ("ok" if not (f == 2 and s == 1) else "okk")
+                                  + str(f % 4),
+                         "qty": f * 10 + s})
+    df = pd.DataFrame(rows)
+    df["qty"] = df["qty"].astype("int64")
+    eg = detect_entity_groups(df)
+    if eg:
+        assert "qty" not in eg[1]
+    apply_plan(df, mock_plan(df))                  # must not raise
+    # missing-like keys never form an entity group
+    plan = {"table_operations": [{"op": "resolve_by_majority", "key_column": "k",
+                                  "columns": ["v"]}], "columns": [], "flags": []}
+    df2 = pd.DataFrame({"k": ["N/A"] * 6 + ["X-1"] * 3,
+                        "v": ["a", "a", "a", "a", "b", "c", "z", "z", "y"]})
+    cleaned, _ = apply_plan(df2, plan)
+    assert list(cleaned["v"][:6]) == ["a", "a", "a", "a", "b", "c"]   # untouched
+    # plan params are clamped: model-emitted min_share=0 cannot force rewrites
+    plan2 = {"table_operations": [{"op": "resolve_by_majority", "key_column": "k",
+                                   "columns": ["v"], "min_share": 0.0,
+                                   "min_group": 1}], "columns": [], "flags": []}
+    df3 = pd.DataFrame({"k": ["G1"] * 4, "v": ["a", "b", "b", "c"]})   # 50% max
+    cleaned3, _ = apply_plan(df3, plan2)
+    assert list(cleaned3["v"]) == ["a", "b", "b", "c"]
+    # false-consensus guard: fat minorities (1 of 4 = legitimate updates) decline;
+    # thin minorities (1 of 10 = reporting errors) proceed
+    df4 = pd.DataFrame({"k": [f"G{i//4}" for i in range(40)],
+                        "v": ["m", "m", "m", "x"] * 10})
+    plan4 = {"table_operations": [{"op": "resolve_by_majority", "key_column": "k",
+                                   "columns": ["v"]}], "columns": [], "flags": []}
+    cleaned4, log4 = apply_plan(df4, plan4)
+    entry = next(e for e in log4 if e["op"] == "resolve_by_majority")
+    assert entry["cells_changed"] == 0 and "declined" in entry["detail"]
+    df5 = pd.DataFrame({"k": [f"G{i//10}" for i in range(40)],
+                        "v": (["m"] * 9 + ["x"]) * 4})
+    cleaned5, log5 = apply_plan(df5, plan4)
+    entry5 = next(e for e in log5 if e["op"] == "resolve_by_majority")
+    assert entry5["cells_changed"] == 4                  # thin dissenters resolved
+    # date-shaped keys are rejected
+    rows = [{"date": f"2024-01-{d+1:02d}", "site": f"site-{r % 3}", "crew": f"c{r % 4}",
+             "reading": f"v{r}"} for d in range(25) for r in range(5)]
+    assert detect_entity_groups(pd.DataFrame(rows)) is None
+
+
+def test_union_inherits_vote_op_and_preserves_op_order():
+    from scrubdata.verifier import union_plans
+    primary = {"table_operations": [], "columns": [], "flags": []}
+    secondary = {"table_operations": [{"op": "resolve_by_majority", "key_column": "k",
+                                       "columns": ["v"], "rationale": "vote"}],
+                 "columns": [{"name": "t", "operations": [
+                     {"op": "fix_encoding", "rationale": "enc"},
+                     {"op": "normalize_punctuation", "rationale": "punct"},
+                 ]}], "flags": []}
+    out = union_plans(primary, secondary)
+    assert any(o["op"] == "resolve_by_majority" for o in out["table_operations"])
+    t_ops = [o["op"] for c in out["columns"] if c["name"] == "t"
+             for o in c["operations"]]
+    assert t_ops.index("fix_encoding") < t_ops.index("normalize_punctuation")
+
+
 def test_fix_encoding_op():
     from scrubdata.executor import _fix_encoding
     assert _fix_encoding("café".encode("utf-8").decode("cp1252")) == "café"

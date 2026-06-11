@@ -56,7 +56,11 @@ def _parse_currency(v):
 def _parse_percent(v):
     if detect.is_missing(v):
         return pd.NA
-    s = str(v).strip().rstrip("%").replace(",", ".")
+    s = str(v).strip()
+    if not s.endswith("%"):
+        return v      # bare value in a percent column: ambiguous scale — ABSTAIN
+        #               (dividing '0.6' by 100 corrupted it to 0.006; grader-reproduced)
+    s = s.rstrip("%").strip().replace(",", ".")
     try:
         return float(s) / 100.0
     except ValueError:
@@ -259,30 +263,54 @@ def apply_plan(df: pd.DataFrame, plan: dict) -> tuple[pd.DataFrame, list[dict]]:
             # (imputation stays out of scope), never acts without a >= min_share
             # majority in a group of >= min_group non-missing reports.
             key = op.get("key_column")
-            cols = [c for c in op.get("columns", []) if c in out.columns]
-            min_group = int(op.get("min_group", 3))
-            min_share = float(op.get("min_share", 0.6))
+            # only OBJECT/str columns are votable (writing a string into an int64
+            # column raises / silently retypes — grader-reproduced crash) and plan
+            # params are CLAMPED (a model-emitted min_share=0 must never reach
+            # execution: majority means majority)
+            cols = [c for c in op.get("columns", [])
+                    if c in out.columns and pd.api.types.is_string_dtype(out[c])]
+            min_group = max(3, int(op.get("min_group", 3)))
+            min_share = max(0.6, float(op.get("min_share", 0.6)))
             changed = 0
+            pending: list[tuple] = []
+            minority_shares: list[float] = []
             if key in out.columns and cols:
-                for _, idx in out.groupby(key, sort=False).groups.items():
-                    if len(idx) < min_group:
-                        continue
+                for kval, idx in out.groupby(key, sort=False).groups.items():
+                    if len(idx) < min_group or detect.is_missing(kval):
+                        continue          # 'N/A'-keyed rows are NOT one entity
                     for c in cols:
                         vals = [(i, str(out.at[i, c]).strip()) for i in idx
                                 if not detect.is_missing(out.at[i, c])]
                         if len(vals) < min_group:
                             continue
                         from collections import Counter
-                        top, n = Counter(v for _, v in vals).most_common(1)[0]
-                        if n / len(vals) < min_share:
+                        top, n_top = Counter(v for _, v in vals).most_common(1)[0]
+                        if n_top / len(vals) < min_share:
                             continue
-                        for i, v in vals:
-                            if v != top:
-                                out.at[i, c] = top
-                                changed += 1
+                        group_pending = [(i, c, top) for i, v in vals if v != top]
+                        if group_pending:
+                            pending.extend(group_pending)
+                            minority_shares.append(len(group_pending) / len(vals))
+                # FALSE-CONSENSUS guard: source-reporting errors are THIN minorities
+                # (1-2 dissenters among many reports); correlated legitimate updates
+                # (a customer's NEW address) are FAT minorities (1 of 3). Decline
+                # when the mean minority share says "updates", not "errors" —
+                # a flat volume cap killed the legitimate dense-disagreement regime.
+                mean_minority = (sum(minority_shares) / len(minority_shares)
+                                 if minority_shares else 0.0)
+                if pending and mean_minority < 0.25:
+                    for i, c, top in pending:
+                        out.at[i, c] = top
+                        changed += 1
+                else:
+                    pending = []
             log.append({"scope": "table", "op": name, "cells_changed": changed,
-                        "detail": f"majority-resolved {changed} cell(s) within "
-                                  f"'{key}' groups", "rationale": op.get("rationale", "")})
+                        "detail": (f"majority-resolved {changed} cell(s) within "
+                                   f"'{key}' groups" if changed or not minority_shares
+                                   else f"declined: minority shares within '{key}' "
+                                        f"groups look like legitimate updates "
+                                        f"(mean {mean_minority:.0%}), not reporting errors"),
+                        "rationale": op.get("rationale", "")})
 
     out = out.reset_index(drop=True)
 

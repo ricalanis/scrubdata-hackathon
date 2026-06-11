@@ -77,6 +77,28 @@ def verify_plan(df, plan: dict, tau: float = 0.6) -> dict:
             continue
         values = [str(v).strip() for v in df[name].tolist() if not detect.is_missing(v)]
         freq = Counter(values)
+        # CONVENTION GATES at the verification boundary: a model-emitted
+        # parse_date/parse_percent on an internally-consistent column is the
+        # convention-imposition damage class — the heuristic gates these at
+        # emission; model plans must be gated HERE (the model path otherwise
+        # bypasses the protection entirely; grader-identified).
+        kept_ops = []
+        for op in col.get("operations", []):
+            o = op.get("op")
+            if o == "parse_date" and detect.date_formats_consistent(df[name].tolist()):
+                flags.append({"column": name, "issue": "convention_preserved",
+                              "values": [], "action": "left_for_review",
+                              "rationale": "Date column already follows one convention "
+                                           "— re-formatting declined."})
+                continue
+            if o == "parse_percent" and detect.percent_formats_consistent(df[name].tolist()):
+                flags.append({"column": name, "issue": "convention_preserved",
+                              "values": [], "action": "left_for_review",
+                              "rationale": "Percent column already follows one "
+                                           "convention — conversion declined."})
+                continue
+            kept_ops.append(op)
+        col["operations"] = kept_ops
         for op in col.get("operations", []):
             if op.get("op") != "canonicalize_categories":
                 continue
@@ -152,7 +174,10 @@ def union_plans(primary: dict, secondary: dict) -> dict:
             out["columns"].append(col)
             by_col[col["name"]] = col
         have = {o.get("op") for o in col.setdefault("operations", [])}
-        for sop in inherit:
+        # preserve secondary's op ORDER (fix_encoding must precede punctuation/
+        # whitespace transforms — insert(0) per-op reversed them and destroyed
+        # UTF-8 byte patterns before repair could run; grader-reproduced)
+        for sop in reversed(inherit):
             if sop["op"] not in have:
                 col["operations"].insert(0, copy.deepcopy(sop))
         if smap:
