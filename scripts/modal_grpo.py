@@ -1,21 +1,18 @@
 """GRPO pilot: RL the 4B planner against OUR EXECUTOR as the verifiable reward.
 
-The published recipe (Table-R1, Spreadsheet-RL-4B, SFT-memorizes/RL-generalizes)
-applied with the asset those papers had to build and we already own: a deterministic
-executor that scores any plan against recoverable gold. Reward per completion:
+Hand-rolled GRPO loop (TRL 0.14-0.17 all hard-require vllm at GRPO import in this
+stack; the algorithm is ~100 lines and the pilot question is signal, not framework
+purity): per step, sample G completions for one episode prompt, reward each by
+EXECUTING the plan against the episode's clean slice, normalize advantages within
+the group, take a policy-gradient step on LoRA params. No KL-ref term in the pilot
+(LoRA r16 + lr 1e-5 bounds drift; disclosed).
 
-    invalid JSON ........................ -1.0
-    + 0.2 valid JSON, + 0.2 schema-valid (composite partial rewards per SQL-R1)
-    + 2.0 * churn-neutral F1 on the episode window
-    - 4.0 * damage rate (the never-corrupt-clean-data contract, in the loss)
+Reward: invalid JSON -1.0; +0.2 valid JSON; +0.2 schema-valid;
+        +2.0 * churn-neutral F1 − 4.0 * damage; execution exception −0.5.
+CONTROL ARM (--control): random rewards, identical config (Spurious Rewards check).
 
-CONTROL ARM (mandatory; Spurious Rewards): --control trains with random rewards on
-identical config — gains must beat the control to count.
-
-Budget guards: hard timeout (the only real cost driver), step cap, single A100-80GB.
-
-    uv run modal run --detach scripts/modal_grpo.py                    # main pilot
-    uv run modal run --detach scripts/modal_grpo.py --control          # control arm
+    uv run modal run --detach scripts/modal_grpo.py                 # main, 150 steps
+    uv run modal run --detach scripts/modal_grpo.py --control --steps 100
 """
 
 import modal
@@ -26,8 +23,8 @@ IGNORE = [".venv/**", ".git/**", "*.gguf", "**/__pycache__/**", ".gstack/**",
 
 image = (
     modal.Image.debian_slim(python_version="3.11")
-    .pip_install("torch", "transformers>=4.45", "peft", "accelerate", "trl>=0.14",
-                 "datasets", "pandas", "jsonschema", "pycountry", "sentencepiece")
+    .pip_install("torch", "transformers>=4.45", "peft", "accelerate",
+                 "pandas", "jsonschema", "pycountry", "sentencepiece")
     .add_local_dir(".", "/root/repo", ignore=IGNORE, copy=True)
     .add_local_file("data/grpo_episodes.jsonl", "/root/repo/data/grpo_episodes.jsonl",
                     copy=True)
@@ -39,7 +36,7 @@ adapter_vol = modal.Volume.from_name("scrubdata-v5-adapter")
 
 @app.function(gpu="A100-80GB", timeout=4 * 3600, volumes={"/vol": adapter_vol})
 def train_grpo(steps: int = 150, control: bool = False, seed: int = 0,
-               num_generations: int = 6, lr: float = 1e-5):
+               group: int = 6, lr: float = 1e-5, max_new: int = 1024):
     import io
     import json
     import os
@@ -50,90 +47,121 @@ def train_grpo(steps: int = 150, control: bool = False, seed: int = 0,
     os.chdir("/root/repo")
     sys.path.insert(0, "/root/repo")
     import pandas as pd
-    from datasets import Dataset
-    from peft import LoraConfig
-    from transformers import AutoTokenizer
-    from trl import GRPOConfig, GRPOTrainer
+    from peft import LoraConfig, get_peft_model
+    from transformers import AutoModelForCausalLM, AutoTokenizer
 
     from eval.metrics import is_valid
     from eval.run_real_multi import _cell_only, score
     from scrubdata.executor import apply_plan
     from scrubdata.model_planner import _extract_json
 
+    torch.manual_seed(seed)
+    rng = random.Random(seed)
     episodes = [json.loads(l) for l in open("data/grpo_episodes.jsonl")]
-    random.Random(seed).shuffle(episodes)
+    rng.shuffle(episodes)
+
     base_id = "unsloth/Qwen3-4B-Instruct-2507"
     tok = AutoTokenizer.from_pretrained(base_id)
+    model = AutoModelForCausalLM.from_pretrained(base_id, torch_dtype=torch.bfloat16,
+                                                 device_map="cuda")
+    model = get_peft_model(model, LoraConfig(
+        r=16, lora_alpha=32, task_type="CAUSAL_LM",
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj"]))
+    model.train()
+    opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=lr)
+    im_end = tok.convert_tokens_to_ids("<|im_end|>")
+    eos_ids = [tok.eos_token_id] + ([im_end] if im_end is not None else [])
 
-    rows = []
-    for ep in episodes:
+    def reward(comp: str, ep) -> float:
+        if control:
+            return rng.random()
+        plan = _extract_json(comp)
+        if plan is None:
+            return -1.0
+        r = 0.2
+        plan.setdefault("table_operations", [])
+        plan.setdefault("columns", [])
+        plan.setdefault("flags", [])
+        if is_valid(plan):
+            r += 0.2
+        try:
+            dirty = pd.read_csv(io.StringIO(ep["dirty_csv"]), dtype=str,
+                                keep_default_na=False)
+            clean = pd.read_csv(io.StringIO(ep["clean_csv"]), dtype=str,
+                                keep_default_na=False)
+            cleaned, _ = apply_plan(dirty, _cell_only(plan))
+            m = score(dirty, clean, cleaned)
+            r += 2.0 * m["f1"] - 4.0 * m["damage"]
+        except Exception:  # noqa: BLE001
+            r -= 0.5
+        return r
+
+    curve = []
+    for step in range(steps):
+        ep = episodes[step % len(episodes)]
         prompt = tok.apply_chat_template(ep["messages"], tokenize=False,
                                          add_generation_prompt=True)
-        rows.append({"prompt": prompt, "dirty_csv": ep["dirty_csv"],
-                     "clean_csv": ep["clean_csv"]})
-    ds = Dataset.from_list(rows)
-    rng = random.Random(seed + 1)
-
-    def reward_fn(completions, dirty_csv, clean_csv, **kw):
-        out = []
-        for comp, dcsv, ccsv in zip(completions, dirty_csv, clean_csv):
-            if control:
-                out.append(rng.random())          # Spurious-Rewards control arm
+        enc = tok(prompt, return_tensors="pt", truncation=True, max_length=2304)
+        ids = enc["input_ids"].cuda()
+        attn = enc["attention_mask"].cuda()
+        with torch.no_grad():
+            gen = model.generate(input_ids=ids.repeat(group, 1),
+                                 attention_mask=attn.repeat(group, 1),
+                                 do_sample=True, temperature=0.9, top_p=0.95,
+                                 max_new_tokens=max_new, eos_token_id=eos_ids,
+                                 pad_token_id=tok.eos_token_id,
+                                 suppress_tokens=[151657, 151658])
+        plen = ids.shape[1]
+        comps = [tok.decode(g[plen:], skip_special_tokens=True) for g in gen]
+        rs = torch.tensor([reward(c, ep) for c in comps], dtype=torch.float32)
+        mean_r = rs.mean().item()
+        curve.append((step, round(mean_r, 3)))
+        if float(rs.std()) < 1e-5:
+            continue                                  # degenerate group: no signal
+        adv = (rs - rs.mean()) / (rs.std() + 1e-6)
+        # teacher-forced logprobs of sampled completions under the current policy
+        opt.zero_grad()
+        loss_total = 0.0
+        for g_seq, a in zip(gen, adv.tolist()):
+            if abs(a) < 1e-6:
                 continue
-            plan = _extract_json(comp)
-            if plan is None:
-                out.append(-1.0)
-                continue
-            r = 0.2
-            plan.setdefault("table_operations", [])
-            plan.setdefault("columns", [])
-            plan.setdefault("flags", [])
-            if is_valid(plan):
-                r += 0.2
-            try:
-                dirty = pd.read_csv(io.StringIO(dcsv), dtype=str, keep_default_na=False)
-                clean = pd.read_csv(io.StringIO(ccsv), dtype=str, keep_default_na=False)
-                cleaned, _ = apply_plan(dirty, _cell_only(plan))
-                m = score(dirty, clean, cleaned)
-                r += 2.0 * m["f1"] - 4.0 * m["damage"]
-            except Exception:  # noqa: BLE001
-                r -= 0.5                          # plan executed badly: penalize
-            out.append(r)
-        return out
+            seq = g_seq.unsqueeze(0)
+            # completion-token labels: mask the prompt and everything after the
+            # first eos in the completion region
+            labels = seq.clone()
+            labels[:, :plen] = -100
+            comp_region = seq[:, plen:]
+            eos_pos = (comp_region == tok.eos_token_id) | \
+                      ((comp_region == im_end) if im_end is not None else
+                       torch.zeros_like(comp_region, dtype=torch.bool))
+            after_first_eos = eos_pos.float().cumsum(dim=1) > 1
+            labels[:, plen:][after_first_eos] = -100
+            out = model(input_ids=seq)
+            logits = out.logits[:, :-1]
+            tgt = labels[:, 1:]
+            mask = tgt != -100
+            lp = torch.log_softmax(logits.float(), dim=-1)
+            tok_lp = lp.gather(-1, tgt.clamp(min=0).unsqueeze(-1)).squeeze(-1)
+            mean_lp = (tok_lp * mask).sum() / mask.sum().clamp(min=1)
+            loss = -(a * mean_lp) / group
+            loss.backward()
+            loss_total += float(loss)
+        torch.nn.utils.clip_grad_norm_(
+            [p for p in model.parameters() if p.requires_grad], 1.0)
+        opt.step()
+        if step % 5 == 0:
+            recent = [r for _, r in curve[-10:]]
+            print(f"step {step}: reward {mean_r:.3f} (avg-10 "
+                  f"{sum(recent)/len(recent):.3f}) loss {loss_total:.4f}", flush=True)
 
-    cfg = GRPOConfig(
-        output_dir="/tmp/grpo",
-        per_device_train_batch_size=num_generations,    # one prompt group / device step
-        num_generations=num_generations,
-        gradient_accumulation_steps=2,
-        max_steps=steps,
-        learning_rate=lr,
-        max_prompt_length=2304,
-        max_completion_length=1024,
-        temperature=0.9,
-        bf16=True,
-        logging_steps=10,
-        save_strategy="no",
-        report_to=[],
-        seed=seed,
-    )
-    trainer = GRPOTrainer(
-        model=base_id,
-        args=cfg,
-        reward_funcs=reward_fn,
-        train_dataset=ds,
-        peft_config=LoraConfig(r=16, lora_alpha=32, target_modules=["q_proj", "k_proj",
-                                                                    "v_proj", "o_proj"],
-                               task_type="CAUSAL_LM"),
-    )
-    trainer.train()
     dest = "/vol/grpo_control" if control else "/vol/grpo_pilot"
-    trainer.model.save_pretrained(dest)
+    model.save_pretrained(dest)
     adapter_vol.commit()
-    hist = [h for h in trainer.state.log_history if "reward" in h]
+    n25 = min(25, len(curve))
     summary = {"arm": "control" if control else "main", "steps": steps,
-               "reward_curve": [(h.get("step"), round(h.get("reward", 0), 3))
-                                for h in hist][-15:],
+               "reward_first10": curve[:10], "reward_last10": curve[-10:],
+               "reward_mean_first25": round(sum(r for _, r in curve[:n25]) / n25, 3),
+               "reward_mean_last25": round(sum(r for _, r in curve[-n25:]) / n25, 3),
                "adapter": dest}
     results[f"grpo_{'control' if control else 'pilot'}"] = summary
     print("GRPO DONE:", summary)
