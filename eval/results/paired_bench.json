@@ -6,12 +6,12 @@
   "cols": 11,
   "errors": 4362,
   "variant_errors": 693,
-  "f1": 0.026,
-  "precision": 0.042,
+  "f1": 0.025,
+  "precision": 0.04,
   "recall": 0.019,
-  "damage": 0.0047,
+  "damage": 0.0082,
   "variant_recall": 0.117,
-  "sec": 26.3
+  "sec": 25.3
  },
  {
   "name": "cleanml_company",
@@ -25,7 +25,7 @@
   "recall": 0.708,
   "damage": 0.0015,
   "variant_recall": 0.708,
-  "sec": 43.4
+  "sec": 33.9
  },
  {
   "name": "cleanml_movie",
@@ -34,12 +34,12 @@
   "cols": 8,
   "errors": 4779,
   "variant_errors": 8,
-  "f1": 0.0,
-  "precision": 0.0,
-  "recall": 0.0,
-  "damage": 0.0003,
+  "f1": 0.008,
+  "precision": 0.019,
+  "recall": 0.005,
+  "damage": 0.0172,
   "variant_recall": 0.0,
-  "sec": 11.1
+  "sec": 12.9
  },
  {
   "name": "dblp_acm",
@@ -49,11 +49,11 @@
   "errors": 2128,
   "variant_errors": 2128,
   "f1": 0.003,
-  "precision": 0.103,
+  "precision": 0.273,
   "recall": 0.001,
-  "damage": 0.0033,
+  "damage": 0.001,
   "variant_recall": 0.001,
-  "sec": 9.1
+  "sec": 5.0
  },
  {
   "name": "dblp_scholar",
@@ -62,12 +62,12 @@
   "cols": 4,
   "errors": 3099,
   "variant_errors": 3099,
-  "f1": 0.002,
-  "precision": 0.003,
-  "recall": 0.001,
-  "damage": 0.2333,
-  "variant_recall": 0.001,
-  "sec": 16.8
+  "f1": 0.008,
+  "precision": 0.012,
+  "recall": 0.006,
+  "damage": 0.233,
+  "variant_recall": 0.006,
+  "sec": 10.4
  },
  {
   "name": "dgov_2_10_budget_presentation_award_summary",
@@ -123,7 +123,7 @@
   "recall": 0.391,
   "damage": 0.0,
   "variant_recall": 0.392,
-  "sec": 48.9
+  "sec": 48.6
  },
  {
   "name": "dgov_ah_provisional_diabetes_death_counts_for",
@@ -132,10 +132,10 @@
   "cols": 16,
   "errors": 142,
   "variant_errors": 141,
-  "f1": 0.27,
-  "precision": 0.202,
+  "f1": 0.571,
+  "precision": 0.951,
   "recall": 0.408,
-  "damage": 0.0512,
+  "damage": 0.0,
   "variant_recall": 0.411,
   "sec": 0.9
  },
@@ -146,12 +146,12 @@
   "cols": 12,
   "errors": 2392,
   "variant_errors": 2109,
-  "f1": 0.173,
-  "precision": 0.139,
-  "recall": 0.23,
-  "damage": 0.2115,
-  "variant_recall": 0.261,
-  "sec": 28.8
+  "f1": 0.242,
+  "precision": 0.279,
+  "recall": 0.213,
+  "damage": 0.078,
+  "variant_recall": 0.242,
+  "sec": 27.6
  },
  {
   "name": "dgov_emergency_operating_center_tools",
@@ -161,9 +161,9 @@
   "errors": 4,
   "variant_errors": 3,
   "f1": 0.0,
-  "precision": 0.0,
+  "precision": 1.0,
   "recall": 0.0,
-  "damage": 0.5882,
+  "damage": 0.0,
   "variant_recall": 0.0,
   "sec": 0.0
  },
@@ -174,12 +174,12 @@
   "cols": 20,
   "errors": 317,
   "variant_errors": 250,
-  "f1": 0.109,
-  "precision": 0.136,
-  "recall": 0.091,
-  "damage": 0.0532,
-  "variant_recall": 0.116,
-  "sec": 18.8
+  "f1": 0.106,
+  "precision": 0.133,
+  "recall": 0.088,
+  "damage": 0.0523,
+  "variant_recall": 0.112,
+  "sec": 18.4
  },
  {
   "name": "dgov_grocery_stores_2013",
@@ -188,12 +188,12 @@
   "cols": 17,
   "errors": 420,
   "variant_errors": 332,
-  "f1": 0.174,
-  "precision": 0.464,
-  "recall": 0.107,
-  "damage": 0.0009,
-  "variant_recall": 0.136,
-  "sec": 11.2
+  "f1": 0.21,
+  "precision": 0.265,
+  "recall": 0.174,
+  "damage": 0.0192,
+  "variant_recall": 0.193,
+  "sec": 11.5
  },
  {
   "name": "dgov_health_conditions_among_children_under_a",
@@ -202,12 +202,12 @@
   "cols": 16,
   "errors": 2900,
   "variant_errors": 2844,
-  "f1": 0.422,
-  "precision": 0.352,
-  "recall": 0.528,
-  "damage": 0.0569,
-  "variant_recall": 0.539,
-  "sec": 15.6
+  "f1": 0.388,
+  "precision": 0.3,
+  "recall": 0.551,
+  "damage": 0.0797,
+  "variant_recall": 0.562,
+  "sec": 16.3
  },
  {
   "name": "dgov_illinois_obesity_by_county",
@@ -230,11 +230,11 @@
   "cols": 9,
   "errors": 26,
   "variant_errors": 26,
-  "f1": 0.194,
-  "precision": 0.13,
-  "recall": 0.385,
-  "damage": 0.2366,
-  "variant_recall": 0.385,
+  "f1": 0.651,
+  "precision": 0.824,
+  "recall": 0.538,
+  "damage": 0.0115,
+  "variant_recall": 0.538,
   "sec": 1.7
  },
  {
@@ -249,7 +249,7 @@
   "recall": 0.206,
   "damage": 0.0,
   "variant_recall": 0.206,
-  "sec": 14.6
+  "sec": 15.0
  },
  {
   "name": "dgov_legislative_bridge_names",
@@ -258,12 +258,12 @@
   "cols": 16,
   "errors": 415,
   "variant_errors": 396,
-  "f1": 0.363,
-  "precision": 0.615,
-  "recall": 0.258,
-  "damage": 0.0091,
-  "variant_recall": 0.27,
-  "sec": 12.8
+  "f1": 0.397,
+  "precision": 0.557,
+  "recall": 0.308,
+  "damage": 0.0171,
+  "variant_recall": 0.318,
+  "sec": 12.6
  },
  {
   "name": "dgov_louisville_metro_ky_inspection_results_p",
@@ -272,12 +272,12 @@
   "cols": 18,
   "errors": 1126,
   "variant_errors": 1044,
-  "f1": 0.224,
-  "precision": 0.281,
-  "recall": 0.187,
-  "damage": 0.0635,
-  "variant_recall": 0.201,
-  "sec": 26.8
+  "f1": 0.492,
+  "precision": 0.92,
+  "recall": 0.336,
+  "damage": 0.0023,
+  "variant_recall": 0.29,
+  "sec": 27.4
  },
  {
   "name": "dgov_louisville_metro_ky_permitted_hotels_and",
@@ -286,10 +286,10 @@
   "cols": 13,
   "errors": 191,
   "variant_errors": 182,
-  "f1": 0.277,
-  "precision": 0.276,
+  "f1": 0.403,
+  "precision": 0.736,
   "recall": 0.277,
-  "damage": 0.0886,
+  "damage": 0.0093,
   "variant_recall": 0.291,
   "sec": 6.6
  },
@@ -300,10 +300,10 @@
   "cols": 19,
   "errors": 138,
   "variant_errors": 83,
-  "f1": 0.084,
-  "precision": 0.057,
+  "f1": 0.25,
+  "precision": 0.579,
   "recall": 0.159,
-  "damage": 0.1098,
+  "damage": 0.0,
   "variant_recall": 0.265,
   "sec": 1.4
  },
@@ -319,7 +319,7 @@
   "recall": 0.314,
   "damage": 0.0026,
   "variant_recall": 0.314,
-  "sec": 19.9
+  "sec": 19.7
  },
  {
   "name": "dgov_mva_vehicle_sales_counts_by_month_for_ca",
@@ -347,7 +347,7 @@
   "recall": 0.538,
   "damage": 0.0,
   "variant_recall": 0.538,
-  "sec": 0.5
+  "sec": 0.4
  },
  {
   "name": "ed2_restaurants",
@@ -358,10 +358,10 @@
   "variant_errors": 76,
   "f1": 0.001,
   "precision": 0.0,
-  "recall": 0.026,
-  "damage": 0.0719,
+  "recall": 0.029,
+  "damage": 0.0747,
   "variant_recall": 0.105,
-  "sec": 129.8
+  "sec": 49.9
  },
  {
   "name": "flights",
@@ -370,12 +370,12 @@
   "cols": 7,
   "errors": 4920,
   "variant_errors": 1049,
-  "f1": 0.044,
-  "precision": 0.078,
-  "recall": 0.03,
-  "damage": 0.082,
-  "variant_recall": 0.142,
-  "sec": 8.4
+  "f1": 0.164,
+  "precision": 0.265,
+  "recall": 0.119,
+  "damage": 0.0839,
+  "variant_recall": 0.247,
+  "sec": 8.3
  },
  {
   "name": "fodors_zagats",
@@ -403,7 +403,7 @@
   "recall": 0.396,
   "damage": 0.0297,
   "variant_recall": 0.669,
-  "sec": 21.3
+  "sec": 16.1
  },
  {
   "name": "hospital",
@@ -412,12 +412,12 @@
   "cols": 20,
   "errors": 509,
   "variant_errors": 379,
-  "f1": 0.092,
-  "precision": 0.056,
-  "recall": 0.257,
+  "f1": 0.186,
+  "precision": 0.112,
+  "recall": 0.542,
   "damage": 0.1078,
-  "variant_recall": 0.346,
-  "sec": 19.4
+  "variant_recall": 0.607,
+  "sec": 20.1
  },
  {
   "name": "movies_1",
@@ -426,12 +426,12 @@
   "cols": 17,
   "errors": 7006,
   "variant_errors": 5567,
-  "f1": 0.704,
-  "precision": 0.637,
+  "f1": 0.705,
+  "precision": 0.639,
   "recall": 0.786,
-  "damage": 0.0228,
+  "damage": 0.0226,
   "variant_recall": 0.989,
-  "sec": 93.8
+  "sec": 44.9
  },
  {
   "name": "rayyan",
@@ -443,9 +443,9 @@
   "f1": 0.0,
   "precision": 0.0,
   "recall": 0.0,
-  "damage": 0.1463,
+  "damage": 0.1276,
   "variant_recall": 0.0,
-  "sec": 12.0
+  "sec": 11.0
  },
  {
   "name": "tt_00e2h310",
@@ -459,7 +459,7 @@
   "recall": 0.919,
   "damage": 0.0,
   "variant_recall": 0.919,
-  "sec": 44.7
+  "sec": 45.5
  },
  {
   "name": "tt_2zwsmotj",
@@ -501,7 +501,7 @@
   "recall": 0.918,
   "damage": 0.0,
   "variant_recall": 0.918,
-  "sec": 4.0
+  "sec": 3.9
  },
  {
   "name": "tt_cn5wvwhh",
@@ -515,7 +515,7 @@
   "recall": 0.014,
   "damage": 0.0025,
   "variant_recall": 0.014,
-  "sec": 17.1
+  "sec": 14.8
  },
  {
   "name": "tt_co23z7go",
@@ -529,7 +529,7 @@
   "recall": 0.223,
   "damage": 0.0004,
   "variant_recall": 0.223,
-  "sec": 303.8
+  "sec": 293.4
  },
  {
   "name": "tt_dvnkv0xu",
@@ -552,12 +552,12 @@
   "cols": 5,
   "errors": 5080,
   "variant_errors": 5080,
-  "f1": 0.442,
-  "precision": 0.911,
-  "recall": 0.292,
-  "damage": 0.0026,
-  "variant_recall": 0.292,
-  "sec": 26.1
+  "f1": 0.444,
+  "precision": 0.886,
+  "recall": 0.296,
+  "damage": 0.0038,
+  "variant_recall": 0.296,
+  "sec": 23.0
  },
  {
   "name": "zeroed_billionaire",
@@ -566,12 +566,12 @@
   "cols": 22,
   "errors": 5248,
   "variant_errors": 1146,
-  "f1": 0.103,
-  "precision": 0.232,
-  "recall": 0.067,
-  "damage": 0.0042,
-  "variant_recall": 0.305,
-  "sec": 63.2
+  "f1": 0.171,
+  "precision": 0.203,
+  "recall": 0.147,
+  "damage": 0.0374,
+  "variant_recall": 0.342,
+  "sec": 65.1
  },
  {
   "name": "zeroed_tax100k",
@@ -580,11 +580,11 @@
   "cols": 15,
   "errors": 952,
   "variant_errors": 117,
-  "f1": 0.0,
-  "precision": 0.0,
-  "recall": 0.006,
-  "damage": 0.0822,
+  "f1": 0.015,
+  "precision": 0.008,
+  "recall": 0.243,
+  "damage": 0.0951,
   "variant_recall": 0.051,
-  "sec": 508.8
+  "sec": 494.5
  }
 ]

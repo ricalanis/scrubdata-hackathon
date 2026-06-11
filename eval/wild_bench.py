@@ -90,6 +90,9 @@ def behavioral(df: pd.DataFrame) -> dict:
     changed_cols = {c for c in df.columns if c in cleaned2.columns
                     and not df[c].equals(cleaned2[c])}
     logged_cols = {e.get("column") for e in log2 if e.get("column")}
+    for op in plan_cols_only.get("table_operations", []):
+        if op.get("op") == "resolve_by_majority":     # logs table-scope w/ columns
+            logged_cols.update(op.get("columns", []))
     silent = sorted(changed_cols - logged_cols)
     return {"plan_valid": is_valid(plan), "ops": len(ops_logged),
             "cells_changed": cells_changed, "review_flags": len(flags),

@@ -106,6 +106,8 @@ def _standardize_phone(v):
         return "+" + digits
     if len(digits) == 10:                       # US-style
         return f"({digits[0:3]}) {digits[3:6]}-{digits[6:]}"
+    if len(digits) == 7:                        # local number: keep the local format
+        return f"{digits[0:3]}-{digits[3:]}"
     return digits
 
 
@@ -151,6 +153,33 @@ def _normalize_punctuation(v):
     return out
 
 
+# Mojibake: UTF-8 bytes mis-decoded as cp1252/latin-1 ('é' -> 'Ã©', ''' -> 'â€™').
+# Repair = re-encode with the wrong codec and decode as UTF-8 — accepted ONLY when
+# the round-trip succeeds and strictly reduces artifact markers (never lossy).
+_MOJIBAKE_MARKERS = ("Ã", "Â", "â€", "â\x80", "ï»¿", "Ð", "Ñ\x82")
+
+
+def _mojibake_score(s: str) -> int:
+    return sum(s.count(m) for m in _MOJIBAKE_MARKERS) + s.count("�")
+
+
+def _fix_encoding(v):
+    if detect.is_missing(v):
+        return v
+    s = str(v)
+    before = _mojibake_score(s)
+    if before == 0:
+        return v
+    for codec in ("cp1252", "latin-1"):
+        try:
+            fixed = s.encode(codec).decode("utf-8")
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            continue
+        if _mojibake_score(fixed) < before and "�" not in fixed:
+            return fixed
+    return v
+
+
 # ---- operation dispatch -----------------------------------------------------
 
 def _apply_column_op(series: pd.Series, op: dict) -> pd.Series:
@@ -159,6 +188,8 @@ def _apply_column_op(series: pd.Series, op: dict) -> pd.Series:
         return series.map(_strip_ws)
     if name == "normalize_punctuation":
         return series.map(_normalize_punctuation)
+    if name == "fix_encoding":
+        return series.map(_fix_encoding)
     if name == "normalize_disguised_nulls":
         return series.map(_to_missing_if_disguised)
     if name == "parse_currency":
@@ -220,6 +251,38 @@ def apply_plan(df: pd.DataFrame, plan: dict) -> tuple[pd.DataFrame, list[dict]]:
             before = len(out)
             out = out.drop_duplicates()
             log.append({"scope": "table", "op": name, "detail": f"removed {before - len(out)} rows"})
+        elif name == "resolve_by_majority":
+            # CROSS-ROW ENTITY VOTING: the same real-world entity appears on many
+            # rows (key_column) reported by different sources; where a clear majority
+            # value exists within a group, minority disagreements are resolved to it.
+            # Deterministic, per-group auditable; never fills missing values
+            # (imputation stays out of scope), never acts without a >= min_share
+            # majority in a group of >= min_group non-missing reports.
+            key = op.get("key_column")
+            cols = [c for c in op.get("columns", []) if c in out.columns]
+            min_group = int(op.get("min_group", 3))
+            min_share = float(op.get("min_share", 0.6))
+            changed = 0
+            if key in out.columns and cols:
+                for _, idx in out.groupby(key, sort=False).groups.items():
+                    if len(idx) < min_group:
+                        continue
+                    for c in cols:
+                        vals = [(i, str(out.at[i, c]).strip()) for i in idx
+                                if not detect.is_missing(out.at[i, c])]
+                        if len(vals) < min_group:
+                            continue
+                        from collections import Counter
+                        top, n = Counter(v for _, v in vals).most_common(1)[0]
+                        if n / len(vals) < min_share:
+                            continue
+                        for i, v in vals:
+                            if v != top:
+                                out.at[i, c] = top
+                                changed += 1
+            log.append({"scope": "table", "op": name, "cells_changed": changed,
+                        "detail": f"majority-resolved {changed} cell(s) within "
+                                  f"'{key}' groups", "rationale": op.get("rationale", "")})
 
     out = out.reset_index(drop=True)
 

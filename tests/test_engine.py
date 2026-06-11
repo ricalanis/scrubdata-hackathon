@@ -253,6 +253,45 @@ def test_active_planner_is_verified_union(monkeypatch):
     assert is_valid(plan)
 
 
+def test_fix_encoding_op():
+    from scrubdata.executor import _fix_encoding
+    assert _fix_encoding("café".encode("utf-8").decode("cp1252")) == "café"
+    assert _fix_encoding("naïve résumé".encode("utf-8").decode("latin-1")) == "naïve résumé"
+    assert _fix_encoding("plain text") == "plain text"        # untouched
+    df = pd.DataFrame({"title": ["cafÃ© latte", "normal row"] * 6})
+    plan = mock_plan(df)
+    ops = [o["op"] for c in plan["columns"] for o in c["operations"]]
+    assert "fix_encoding" in ops
+    cleaned, _ = apply_plan(df, plan)
+    assert cleaned["title"][0] == "café latte"
+
+
+def test_resolve_by_majority_voting():
+    rows = []
+    for f in range(25):                       # 25 flights x 5 source reports
+        for s in range(5):
+            dep = f"{(f % 12) + 1}:58 p.m."
+            arr = f"{(f % 11) + 1}:10 a.m."
+            if (f, s) in ((3, 4), (9, 1)):
+                dep = "7:59 p.m."             # two corrupted reports, two groups
+            if (f, s) in ((7, 2), (12, 0)):
+                arr = "9:40 a.m."
+            rows.append({"flight": f"AA-{1000+f}", "src": f"src{s}", "dep": dep,
+                         "arr": arr, "gate": f"G{f}"})
+    df = pd.DataFrame(rows)
+    plan = mock_plan(df)
+    vote = [o for o in plan["table_operations"] if o["op"] == "resolve_by_majority"]
+    assert vote and vote[0]["key_column"] == "flight"
+    cleaned, log = apply_plan(df, plan)
+    assert set(cleaned[cleaned["flight"] == "AA-1003"]["dep"]) == {"4:58 p.m."}
+    entry = next(e for e in log if e["op"] == "resolve_by_majority")
+    assert entry["cells_changed"] >= 1        # the minority report was resolved
+    # no key regime -> no vote op
+    df2 = pd.DataFrame({"a": [str(i) for i in range(40)], "b": ["x"] * 40})
+    assert not any(o["op"] == "resolve_by_majority"
+                   for o in mock_plan(df2)["table_operations"])
+
+
 def test_suspects_visibility_high_cardinality():
     from scrubdata.profiler import profile_column
     # high-card "text" column: 60 unique names + one near-dup of a repeated one

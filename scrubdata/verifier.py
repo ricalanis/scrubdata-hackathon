@@ -122,11 +122,18 @@ def union_plans(primary: dict, secondary: dict) -> dict:
     strips format ops, so op-level inheritance does not move the gate point)."""
     import copy
     out = copy.deepcopy(primary)
+    # deterministic TABLE ops the model vocabulary cannot express: cross-row entity
+    # voting is detection-driven and auditable — inherit when primary lacks it
+    have_tops = {o.get("op") for o in out.setdefault("table_operations", [])}
+    for top in secondary.get("table_operations", []):
+        if top.get("op") == "resolve_by_majority" and top["op"] not in have_tops:
+            out["table_operations"].append(copy.deepcopy(top))
     by_col = {c.get("name"): c for c in out.setdefault("columns", [])}
     # deterministic, issue-driven ops the heuristic may know that the model's trained
     # vocabulary cannot express — inherited per column unless primary already emitted
     # the same op there. PII and judgment ops are NOT inherited.
-    INHERIT_OPS = {"normalize_punctuation", "strip_whitespace", "normalize_disguised_nulls"}
+    INHERIT_OPS = {"normalize_punctuation", "fix_encoding", "strip_whitespace",
+                   "normalize_disguised_nulls"}
     for sc in secondary.get("columns", []):
         smap: dict = {}
         inherit = []

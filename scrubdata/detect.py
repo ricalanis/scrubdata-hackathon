@@ -84,10 +84,20 @@ def detect_semantic_type(name: str, values) -> str:
     distinct = {normalize_token(v) for v in vals}
     if distinct and distinct <= (BOOL_TRUE | BOOL_FALSE):
         return "boolean"
+    if "zip" in lname or "postal" in lname or "zcta" in lname:
+        return "text"            # ZIP/ZIP+4/ZCTA: never phone, date or number (leading
+        #                          zeros + dashes are data, not formatting to fix)
     if frac(lambda s: bool(_PHONE_RE.match(s)) and sum(c.isdigit() for c in s) >= 7) > 0.6 \
             and ("phone" in lname or "tel" in lname or frac(lambda s: any(c in s for c in "()+-")) > 0.3):
         return "phone"
     if frac(_looks_like_date) > 0.6:
+        # the Excel-serial branch alone (5-digit ints) is weak evidence — a ZIP/ID
+        # column in the 36000-50000 range types as 2010s dates (measured: 380 damaged
+        # cells). Serial-only columns need a date-ish NAME to qualify.
+        if frac(lambda s: bool(_EXCEL_SERIAL_RE.match(s.strip()))) > 0.9 \
+                and not any(t in lname for t in ("date", "time", "day", "created",
+                                                 "updated", "modified", "dob")):
+            return "number"
         return "date"
     if frac(lambda s: bool(_CURRENCY_RE.match(s))) > 0.6:
         # Distinguish currency (has $ or thousands grouping) from plain number.
@@ -121,6 +131,27 @@ def phone_shape(s) -> str:
     return re.sub(r"\d", "D", str(s).strip())
 
 
+def date_formats_consistent(values) -> bool:
+    """True if all non-missing date strings share one structural CONVENTION — an
+    already-consistent column should NOT be re-formatted (convention-conservatism:
+    measured ~2k damaged cells from ISO-converting uniformly M/D/YYYY columns).
+    Digit runs are collapsed so '1/4/2016' and '12/23/2015' count as the same shape;
+    a column is 'consistent' when one shape covers >=90% of values (the minority is
+    typically the ERRORS, which are repair targets — not a license to re-format the
+    whole column)."""
+    shapes = [re.sub(r"\d+", "D", str(v).strip()) for v in values if not is_missing(v)]
+    if not shapes:
+        return True
+    from collections import Counter
+    return Counter(shapes).most_common(1)[0][1] / len(shapes) >= 0.9
+
+
+def percent_formats_consistent(values) -> bool:
+    """True if every non-missing value carries the % suffix (uniform convention)."""
+    vals = [str(v).strip() for v in values if not is_missing(v)]
+    return bool(vals) and all(v.endswith("%") for v in vals)
+
+
 def phone_formats_consistent(values) -> bool:
     """True if all non-missing phone values already share one format (don't reformat)."""
     shapes = {phone_shape(v) for v in values if not is_missing(v)}
@@ -145,6 +176,20 @@ _UNICODE_PUNCT = set(
     "\u200b\u200c\u200d\ufeff"          # zero-width characters
     "\u2026"                               # ellipsis
 )
+
+
+_MOJIBAKE_SIGNS = ("Ã", "â€", "�", "ï»¿")
+
+
+def has_mojibake(values) -> bool:
+    """True if any value shows UTF-8-as-cp1252 mis-decoding artifacts."""
+    for v in values:
+        if is_missing(v):
+            continue
+        s = str(v)
+        if any(m in s for m in _MOJIBAKE_SIGNS):
+            return True
+    return False
 
 
 def has_unicode_punctuation(values) -> bool:

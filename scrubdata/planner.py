@@ -129,6 +129,10 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
     if "whitespace" in issues:
         ops.append({"op": "strip_whitespace",
                     "rationale": "Trimmed leading/trailing and doubled spaces."})
+    if "mojibake" in issues:
+        ops.append({"op": "fix_encoding",
+                    "rationale": "Repaired UTF-8-as-cp1252 mis-decoding artifacts "
+                                 "(lossless round-trip only)."})
     if "unicode_punctuation" in issues:
         ops.append({"op": "normalize_punctuation",
                     "rationale": "Normalized curly quotes / long dashes / NBSP "
@@ -144,11 +148,16 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
         ops.append({"op": "parse_number",
                     "rationale": "Parsed numeric text to number."})
     elif stype == "percent":
-        ops.append({"op": "parse_percent",
-                    "rationale": "Parsed percent text to fraction."})
+        # convention-conservatism: a uniformly '%'-suffixed column is a CONVENTION,
+        # not a problem — converting it imposes our format (measured damage)
+        if "uniform_percent_convention" not in issues:
+            ops.append({"op": "parse_percent",
+                        "rationale": "Parsed mixed percent representations to fraction."})
     elif stype == "date":
-        ops.append({"op": "parse_date",
-                    "rationale": "Unified mixed date formats to ISO YYYY-MM-DD."})
+        # same principle as phones: only unify when formats actually disagree
+        if "mixed_date_formats" in issues:
+            ops.append({"op": "parse_date",
+                        "rationale": "Unified mixed date formats to ISO YYYY-MM-DD."})
     elif stype == "boolean":
         ops.append({"op": "standardize_boolean",
                     "rationale": "Mapped Yes/Y/1/TRUE → true, No/N/0/FALSE → false."})
@@ -247,6 +256,76 @@ def _suspect_canonicalize(col_profile, series, ops, flags_out, cfg) -> None:
         })
 
 
+def detect_entity_groups(df: pd.DataFrame, min_mult: int = 3, min_groups: int = 20,
+                         min_disagree: float = 0.02):
+    """Find a KEY column whose values denote repeated real-world entities (the same
+    flight/provider reported by many rows) plus the columns that DISAGREE within its
+    groups — the cross-row voting opportunity. Returns (key, votable_cols) or None.
+
+    Key requirements: many groups, median multiplicity >= min_mult, and at least one
+    other column with intra-group disagreement on >= min_disagree of its groups."""
+    import statistics
+    from collections import Counter
+
+    n = len(df)
+    if n < 30:
+        return None
+    import re as _re
+    token = _re.compile(r"^[\w\-./]+$")
+    best = None
+    for key in df.columns:
+        vals = [str(v).strip() for v in df[key].tolist()]
+        freq = Counter(v for v in vals if v and not detect.is_missing(v))
+        if len(freq) < min_groups or len(freq) > 0.5 * n:
+            continue
+        med_mult = statistics.median(freq.values())
+        if med_mult < min_mult or med_mult > 30:
+            # entity groups are SMALL (one flight = a handful of source reports);
+            # huge groups mean a CATEGORY column (genres grouped thousands of
+            # unrelated movies -> measured regression), not an entity key
+            continue
+        # entity keys are compact identifier tokens (AA-1007, 10018) — free text,
+        # times ('7:58 p.m.') and sentence-ish values make FALSE groups (measured:
+        # a time column chosen as key raised damage instead of fixing anything)
+        tok_share = sum(1 for v in list(freq)[:200] if token.match(v)) / min(len(freq), 200)
+        if tok_share < 0.8:
+            continue
+        groups = df.groupby(key, sort=False).groups
+        votable = []
+        for c in df.columns:
+            if c == key:
+                continue
+            actionable = checked = 0
+            majorities = set()
+            for _, idx in groups.items():
+                if len(idx) < min_mult:
+                    continue
+                checked += 1
+                vv = [str(df.at[i, c]).strip() for i in idx
+                      if not detect.is_missing(df.at[i, c])]
+                if len(vv) >= min_mult and len(set(vv)) > 1:
+                    top, top_n = Counter(vv).most_common(1)[0]
+                    if top_n / len(vv) >= 0.6:
+                        # majority-bearing disagreement: a dominant value exists AND
+                        # a minority differs — exactly what voting can resolve.
+                        # Per-row-unique columns (timestamps, ids) never form a
+                        # majority; constant columns never disagree.
+                        actionable += 1
+                        majorities.add(top)
+                if checked >= 200:
+                    break
+            # per-group INFORMATION required: if every group's majority is the same
+            # value, voting just imposes the global mode (measured damage on
+            # language-style columns grouped by a coincidental key)
+            if checked and actionable / checked >= min_disagree and len(majorities) >= 2:
+                votable.append(c)
+        # one votable column is weak evidence of an entity key (measured: volume
+        # numbers as key + a single language column = damage); require breadth
+        if len(votable) >= 2 and (best is None or len(votable) > len(best[1])):
+            best = (key, votable)
+    return best
+
+
 def mock_plan(df: pd.DataFrame, profile: dict | None = None,
               ground_cfg: dict | None = None) -> dict:
     """Return a cleaning plan dict for `df` (PRODUCT.md §5 schema). `ground_cfg` tunes the
@@ -264,6 +343,16 @@ def mock_plan(df: pd.DataFrame, profile: dict | None = None,
         table_ops.append({"op": "drop_exact_duplicates",
                           "rationale": f"Removed {profile['n_exact_duplicate_rows']} "
                                        f"exact duplicate row(s)."})
+    eg = detect_entity_groups(df)
+    if eg is not None:
+        key, votable = eg
+        table_ops.append({
+            "op": "resolve_by_majority", "key_column": key, "columns": votable,
+            "min_group": 3, "min_share": 0.6,
+            "rationale": f"Rows repeat per '{key}' (same entity from multiple "
+                         f"sources); within-group majority resolves disagreements "
+                         f"in {len(votable)} column(s).",
+        })
 
     columns = []
     flags: list[dict] = []

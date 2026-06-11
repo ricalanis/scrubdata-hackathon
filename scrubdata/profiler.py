@@ -19,6 +19,8 @@ def _column_issues(series: pd.Series, semantic_type: str) -> list[str]:
         issues.append("whitespace")
     if detect.has_unicode_punctuation(values):
         issues.append("unicode_punctuation")
+    if detect.has_mojibake(values):
+        issues.append("mojibake")
     if detect.casing_variants(values):
         issues.append("casing")
     # disguised nulls present but column isn't all-empty
@@ -26,8 +28,10 @@ def _column_issues(series: pd.Series, semantic_type: str) -> list[str]:
         issues.append("disguised_nulls")
     if semantic_type in {"currency", "number", "percent"} and series.dtype == object:
         issues.append("numeric_stored_as_text")
-    if semantic_type == "date":
+    if semantic_type == "date" and not detect.date_formats_consistent(values):
         issues.append("mixed_date_formats")
+    if semantic_type == "percent" and detect.percent_formats_consistent(values):
+        issues.append("uniform_percent_convention")
     if semantic_type == "phone" and not detect.phone_formats_consistent(values):
         issues.append("inconsistent_formats")
     if semantic_type in {"categorical", "country"}:

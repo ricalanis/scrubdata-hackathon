@@ -12,7 +12,7 @@ from scrubdata.executor import apply_plan
 # Plan schema (validity gate). Permissive on extra keys; strict on shape/op names.
 OP_NAMES = [
     "strip_whitespace", "collapse_internal_whitespace", "normalize_punctuation",
-    "normalize_disguised_nulls",
+    "fix_encoding", "resolve_by_majority", "normalize_disguised_nulls",
     "standardize_case", "parse_currency", "parse_number", "parse_percent", "parse_date",
     "standardize_boolean", "standardize_phone", "normalize_email", "canonicalize_categories",
     "drop_empty_rows", "drop_empty_columns", "drop_exact_duplicates",
