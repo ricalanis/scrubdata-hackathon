@@ -19,6 +19,13 @@ Headline numbers per system:
     VARIANT-PREC    of committed changes on variant cells, share correct
     damage          clean cells corrupted (churn-neutral)
 
+DISCLOSED class imperfection: the string-variant gate over-counts on flights —
+single-digit time differences ('7:59 p.m.' vs '7:58 p.m.') pass the similarity
+threshold but are cross-source VALUE disagreements (need per-entity cross-row
+voting, a different capability), not surface canonicalization. ~950 of flights'
+1049 "variant" errors are of this kind; treat flights' variant-recall as a
+lower-bound stress number, not addressable headroom.
+
     uv run python -m eval.generalization                 # grounded heuristic baseline
 """
 
