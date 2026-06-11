@@ -30,7 +30,7 @@ SYSTEM_PROMPT = (
     "}\n\n"
     "Operation vocabulary:\n"
     "  table: drop_empty_rows, drop_empty_columns, drop_exact_duplicates\n"
-    "  column (safe): strip_whitespace, normalize_disguised_nulls, standardize_case,\n"
+    "  column (safe): strip_whitespace, normalize_punctuation, normalize_disguised_nulls, standardize_case,\n"
     "    parse_currency, parse_number, parse_percent, parse_date, standardize_boolean,\n"
     "    standardize_phone, normalize_email, canonicalize_categories\n"
     "Rules: prefer safe ops; for canonicalize_categories give the full {raw->canonical} "

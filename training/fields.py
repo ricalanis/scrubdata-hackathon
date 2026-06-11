@@ -68,7 +68,8 @@ class NameField(Field):
     FIRST = ["Alice", "Bob", "Carol", "David", "Eve", "Frank", "Grace", "Heidi",
              "Ivan", "Judy", "Karl", "Lena", "Mona", "Omar", "Priya", "Sara"]
     LAST = ["Johnson", "Smith", "Diaz", "Lee", "Adams", "Moore", "Park", "Cruz",
-            "Petrov", "Wong", "Brandt", "Fischer", "Ali", "Khan", "Novak", "Reyes"]
+            "Petrov", "Wong", "Brandt", "Fischer", "Ali", "Khan", "Novak", "Reyes",
+            "O'Brien", "D'Angelo", "Saint-Clair", "Smith-Jones", "N'Diaye"]
 
     def gen_clean(self, rng, n):
         return [f"{rng.choice(self.FIRST)} {rng.choice(self.LAST)}" for _ in range(n)]
@@ -77,13 +78,33 @@ class NameField(Field):
         dirty = [_add_whitespace(rng, c) if rng.random() < 0.5 else c for c in clean]
         ops = [{"op": "strip_whitespace",
                 "rationale": "Trimmed leading/trailing and doubled spaces."}]
-        return dirty, clean, ops, ["whitespace"]
+        issues = ["whitespace"]
+        # high-cardinality regime: unicode punctuation artifacts (curly quotes, long
+        # dashes, NBSP). Inverse of executor._PUNCT_MAP -> execution-verified.
+        if rng.random() < 0.45:
+            punct = False
+            for i, v in enumerate(dirty):
+                if rng.random() < 0.35:
+                    w = v.replace("'", "’").replace("-", "–")
+                    if " " in w and rng.random() < 0.3:
+                        k = w.rindex(" ")
+                        w = w[:k] + " " + w[k + 1:]
+                    if w != v:
+                        dirty[i] = w
+                        punct = True
+            if punct:
+                ops.append({"op": "normalize_punctuation",
+                            "rationale": "Normalized curly quotes / long dashes / "
+                                         "NBSP artifacts to plain ASCII."})
+                issues.append("unicode_punctuation")
+        return dirty, clean, ops, issues
 
 
 class CompanyField(NameField):
     names = ["company", "organization", "account", "employer"]
     POOL = ["Acme Inc", "Globex", "Initech", "Umbrella", "Soylent Corp", "Hooli",
-            "Vehement", "Stark Industries", "Wonka Co", "Cyberdyne"]
+            "Vehement", "Stark Industries", "Wonka Co", "Cyberdyne",
+            "O'Reilly & Sons", "Day-Lewis Group", "L'Atelier Co"]
 
     def gen_clean(self, rng, n):
         return [rng.choice(self.POOL) for _ in range(n)]
