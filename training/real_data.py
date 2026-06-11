@@ -61,6 +61,7 @@ DATASETS = {
     # dblp_acm/dblp_scholar: rejected — unique-value title columns are out-of-regime
     # (canonicalizable_columns distinct-ratio gate; per-cell fixes = memorization).
     "fodors_zagats":   {"keep": True, "sample": None},   # EM gold pairs -> aligned table
+    "gidcl_imdb":      {"keep": True, "sample": 20000},  # 1M-row imdb pair subset (stage-3)
     "cleanml_company": {"keep": True, "sample": 8000},   # org names/cities
     "cleanml_movie":   {"keep": True, "sample": 4000},   # movie metadata (8 typo cells)
 }

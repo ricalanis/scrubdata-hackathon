@@ -27,7 +27,8 @@ from .run_real_multi import _cell_only, score
 ROOT = Path(__file__).resolve().parent.parent
 REAL = ROOT / "data" / "real"
 N_CAP = 20000          # row cap for very large pairs (gidcl_imdb, tax100k)
-SEEN = TRAIN_SOURCES["v6"] | {"fodors_zagats", "cleanml_company", "cleanml_movie"}
+SEEN = TRAIN_SOURCES["v6"] | {"fodors_zagats", "cleanml_company", "cleanml_movie",
+                              "gidcl_imdb"}        # gidcl trains from v9 (stage-3)
 
 
 def pairs() -> list[Path]:
