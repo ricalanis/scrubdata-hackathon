@@ -1,0 +1,22 @@
+[
+ {
+  "name": "schools_nyc",
+  "domain": "education",
+  "rows": 800,
+  "cols": 41,
+  "plan_valid": true,
+  "ops": 6,
+  "cells_changed": 14385,
+  "review_flags": 1,
+  "pii_protected_or_flagged": 5,
+  "silent_edit_columns": [],
+  "sec_per_1k_rows": 24.51,
+  "inject": {
+   "typo": 0.093,
+   "ocr": 0.145,
+   "case": 0.131,
+   "whitespace": 0.217,
+   "mean": 0.146
+  }
+ }
+]
