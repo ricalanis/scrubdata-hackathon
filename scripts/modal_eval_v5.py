@@ -17,10 +17,14 @@ image = (
     .pip_install("torch", "transformers>=4.45", "peft", "accelerate",
                  "pandas", "jsonschema", "pycountry", "sentencepiece")
     .add_local_dir(".", "/root/repo", ignore=IGNORE, copy=True)
-    # harvested EVAL-ONLY pair (data/** is ignored above; Raha sets auto-download
-    # in-container, this one only exists locally via training/harvest_stage2.py)
+    # harvested EVAL-ONLY pairs (data/** is ignored above; Raha sets auto-download
+    # in-container, these only exist locally via the stage-2/3 harvesters)
     .add_local_dir("data/real/ed2_restaurants",
                    "/root/repo/data/real/ed2_restaurants", copy=True)
+    .add_local_dir("data/real/tt_co23z7go", "/root/repo/data/real/tt_co23z7go", copy=True)
+    .add_local_dir("data/real/tt_uma1dnf6", "/root/repo/data/real/tt_uma1dnf6", copy=True)
+    .add_local_dir("data/real/zeroed_billionaire",
+                   "/root/repo/data/real/zeroed_billionaire", copy=True)
 )
 app = modal.App("scrubdata-eval-v5", image=image)
 adapter_vol = modal.Volume.from_name("scrubdata-v5-adapter")
