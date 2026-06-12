@@ -30,26 +30,29 @@ abstention from cell-level confidence to the plan itself. The verified union of 
 gated model plan with a reference-grounded heuristic is the architecture's operating
 point: a zero-configuration, zero-label system that repairs 41\% of the hospital
 benchmark's 509 real errors at \unionGatePrec{} precision (strongest of three training
-seeds; 3-seed mean \unionGateThreeSeedPrec{} at \unionGateThreeSeedCov{} coverage),
+seeds; 3-seed mean \unionGateThreeSeedPrec{} at \unionGateThreeSeedCov{} coverage,
+$\pm$ = sd),
 with every declined merge surfaced for review. Four deterministic capabilities ---
 profile-level \emph{suspect surfacing} for high-cardinality columns, reconciliation
 against a pluggable \emph{entity reference} built from open vocabularies,
 \emph{cross-row majority voting} over repeated-entity groups, and
 \emph{convention-conservatism} gates --- carry the system to never-seen tables:
-unseen-source macro F1 \unseenMacroF{} at \unseenMacroDamage{} damage on a
-\nPairs-pair benchmark, and \emph{zero silent edits} across \nWild{} wild tables plus
-a \nTrust-table trust audit, released together as the \textsc{WildClean} benchmark.
+macro F1 \unseenMacroF{} at \unseenMacroDamage{} damage over the 35 unseen-source
+pairs of a \nPairs-pair benchmark, and \emph{zero silent edits} across \nWild{} wild
+tables plus a \nTrust-table trust audit, released together as the \textsc{WildClean}
+benchmark.
 
 Finally, we report where the capability lives. \emph{Execution-verified} synthetic
 supervision --- a training example is kept only if executing its plan provably
 recovers the known-clean table --- buys the 4B fine-tune real in-distribution skill
-and the most precise gated planner we measure (\modelGatePrec{} precision); but five
-further retrains and a three-arm GRPO pilot leave held-out generalization
-statistically bounded (TOST against a pre-registered margin), while zero-shot
-24--31B open-weights planners dropped into the \emph{identical} harness exceed the
-fine-tune's operating point (\scalePrecBig{} precision at \scaleCovBig{} coverage)
-with no task training. The architecture is planner-agnostic and rides capability
-scaling for free. The shipped system runs entirely locally on commodity hardware;
+and the most precise gated planner at usable coverage (\modelGatePrec{} precision at
+\modelGateCov{} coverage); but five further retrains and a three-arm GRPO pilot leave
+held-out generalization statistically bounded (TOST against a pre-registered margin),
+while two of three zero-shot 24--31B open-weights planners (devstral-24B, gemma4-31B)
+dropped into the \emph{identical} harness exceed the fine-tune's operating point
+(\scalePrecBig{} precision at \scaleCovBig{} coverage) with no task training. The
+architecture is planner-agnostic: it converts capability gains into trustworthy
+operating points without retraining. The shipped system runs entirely locally on commodity hardware;
 no data leaves the machine (the scaling-arm planners were measured via hosted
 endpoints; all are locally deployable open weights).
 \end{abstract}
@@ -106,8 +109,8 @@ This paper makes five contributions:
 \item \textbf{A unified finding on where capability lives in this architecture}: five
   further supervised fine-tunes and a three-arm GRPO pilot with the executor as a
   verifiable reward leave held-out generalization statistically bounded (TOST), while
-  zero-shot 24--31B planners dropped into the same harness exceed the fine-tune's
-  operating point --- deterministic machinery plus plan-level verification carry the
+  two of three zero-shot 24--31B planners dropped into the same harness exceed the
+  fine-tune's operating point --- deterministic machinery plus plan-level verification carry the
   generalization that exists, and raw planner capability, not task fine-tuning, scales
   it (\S\ref{sec:negative}, \S\ref{sec:scaling}).
 \end{enumerate}
@@ -430,12 +433,13 @@ the behavioral guarantees below.
 On the full suite against OpenRefine (Table~\ref{tab:money}), the result splits
 cleanly by regime, and we report both. On the \emph{real-error} slice---the regime the
 tool exists for---grounded cleaning reaches REAL-F1 \realFGrounded{}, $3.9\times$
-OpenRefine kNN (\realFORKnn) and $5.8\times$ fingerprint (\realFORFp), with seed CIs of
-$\pm$\northGroundedCI. Provenance: all Table~\ref{tab:money} numbers are regenerated
-at the current system head (2026-06-12, post-capability, scorer fix in); the June-10
-freeze system measured REAL-F1 \realFGroundedFreeze{} on the same protocol --- the
-$+0.05$ difference is the measured contribution of the four deterministic
-capabilities (\S\ref{sec:capabilities}) on the real-error slice. On the \emph{injected} slice, fingerprint clustering wins
+OpenRefine kNN (\realFORKnn) and $5.7\times$ fingerprint (\realFORFp), with seed CIs of
+$\pm$\northGroundedCI. Provenance: the grounded and OpenRefine rows of
+Table~\ref{tab:money} are regenerated at the current system head (2026-06-12,
+post-capability, scorer fix in); the dagger rows keep their original capture
+provenance. The June-10 freeze system measured REAL-F1 \realFGroundedFreeze{} on the
+same protocol --- the $+0.05$ difference is the measured contribution of the four
+deterministic capabilities (\S\ref{sec:capabilities}) on the real-error slice. On the \emph{injected} slice, fingerprint clustering wins
 (\injFORFp{} vs \injFGrounded) at near-zero damage: our case/whitespace injectors are
 exactly the perturbations key-collision normalizes away, so this is its home game and
 we say so. kNN clustering---the method that, like us, attempts typo repair---loses on
@@ -445,7 +449,9 @@ verified-union system's suite row (REAL-F1 \modelRealF, damage \modelDamage) sho
 grounding wrapper and heuristic union carry entity canonicalization on these datasets ---
 the model's contribution concentrates on the synthetic regime and hospital repair
 (\S\ref{sec:ws1results}), and the verifier cuts its suite damage to \modelDamage,
-$7\times$ below the grounded heuristic's \damageGrounded. Within our own ablations, removing grounding cedes $22\%$ of real-error
+$6\times$ below the grounded heuristic's \damageGrounded{} (HEAD damage vs the union
+row's freeze-time capture --- a disclosed basis mix). Within our own ablations
+(June-10 freeze basis throughout), removing grounding cedes $22\%$ of real-error
 F1 (\ablNoGroundRealF{} vs \ablFullRealF) and forfeits the behavioral guarantees:
 perfect abstention on adversarial traps (\ablFullAbstain) versus
 \ablNoAbstainAbstain{} without abstention, and reference-vetoed wrong merges (e.g.\
@@ -812,10 +818,11 @@ five further fine-tunes and a three-arm GRPO pilot, the weights never moved
 never-seen-table performance --- deterministic visibility, grounding, consensus, and
 verification did, at zero silent edits across \nWild{} wild tables and a
 \nTrust{}-table trust audit. The scaling arm completes the picture: the bounded null
-is about fine-tuning small weights, not about capability --- zero-shot
+is about fine-tuning small weights, not about capability --- two of three zero-shot
 24--31B planners dropped into the unchanged verifier harness exceed the
 fine-tune's operating point (\S\ref{sec:scaling}), so the architecture is
-planner-agnostic and rides capability scaling for free. The shipped system runs
+planner-agnostic: capability gains arrive as better operating points without
+retraining. The shipped system runs
 entirely locally on commodity hardware and no data leaves the machine; the
 scaling-arm planners were measured via hosted endpoints, but all are locally
 deployable open weights. We believe the recipe---propose/execute decomposition,
