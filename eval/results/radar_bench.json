@@ -1,0 +1,32 @@
+[
+ {
+  "artifact_type": "bad-values",
+  "tables": 10,
+  "macro_f1": 0.0,
+  "macro_damage": 0.0839
+ },
+ {
+  "artifact_type": "clean",
+  "tables": 4,
+  "macro_f1": 0.0,
+  "macro_damage": 0.0
+ },
+ {
+  "artifact_type": "inconsistent-commonsense-logic",
+  "tables": 4,
+  "macro_f1": 0.0,
+  "macro_damage": 0.0114
+ },
+ {
+  "artifact_type": "inconsistent-formatting",
+  "tables": 5,
+  "macro_f1": 0.0,
+  "macro_damage": 0.2718
+ },
+ {
+  "artifact_type": "missingness",
+  "tables": 21,
+  "macro_f1": 0.0,
+  "macro_damage": 0.0051
+ }
+]
