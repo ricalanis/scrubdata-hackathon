@@ -32,8 +32,10 @@ reconciled against type-scoped reference taxonomies (GeoNames, ISO) with fuzzy r
 and flags values for review; we show the confidence is selective-prediction-grade
 (AURC \aurc, precision rises monotonically with threshold). Extending abstention to the
 plan itself --- a deterministic verifier that gates every proposed mapping --- yields a
-zero-configuration, zero-label system that repairs 41\% of a real benchmark's errors at
-\unionGatePrec{} precision, with every declined merge surfaced for review.
+zero-configuration, zero-label system that repairs 41\% of the hospital benchmark's
+509 real errors at \unionGatePrec{} precision (strongest of three training seeds;
+3-seed mean \unionGateThreeSeedPrec{} at \unionGateThreeSeedCov{} coverage), with
+every declined merge surfaced for review.
 
 Beyond the verifier, four deterministic capabilities --- profile-level
 \emph{suspect surfacing} for high-cardinality columns, reconciliation against a
@@ -47,8 +49,8 @@ at \ttFOne{} F1 and \emph{zero} damage, and \emph{zero silent edits} across
 negative and load-bearing: five supervised fine-tuning iterations and a
 three-arm GRPO pilot (with a random-reward control) all failed to make the
 \emph{model weights} contribute to held-out generalization --- the deterministic
-machinery, gated by the verifier, is what generalizes, a result independently
-corroborated by three concurrent studies. The same architecture covers PII
+machinery, gated by the verifier, is what generalizes, a result whose mechanism is
+corroborated by two concurrent studies. The same architecture covers PII
 protection: a 44M token classifier types columns from bare cell values (100\% on
 names/addresses), and deterministic masking yields zero residual detectable PII.
 All components run locally on commodity hardware; no data leaves the machine.
@@ -92,7 +94,7 @@ This paper makes six contributions:
   confidence with risk--coverage analysis (\S\ref{sec:grounding},
   \S\ref{sec:calibration}).
 \item \textbf{An un-gameable evaluation}: a 65-dataset suite (real-error benchmarks plus
-  seeded error injection over 20 harvested open-data domains) scored with a
+  seeded error injection over 15 harvested open-data domains) scored with a
   churn-neutral, convention-tolerant metric that cannot be inflated by mass rewriting;
   we report two metric artifacts that our own ablations exposed and corrected
   (\S\ref{sec:eval}).
@@ -140,15 +142,18 @@ semantic-domain constraints, no LLM at inference) --- none performs zero-label
 \emph{repair}. GIDCL~\cite{gidcl} sets the labeled-class repair ceiling
 (hospital \gidclHosp{} with 20 labels and a LoRA trained per cleaned table);
 Cocoon~\cite{cocoon} remains an unreproduced preprint (15 citing papers, none a
-reproduction). Three concurrent results independently corroborate this paper's
-central negative finding that machinery, not weights, carries cleaning
-generalization: an agentic-cleaning ablation where a deterministic harness
-contributes most of the gain at 4B scale~\cite{spreadsheetrl}, a study showing
-even frontier models cannot correct table distortions without explicit
-priors~\cite{distort}, and a large multi-agent-debate evaluation in which LLM
-self-critique \emph{degrades} repair and only an adversarially separate,
+reproduction). Two concurrent results corroborate facets of this paper's central
+negative finding that machinery, not weights, carries cleaning generalization: a
+study showing even frontier models cannot correct table distortions without
+explicit priors~\cite{distort}, and a large multi-agent-debate evaluation in which
+LLM self-critique \emph{degrades} repair and only an adversarially separate,
 execution-grounded critic helps~\cite{debate} --- the architecture our verifier
-instantiates.
+instantiates. Spreadsheet-RL~\cite{spreadsheetrl} reports the complementary
+positive case: with full-scale RL infrastructure and execution-verified rewards,
+a 4B model's spreadsheet-manipulation skill \emph{does} move (12.0\%
+$\rightarrow$ 23.4\%) --- consistent with our reading that the gap between our
+\$30 pilot and such results is infrastructure scale, a boundary we state rather
+than blur (\S\ref{sec:negative}).
 
 \textbf{LLMs for data wrangling.} Narayan et al.~\cite{wrangle} showed frontier
 foundation models handle entity matching and imputation few-shot;
@@ -460,7 +465,7 @@ remains low in absolute terms (GEN-F1 \genFTwo{}, variant-recall \genVRTwo{}, da
 number to anchor the next section's claim about \emph{where} the capability that does
 exist actually lives.
 
-\subsection{Weights do not carry generalization: negative training results}
+\subsection{Weights do not carry generalization here: a bounded negative result}
 \label{sec:negative}
 Every attempt to move never-seen-table performance through the model weights failed;
 every gain in \S\ref{sec:wild} came from deterministic machinery plus the verifier.
@@ -473,16 +478,23 @@ across mix ratios). A GRPO pilot using the executor as a verifiable reward (the
 direction RLVR table work~\cite{tabler1} motivates) was negative in all three arms at
 4B/LoRA scale: the main arm and a KL-anchored variant degraded plan-format validity,
 and a random-reward control arm reproduced the same drift, identifying it as an RL
-artifact rather than signal~\cite{spurious}. We report this as the paper's central
-empirical claim rather than a failure of effort: in this protocol class, at this
-scale, \textbf{the planner's weights contribute approximately nothing to
-generalization beyond format competence} --- profiling visibility, reference
-grounding, cross-row consensus, convention conservatism, and plan-level verification
-carry it. Concurrent work reaches the same conclusion from three independent
-directions~\cite{spreadsheetrl,distort,debate}. The practical corollary is
-unusual but actionable: a contributor who wants to improve a system like this should
-write a deterministic capability and gate it with the verifier, not collect more
-training data.
+artifact rather than signal~\cite{spurious}. We state this as a \emph{bounded} null,
+not a universal one: at 4B/LoRA scale, under our propose/execute protocol and
+training budgets, no weight intervention we ran produced measurable movement in
+never-seen-table repair --- profiling visibility, reference grounding, cross-row
+consensus, convention conservatism, and plan-level verification carry the capability
+that exists. The bound is explicit: results with full-scale RL infrastructure
+(execution-verified rewards on multi-GPU RLVR stacks~\cite{spreadsheetrl,tabler1})
+show task skill moving at the same parameter scale, so our claim is about what
+SFT-and-pilot-RL buy in this protocol class, not about reinforcement learning in
+general. A second explicit bound: every weight experiment here uses the Qwen3
+family --- and the very work we cite to explain the control arm's drift documents
+that random-reward GRPO effects are themselves family-sensitive~\cite{spurious}
+--- so the null is stated for Qwen3-class models pending a cross-family
+replication. Concurrent evaluations corroborate the mechanism from independent
+directions~\cite{distort,debate}. The practical corollary is unusual but actionable:
+a contributor who wants to improve a system like this should write a deterministic
+capability and gate it with the verifier, not collect more training data.
 
 \subsection{Ablations}
 All ablations are 3-seed means (CIs $\le\pm0.003$). Removing abstention costs $-0.013$
@@ -555,7 +567,10 @@ and whitespace but still counts alias expansion (\texttt{NYC}$\to$\texttt{New Yo
 damage when the gold keeps the alias---a value-level convention question we leave open.
 The confidence signal is mildly over-confident (ECE \ece); temperature scaling is future
 work. The injected half of the suite, while seeded and reproducible, inherits the
-injector's error model; we mitigate with the real-error slice and report both. PII
+injector's error model; we mitigate with the real-error slice and report both. All
+weight-training experiments (SFT and GRPO) use a single model family (Qwen3), so
+the negative result of \S\ref{sec:negative} is family-scoped until replicated on a
+second family. PII
 coverage is English-only, and we make no de-identification guarantee. Finally, the
 fine-tune headline is reported with multi-seed confidence intervals, but the wide-suite
 model row is single-seed for cost reasons and scoped as such.
@@ -619,56 +634,70 @@ Held-out-source generalization & \texttt{python -m eval.generalization} \\
 \end{center}
 
 \begin{thebibliography}{20}
-\bibitem{raha} M.~Mahdavi et al. Raha: A configuration-free error detection system.
-SIGMOD 2019; Baran: Effective error correction via a unified context representation.
-VLDB 2020.
-\bibitem{holoclean} T.~Rekatsinas, X.~Chu, I.~Ilyas, C.~R\'e. HoloClean: Holistic data
-repairs with probabilistic inference. VLDB 2017. arXiv:1702.00820.
-\bibitem{garf} J.~Peng et al. GARF: Self-supervised interpretable data cleaning. VLDB
-2023.
-\bibitem{wrangle} A.~Narayan, I.~Chami, L.~Orr, C.~R\'e. Can foundation models wrangle
-your data? VLDB 2022. arXiv:2205.09911.
-\bibitem{jellyfish} H.~Zhang et al. Jellyfish: A large language model for data
-preprocessing. EMNLP 2024.
-\bibitem{cocoon} Anonymous. Cocoon: Semantic data cleaning with LLMs.
-arXiv:2410.15547, 2024 (unreviewed preprint).
-\bibitem{zeroed} ZeroED: Hybrid zero-shot error detection through LLM reasoning.
-arXiv:2504.05345, ICDE 2025.
-\bibitem{forested} Ensembling LLM-induced decision trees for explainable and robust
-error detection. arXiv:2512.07246, 2025.
-\bibitem{autotest} Q.~Chen et al. Auto-Test: Learning semantic-domain constraints
-for unsupervised error detection. SIGMOD 2025. arXiv:2504.10762.
-\bibitem{gidcl} GIDCL: Generative-discriminative iterative data cleaning with LLMs.
-SIGMOD 2025.
-\bibitem{spreadsheetrl} Spreadsheet-RL: Reinforcement learning for spreadsheet
-manipulation with execution verification, 2026.
-\bibitem{distort} An empirical study of LLM robustness to tabular distortions.
-arXiv:2601.05009, 2026.
-\bibitem{debate} When helping hurts and how to fix it: Multi-agent debate for data
-cleaning. arXiv:2606.02866, 2026.
-\bibitem{tabler1} Table-R1: Region-based reinforcement learning with verifiable
-rewards for table reasoning. arXiv:2505.23621, 2025.
-\bibitem{spurious} Spurious rewards: Rethinking training signals in RLVR.
-arXiv:2506.10947, 2025.
-\bibitem{tablegpt} P.~Li et al. Table-GPT: Table-tuned GPT for diverse table tasks.
-SIGMOD 2024.
-\bibitem{retclean} M.~Ahmad et al. RetClean: Retrieval-based data cleaning using LLMs
-and data lakes. VLDB 2024. arXiv:2303.16909.
-\bibitem{turl} X.~Deng et al. TURL: Table understanding through representation
-learning. VLDB 2020. arXiv:2006.14806.
-\bibitem{tablellama} T.~Zhang et al. TableLlama: Towards open large generalist models
-for tables. NAACL 2024. arXiv:2311.09206.
-\bibitem{belotti} F.~Belotti et al. Evaluating LLMs on entity disambiguation in tables.
-2024. arXiv:2408.06423.
-\bibitem{racoon} L.~Qiu et al. RACOON: Retrieval-augmented column type annotation with
-a knowledge graph. 2024. arXiv:2409.14556.
-\bibitem{mtab} P.~Nguyen et al. MTab: Matching tabular data to knowledge graph using
-probability models. SemTab 2019. arXiv:1910.00246.
-\bibitem{selective} R.~El-Yaniv, Y.~Wiener. On the foundations of noise-free selective
-classification. JMLR 2010; Y.~Geifman, R.~El-Yaniv. Selective classification for deep
-neural networks. NeurIPS 2017.
-\bibitem{openmed} M.~Panahi. OpenMed NER: Open-source domain-adapted token classifiers
-for biomedical NER. 2025. arXiv:2508.01630.
+\bibitem{raha} M.~Mahdavi, Z.~Abedjan, R.~Castro Fernandez, S.~Madden, M.~Ouzzani,
+M.~Stonebraker, N.~Tang. Raha: A Configuration-Free Error Detection System. SIGMOD
+2019; M.~Mahdavi, Z.~Abedjan. Baran: Effective Error Correction via a Unified Context
+Representation and Transfer Learning. PVLDB 13(11):1948--1961, 2020.
+\bibitem{holoclean} T.~Rekatsinas, X.~Chu, I.~F.~Ilyas, C.~R\'e. HoloClean: Holistic
+Data Repairs with Probabilistic Inference. PVLDB 10(11), 2017. arXiv:1702.00820.
+\bibitem{garf} J.~Peng, D.~Shen, N.~Tang, T.~Liu, Y.~Kou, T.~Nie, H.~Cui, G.~Yu.
+Self-Supervised and Interpretable Data Cleaning with Sequence Generative Adversarial
+Networks (GARF). PVLDB 16(3):433--446, 2022.
+\bibitem{wrangle} A.~Narayan, I.~Chami, L.~Orr, S.~Arora, C.~R\'e. Can Foundation
+Models Wrangle Your Data? PVLDB 16(4):738--746, 2022. arXiv:2205.09911.
+\bibitem{jellyfish} H.~Zhang, Y.~Dong, C.~Xiao, M.~Oyamada. Jellyfish:
+Instruction-Tuning Local Large Language Models for Data Preprocessing. EMNLP 2024.
+arXiv:2312.01678.
+\bibitem{cocoon} S.~Zhang, Z.~Huang, E.~Wu. Data Cleaning Using Large Language Models
+(Cocoon). arXiv:2410.15547, 2024 (preprint; no published reproduction).
+\bibitem{zeroed} W.~Ni, K.~Zhang, X.~Miao, X.~Zhao, Y.~Wu, Y.~Wang, J.~Yin. ZeroED:
+Hybrid Zero-Shot Error Detection Through Large Language Model Reasoning. ICDE 2025.
+arXiv:2504.05345.
+\bibitem{forested} M.~Wang, J.~Wang, Q.~Liu, X.~Xu, Z.~Xing, L.~Zhu, W.~Zhang.
+Ensembling LLM-Induced Decision Trees for Explainable and Robust Error Detection.
+arXiv:2512.07246, 2025 (preprint).
+\bibitem{autotest} Q.~Chen, Y.~He, R.~C.-W.~Wong, W.~Cui, S.~Ge, H.~Zhang, D.~Zhang,
+S.~Chaudhuri. Auto-Test: Learning Semantic-Domain Constraints for Unsupervised Error
+Detection in Tables. SIGMOD 2025. arXiv:2504.10762.
+\bibitem{gidcl} M.~Yan, Y.~Wang, Y.~Wang, X.~Miao, J.~Li. GIDCL: A Graph-Enhanced
+Interpretable Data Cleaning Framework with Large Language Models. Proc.\ ACM Manag.\
+Data 2(6), Article 236, 2024 (SIGMOD).
+\bibitem{spreadsheetrl} B.~Chi, Y.~Xie, M.~Wu, J.~Yang, J.~Jiang, Z.~Li, et al.
+Spreadsheet-RL: Advancing Large Language Model Agents on Realistic Spreadsheet Tasks
+via Reinforcement Learning. arXiv:2605.22642, 2026.
+\bibitem{distort} A.~Dutta, H.~Nigam, H.~Hasanbeig, A.~Radhakrishna, S.~Gulwani.
+An Empirical Investigation of Robustness in Large Language Models under Tabular
+Distortions. arXiv:2601.05009, 2026.
+\bibitem{debate} C.~Parmar, A.~Mehta, H.~Wu, J.~Ramamurthy, S.~Medhekar. When Helping
+Hurts and How to Fix It: Multi-Agent Debate for Data Cleaning. arXiv:2606.02866, 2026.
+\bibitem{tabler1} Z.~Yang, L.~Chen, A.~Cohan, Y.~Zhao. Table-R1: Inference-Time
+Scaling for Table Reasoning. EMNLP 2025. arXiv:2505.23621.
+\bibitem{spurious} R.~Shao, S.~S.~Li, R.~Xin, S.~Geng, Y.~Wang, et al. Spurious
+Rewards: Rethinking Training Signals in RLVR. arXiv:2506.10947, 2025.
+\bibitem{tablegpt} P.~Li, Y.~He, D.~Yashar, W.~Cui, S.~Ge, H.~Zhang, D.~Rifinski
+Fainman, D.~Zhang, S.~Chaudhuri. Table-GPT: Table Fine-tuned GPT for Diverse Table
+Tasks. Proc.\ ACM Manag.\ Data 2(3), Article 176, 2024 (SIGMOD). arXiv:2310.09263.
+\bibitem{retclean} Z.~A.~Naeem, M.~S.~Ahmad, M.~Eltabakh, M.~Ouzzani, N.~Tang.
+RetClean: Retrieval-Based Data Cleaning Using LLMs and Data Lakes. PVLDB 17(12), 2024
+(demo). arXiv:2303.16909.
+\bibitem{turl} X.~Deng, H.~Sun, A.~Lees, Y.~Wu, C.~Yu. TURL: Table Understanding
+through Representation Learning. PVLDB 14(3):307--319, 2021. arXiv:2006.14806.
+\bibitem{tablellama} T.~Zhang, X.~Yue, Y.~Li, H.~Sun. TableLlama: Towards Open Large
+Generalist Models for Tables. NAACL 2024. arXiv:2311.09206.
+\bibitem{belotti} F.~Belotti, F.~Dadda, M.~Cremaschi, R.~Avogadro, M.~Palmonari.
+Evaluating LLMs on Entity Disambiguation in Tables. arXiv:2408.06423, 2024 (preprint).
+\bibitem{racoon} L.~L.~Wei, G.~Xiao, M.~Balazinska. RACOON: An LLM-based Framework for
+Retrieval-Augmented Column Type Annotation with a Knowledge Graph. arXiv:2409.14556,
+2024 (preprint).
+\bibitem{mtab} P.~Nguyen, N.~Kertkeidkachorn, R.~Ichise, H.~Takeda. MTab: Matching
+Tabular Data to Knowledge Graph using Probability Models. SemTab/ISWC 2019.
+arXiv:1910.00246.
+\bibitem{selective} R.~El-Yaniv, Y.~Wiener. On the Foundations of Noise-free Selective
+Classification. JMLR 11:1605--1641, 2010; Y.~Geifman, R.~El-Yaniv. Selective
+Classification for Deep Neural Networks. NeurIPS 2017.
+\bibitem{openmed} M.~Panahi. OpenMed NER: Open-Source, Domain-Adapted State-of-the-Art
+Transformers for Biomedical NER Across 12 Public Datasets. arXiv:2508.01630, 2025
+(preprint).
 \end{thebibliography}
 
 \end{document}
