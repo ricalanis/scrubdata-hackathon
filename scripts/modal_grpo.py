@@ -36,7 +36,8 @@ adapter_vol = modal.Volume.from_name("scrubdata-v5-adapter")
 
 @app.function(gpu="A100-80GB", timeout=4 * 3600, volumes={"/vol": adapter_vol})
 def train_grpo(steps: int = 150, control: bool = False, seed: int = 0,
-               group: int = 6, lr: float = 1e-5, max_new: int = 1024):
+               group: int = 6, lr: float = 5e-6, max_new: int = 1024,
+               kl_beta: float = 0.05, dest_name: str = ""):
     import io
     import json
     import os
@@ -143,7 +144,17 @@ def train_grpo(steps: int = 150, control: bool = False, seed: int = 0,
             lp = torch.log_softmax(logits.float(), dim=-1)
             tok_lp = lp.gather(-1, tgt.clamp(min=0).unsqueeze(-1)).squeeze(-1)
             mean_lp = (tok_lp * mask).sum() / mask.sum().clamp(min=1)
-            loss = -(a * mean_lp) / group
+            # KL anchor to the frozen base (v2 fix: v1 ran unanchored and BOTH
+            # arms destroyed JSON discipline — pure RL drift, caught by the
+            # random-reward control). With LoRA the ref is free: disable adapters.
+            kl = torch.tensor(0.0, device=seq.device)
+            if kl_beta > 0:
+                with torch.no_grad(), model.disable_adapter():
+                    ref_logits = model(input_ids=seq).logits[:, :-1]
+                    ref_lp_tok = torch.log_softmax(ref_logits.float(), dim=-1).gather(
+                        -1, tgt.clamp(min=0).unsqueeze(-1)).squeeze(-1)
+                kl = ((tok_lp - ref_lp_tok) * mask).sum() / mask.sum().clamp(min=1)
+            loss = (-(a * mean_lp) + kl_beta * kl.abs()) / group
             loss.backward()
             loss_total += float(loss)
         torch.nn.utils.clip_grad_norm_(
@@ -154,7 +165,7 @@ def train_grpo(steps: int = 150, control: bool = False, seed: int = 0,
             print(f"step {step}: reward {mean_r:.3f} (avg-10 "
                   f"{sum(recent)/len(recent):.3f}) loss {loss_total:.4f}", flush=True)
 
-    dest = "/vol/grpo_control" if control else "/vol/grpo_pilot"
+    dest = dest_name or ("/vol/grpo_control" if control else "/vol/grpo_pilot")
     model.save_pretrained(dest)
     adapter_vol.commit()
     n25 = min(25, len(curve))
@@ -163,12 +174,13 @@ def train_grpo(steps: int = 150, control: bool = False, seed: int = 0,
                "reward_mean_first25": round(sum(r for _, r in curve[:n25]) / n25, 3),
                "reward_mean_last25": round(sum(r for _, r in curve[-n25:]) / n25, 3),
                "adapter": dest}
-    results[f"grpo_{'control' if control else 'pilot'}"] = summary
+    key = dest.rsplit("/", 1)[-1]
+    results[key] = summary
     print("GRPO DONE:", summary)
     return summary
 
 
 @app.local_entrypoint()
-def main(steps: int = 150, control: bool = False):
-    call = train_grpo.spawn(steps=steps, control=control)
+def main(steps: int = 150, control: bool = False, dest_name: str = ""):
+    call = train_grpo.spawn(steps=steps, control=control, dest_name=dest_name)
     print(f"Launched detached. call_id={call.object_id}")
