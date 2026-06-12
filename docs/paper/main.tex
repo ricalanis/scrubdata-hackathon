@@ -838,16 +838,18 @@ deterministic capabilities---is a template for deploying small specialized model
 other structured tasks.
 
 \section*{Reproducibility}
-The model weights are public
-(\url{https://huggingface.co/ricalanis/scrubdata-qwen3-4b-v6-q8}); code,
-evaluation suite, and result artifacts are released at the project repository
-(\url{https://github.com/ricalanis/scrubdata-hackathon}; public upon publication,
+\begin{sloppypar}
+The model weights are public:
+\url{https://huggingface.co/ricalanis/scrubdata-qwen3-4b-v6-q8}. Code, evaluation
+suite, and result artifacts are released at the project repository,
+\url{https://github.com/ricalanis/scrubdata-hackathon} (public upon publication,
 available to reviewers from the initial submission). The \textsc{WildClean}
 bundle --- redistributable dirty/gold pairs, the GitTables audit slice, open
 vocabularies, result JSONs, and license-gated loaders for the non-redistributable
 pairs --- is a public Hugging Face dataset
 (\url{https://huggingface.co/datasets/ricalanis/wildclean}). The shipped product
 planner is the identical code path measured here (\texttt{scrubdata/active.py}).
+\end{sloppypar}
 
 \paragraph{Release integrity.} Our own reproducibility QA discovered that the
 published Q8\_0 GGUF was corrupted by an export bug (the export declared a wrong
