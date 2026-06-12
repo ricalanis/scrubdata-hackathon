@@ -1,3 +1,8 @@
+> **SUPERSEDED SCAFFOLD (2026-06-12).** The paper was reframed; current title:
+> "Verified Cleaning Plans: Plan-Level Selective Prediction Turns Local LLM
+> Planners into Trustworthy Table Cleaners". This file is the original outline,
+> kept for history. The live paper is docs/paper/main.tex.
+
 # ScrubData — paper scaffold & related-work map
 
 **Working title:** *Small fine-tuned planners with execution-verified data and calibrated

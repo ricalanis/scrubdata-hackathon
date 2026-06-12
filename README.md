@@ -54,11 +54,13 @@ runnable via llama.cpp GGUF.
 
 ## Measured (not vibes)
 
-- **Canonicalization micro-F1 0.90** (4B fine-tune) vs **0.45** for a much larger generic
-  model vs **0.13** for rules — small-specialized beats big-generic on this task.
-- Real hospital typos: grounding beats frequency clustering (recall 0.257 vs 0.193,
-  ~2× precision, −62% wrong changes); the fine-tune lifts real repair recall 0.00 → 0.42.
-- Evaluated on a **65-dataset suite** (Raha benchmarks + seeded error injection over 20
+- **Canonicalization micro-F1 0.90 (best seed; 0.80 ± 0.01 over 3 seeds)** for the 4B
+  fine-tune vs **0.45** for a much larger generic model vs **0.15** for rules.
+- Real errors (5-benchmark macro): grounded cleaning reaches REAL-F1 **0.225**, 3.9×
+  OpenRefine kNN (0.058) and 5.7× fingerprint (0.039); the verified-union gate repairs
+  41% of hospital's 509 real errors at **0.905 precision**, every declined merge
+  surfaced for review.
+- Evaluated on a **65-dataset suite** (Raha benchmarks + seeded error injection over 15
   open-data domains) with a churn-neutral metric that can't be gamed by mass rewriting.
 - Full write-up: `docs/paper/` (preprint draft) · details in `eval/README.md`.
 

@@ -230,10 +230,14 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
                              f"reference taxonomy.",
             })
         if abstained and flags_out is not None:
+            # name the reference type only when the column's own detected type
+            # agrees — an inferred reference on a name-like column otherwise
+            # produces misleading user-facing rationale ("city values" on names)
+            kind = f"{ref_type} " if stype == ref_type else ""
             flags_out.append({
                 "column": col_profile["name"], "issue": "uncertain_canonicalization",
                 "values": abstained[:20], "action": "left_for_review",
-                "rationale": f"{len(abstained)} {ref_type} value(s) look like typos but did "
+                "rationale": f"{len(abstained)} {kind}value(s) look like typos but did "
                              f"not confidently match the reference — left unchanged for review.",
             })
     return ops

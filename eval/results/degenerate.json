@@ -2688,6 +2688,6 @@
    ],
    "no-op": []
   },
-  "investigation": "oracle violation on zeroed_tax100k (0.9984) traced to a metric bug, not the harness: _cell_equal treats any string parsing to float NaN ('Nan' the first name, f_name col) as unequal to itself (math.isclose(nan,nan)=False before the str fallback) -> 3 phantom errors where dirty==clean, unfixable by construction. Blast radius: exactly 3 of 1,786,510 cells across all 42 pairs. Verified fix (runtime patch): fall back to str(a)==str(b) when either side parses NaN -> 949 true errors, oracle F1=1.0 exact. Fix NOT yet applied to eval/metrics.py (shared by all published numbers; orchestrator decision). See docs/DEGENERATE_BASELINES.md."
+  "investigation": "oracle violation on zeroed_tax100k (0.9984) traced to a metric bug, not the harness: _cell_equal treats any string parsing to float NaN ('Nan' the first name, f_name col) as unequal to itself (math.isclose(nan,nan)=False before the str fallback) -> 3 phantom errors where dirty==clean, unfixable by construction. Blast radius: exactly 3 of 1,786,510 cells across all 42 pairs. Verified fix (runtime patch): fall back to str(a)==str(b) when either side parses NaN -> 949 true errors, oracle F1=1.0 exact. Fix applied to eval/metrics.py in commit 34e5c63 (same session); this JSON is the pre-fix run \u2014 rerun shifts oracle to exactly 1.0 and shipped macros by <1e-4 (shared by all published numbers; orchestrator decision). See docs/DEGENERATE_BASELINES.md."
  }
 }

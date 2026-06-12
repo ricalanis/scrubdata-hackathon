@@ -31,7 +31,7 @@ gated model plan with a reference-grounded heuristic is the architecture's opera
 point: a zero-configuration, zero-label system that repairs 41\% of the hospital
 benchmark's 509 real errors at \unionGatePrec{} precision (strongest of three training
 seeds; 3-seed mean \unionGateThreeSeedPrec{} at \unionGateThreeSeedCov{} coverage,
-$\pm$ = sd),
+$\pm$ = 95\% CI),
 with every declined merge surfaced for review. Four deterministic capabilities ---
 profile-level \emph{suspect surfacing} for high-cardinality columns, reconciliation
 against a pluggable \emph{entity reference} built from open vocabularies,
@@ -504,7 +504,8 @@ heuristic-only, and the heuristic hospital path doubles from \hospBaseHeur{} to
 \hospVoteHeur{}. The hospital union gate is invariant under all of this
 (\unionGatePrec{} at \unionGateCov). \textbf{(2) Wild bench}: \nWild{} uncurated
 in-the-wild tables (open-data portals, GitHub, Kaggle) with no gold; we score seeded
-inject--recovery on each table's own data (mean recovery \wildRecovery) plus a
+inject--recovery on each table's own data (mean recovery \wildRecovery{} over the 34
+tables with inject scores; one table has none) plus a
 behavioral audit: every run yields a valid plan, every changed cell is attributable
 to a logged operation --- \textbf{zero silent edits across all \nWild{} tables}.
 \textbf{(3) Trust audit at scale}: \nTrust{} GitTables tables, same property ---
@@ -566,17 +567,23 @@ directions~\cite{distort,debate}. The practical corollary is unusual but actiona
 a contributor who wants to improve a system like this should write a deterministic
 capability and gate it with the verifier, not collect more training data.
 
-The null extends to test-time compute. Self-consistency over $N{=}8$
-temperature-0.7 samples with cell-edit-level majority voting, run through the
-identical verifier-union pipeline, yields 0.906 precision at 0.456 coverage versus
-0.9055 at 0.4519 for matched greedy decoding on the same local runtime ---
-$+0.004$ coverage at matched precision. This is the visibility law from the
-test-time side: sampling cannot surface repairs the profile does not expose.
-Two side benefits are honestly noted rather than claimed as wins: voting removes
-all 168 singleton (one-of-eight) proposals, and the voted operating point is
-$\tau$-flat over $[0.2, 0.6]$. Separately, the local capture path itself (Q8
-quantization with grammar-constrained decoding) is worth $+3.9$ points of
-coverage over the original Modal capture at equal precision.
+The null extends to test-time compute --- with one instructive exception that
+\emph{confirms} the architecture claim. Self-consistency \emph{voting} over
+$N{=}16$ temperature-0.7 samples (cell-edit-level majority, run through the
+identical verifier--union pipeline) yields 0.906 precision at 0.454 coverage
+versus 0.9055 at 0.4519 for matched greedy decoding on the same local runtime ---
+a null at matched precision, the visibility law from the test-time side: voting
+cannot surface repairs the profile does not expose, and it actively discards
+verified-recoverable coverage. But pooling \emph{every} mapping from all 16
+samples and letting the verifier filter the union gives the best operating point
+we measure for the 4B: \textbf{0.911 precision at 0.483 coverage} ($+0.6$ points
+precision, $+7.1$ points coverage over the shipped gate; two independent runs
+agree to $\pm 0.001$). The lesson is the paper's thesis in miniature: sampling
+helps only as a \emph{candidate generator}; consensus adds nothing the verifier
+does not already provide --- pool candidates, verify, do not vote. Separately,
+the local capture path itself (Q8 quantization with grammar-constrained decoding)
+is worth $+3.9$ points of coverage over the original Modal capture at equal
+precision.
 
 \subsection{Zero-label capability scaling: the verifier harness is planner-agnostic}
 \label{sec:scaling}
@@ -831,13 +838,16 @@ deterministic capabilities---is a template for deploying small specialized model
 other structured tasks.
 
 \section*{Reproducibility}
-Code, evaluation suite, result artifacts, and the fine-tuned weights are public at
-\url{https://github.com/ricalanis/scrubdata-hackathon}. The \textsc{WildClean} bundle ---
-redistributable dirty/gold pairs, the GitTables audit slice, open vocabularies,
-result JSONs, and license-gated loaders for the non-redistributable pairs --- is
-released as a Hugging Face dataset at
-\url{https://huggingface.co/datasets/ricalanis/wildclean}. The shipped product planner is the identical
-code path measured here (\texttt{scrubdata/active.py}).
+The model weights are public
+(\url{https://huggingface.co/ricalanis/scrubdata-qwen3-4b-v6-q8}); code,
+evaluation suite, and result artifacts are released at the project repository
+(\url{https://github.com/ricalanis/scrubdata-hackathon}; public upon publication,
+available to reviewers from the initial submission). The \textsc{WildClean}
+bundle --- redistributable dirty/gold pairs, the GitTables audit slice, open
+vocabularies, result JSONs, and license-gated loaders for the non-redistributable
+pairs --- is a public Hugging Face dataset
+(\url{https://huggingface.co/datasets/ricalanis/wildclean}). The shipped product
+planner is the identical code path measured here (\texttt{scrubdata/active.py}).
 
 \paragraph{Release integrity.} Our own reproducibility QA discovered that the
 published Q8\_0 GGUF was corrupted by an export bug (the export declared a wrong
@@ -869,7 +879,7 @@ released revision):
 \toprule
 Reported result & Command \\
 \midrule
-Money table (Table~\ref{tab:money}) & \texttt{python -m eval.run\_real\_multi --out eval/results} \\
+Wide-suite comparison (Table~\ref{tab:money}) & \texttt{python -m eval.run\_real\_multi --out eval/results} \\
 Precision--coverage curve + gate & \texttt{python -m eval.precision\_curve} \\
 \quad (Figure~\ref{fig:pc}, \S\ref{sec:ws1results}) & \texttt{\ \ --plan eval/results/v6\_hospital\_raw\_plan.json --union} \\
 Ablations & \texttt{python -m eval.ablations} \\
@@ -889,7 +899,7 @@ Degenerate baselines (Table~\ref{tab:degenerate}) & \texttt{python -m eval.degen
 TOST equivalence (\S\ref{sec:negative}) & \texttt{python -m eval.equivalence} \\
 Label curve (Figure~\ref{fig:labelcurve}) & \texttt{python -m eval.label\_curve} \\
 Per-dataset table (Table~\ref{tab:perdataset}) & \texttt{python -m eval.raha\_table} \\
-Self-consistency null (\S\ref{sec:negative}) & \texttt{python -m eval.sc\_rerank --model scrubdata-ft --n 8} \\
+Self-consistency null (\S\ref{sec:negative}) & \texttt{python -m eval.sc\_rerank --model scrubdata-ft --n 16} \\
 Scaling arm (Table~\ref{tab:scaling}) & \texttt{python -m eval.scaling\_arm} \\
 \bottomrule
 \end{tabular}
@@ -963,8 +973,9 @@ Transformers for Biomedical NER Across 12 Public Datasets. arXiv:2508.01630, 202
 \bibitem{lakens} D.~Lakens. Equivalence Tests: A Practical Primer for t Tests,
 Correlations, and Meta-Analyses. Social Psychological and Personality Science
 8(4):355--362, 2017.
-\bibitem{grouse} S.~Muller, A.~Lo\"ison, B.~Omrani, G.~Viaud. GroUSE: A Benchmark
-to Evaluate Evaluators in Grounded Question Answering. arXiv:2409.06595, 2024.
+\bibitem{grouse} S.~Muller, A.~Loison, B.~Omrani, G.~Viaud. GroUSE: A Benchmark
+to Evaluate Evaluators in Grounded Question Answering. COLING 2025.
+arXiv:2409.06595.
 \end{thebibliography}
 
 \end{document}

@@ -182,7 +182,7 @@ log-attributed columns (must be 0).
 
 | Harness | Command | What it measures | Current numbers |
 |---|---|---|---|
-| Money table | `python -m eval.run_real_multi` | 65-set suite, 3 seeds | grounded NORTH 0.203±0.003; REAL-F1 0.174 vs OR-kNN 0.058 |
+| Money table | `python -m eval.run_real_multi` | 65-set suite, 3 seeds | grounded NORTH 0.224±0.004; REAL-F1 0.225 vs OR-kNN 0.058 (HEAD 2026-06-12 regen; freeze was 0.203/0.174) |
 | WS1 gate | `python -m eval.precision_curve --plan eval/results/v6_hospital_raw_plan.json --union` | precision–coverage curve | **0.905 @ 0.413** (τ=0.5) |
 | Paired bench | `python -m eval.paired_bench` | 42 dirty/gold pairs | unseen-35 macro F1 **0.363** @ dmg **0.0219** |
 | Wild bench | `python -m eval.wild_bench` | 35 uncurated tables, behavioral + inject-recovery | recovery 0.207; **0 silent edits** |

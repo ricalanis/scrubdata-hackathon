@@ -14,3 +14,24 @@
 [sample 13/16] 146s, capture={'failed_batches': 0, 'salvaged_batches': 1}, entries=209, union tau=0.5: 0.892 @ 0.391
 [sample 14/16] 129s, capture={'failed_batches': 0, 'salvaged_batches': 0}, entries=278, union tau=0.5: 0.903 @ 0.440
 [sample 15/16] 123s, capture={'failed_batches': 0, 'salvaged_batches': 0}, entries=267, union tau=0.5: 0.906 @ 0.456
+[sample 16/16] 180s, capture={'failed_batches': 0, 'salvaged_batches': 1}, entries=287, union tau=0.5: 0.900 @ 0.426
+
+[vote] union 494 entries -> kept 262 (>= 8/16 votes); hist {16: 102, 14: 28, 1: 143, 12: 37, 15: 69, 10: 4, 11: 4, 6: 5, 13: 10, 3: 15, 9: 6, 8: 2, 5: 5, 4: 9, 7: 5, 2: 50}
+
+=== voted plan + verify + heuristic union (hospital, 509 real errors) ===
+  tau  precision  coverage  changed  fixed
+ 0.00      0.212     0.538     1295    274
+ 0.20      0.906     0.454      255    231
+ 0.30      0.906     0.454      255    231
+ 0.40      0.906     0.454      255    231
+ 0.50      0.906     0.454      255    231
+ 0.60      0.906     0.454      255    231
+ 0.70      0.909     0.452      253    230
+ 0.80      0.905     0.428      241    218
+ 0.90      0.879     0.342      198    174
+ 0.95      0.854     0.275      164    140
+
+voted-union @ tau=0.5: 0.906 @ 0.454  vs shipped 0.905 @ 0.413
+[ablation a] best single (seed 101): 0.910 @ 0.456 (eligible >=0.30 cov: 16/16)
+[ablation b] union-of-all (494 entries): 0.911 @ 0.483
+results written to eval/results/sc_rerank.json

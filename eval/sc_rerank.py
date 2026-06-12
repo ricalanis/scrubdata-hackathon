@@ -246,8 +246,10 @@ def main() -> None:
     ap.add_argument("--temperature", type=float, default=0.7)
     ap.add_argument("--seed", type=int, default=100, help="base sampling seed (seed+i per sample)")
     ap.add_argument("--host", default="http://localhost:11434",
-                    help="ollama host (the published v6 Q8 GGUF degenerates on ollama "
-                         "0.21.2; verified working on 0.30.7)")
+                    help="ollama host (REPAIRED GGUF sha256 ef08cc6c... verified on "
+                         "0.21.2 with format=json; 0.30.7 silently IGNORES format=json "
+                         "for this model — the pre-repair GGUF sha 9caa0b2c degenerated "
+                         "on every runtime)")
     ap.add_argument("--out", type=str, default="eval/results/sc_rerank.json")
     ap.add_argument("--blob-sha256-prefix", default="",
                     help="sha256 prefix of the served GGUF blob (provenance)")
