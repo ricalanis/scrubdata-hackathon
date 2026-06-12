@@ -1,0 +1,13 @@
+[greedy anchor] 991s, capture={'failed_batches': 0, 'salvaged_batches': 1}, union tau=0.5: 0.905 @ 0.452 (shipped 0.905 @ 0.413)
+[sample 1/16] 260s, capture={'failed_batches': 0, 'salvaged_batches': 0}, entries=269, union tau=0.5: 0.910 @ 0.456
+[sample 2/16] 391s, capture={'failed_batches': 0, 'salvaged_batches': 2}, entries=266, union tau=0.5: 0.896 @ 0.391
+[sample 3/16] 434s, capture={'failed_batches': 0, 'salvaged_batches': 2}, entries=209, union tau=0.5: 0.901 @ 0.428
+[sample 4/16] 373s, capture={'failed_batches': 0, 'salvaged_batches': 1}, entries=285, union tau=0.5: 0.905 @ 0.452
+[sample 5/16] 357s, capture={'failed_batches': 0, 'salvaged_batches': 1}, entries=290, union tau=0.5: 0.906 @ 0.454
+[sample 6/16] 301s, capture={'failed_batches': 0, 'salvaged_batches': 1}, entries=263, union tau=0.5: 0.903 @ 0.440
+[sample 7/16] 211s, capture={'failed_batches': 0, 'salvaged_batches': 0}, entries=262, union tau=0.5: 0.904 @ 0.444
+[sample 8/16] 192s, capture={'failed_batches': 0, 'salvaged_batches': 1}, entries=262, union tau=0.5: 0.905 @ 0.450
+[sample 9/16] 240s, capture={'failed_batches': 0, 'salvaged_batches': 2}, entries=244, union tau=0.5: 0.901 @ 0.430
+[sample 10/16] 219s, capture={'failed_batches': 0, 'salvaged_batches': 2}, entries=282, union tau=0.5: 0.901 @ 0.430
+[sample 11/16] 199s, capture={'failed_batches': 0, 'salvaged_batches': 1}, entries=272, union tau=0.5: 0.907 @ 0.462
+[sample 12/16] 135s, capture={'failed_batches': 0, 'salvaged_batches': 0}, entries=256, union tau=0.5: 0.906 @ 0.456

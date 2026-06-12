@@ -1,0 +1,1 @@
+{"dataset_summary": "1000 rows \u00d7 20 columns (planned in 5 batches).", "table_operations": [{"op": "drop_empty_columns", "columns": ["address_2", "address_3"], "rationale": "Column(s) with no data."}], "columns": [], "flags": []}

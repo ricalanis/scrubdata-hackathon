@@ -1,0 +1,296 @@
+{
+ "metric": "churn-neutral REAL-F1 (eval.run_real_multi.score), macro over the 5 Raha real-error datasets",
+ "datasets": [
+  "hospital",
+  "beers",
+  "flights",
+  "rayyan",
+  "movies_1"
+ ],
+ "ours": {
+  "system": "ScrubData (grounded heuristic + k-label calibration)",
+  "label_use": "validate/expand accept set only; no retraining, no extra gold",
+  "points": [
+   {
+    "k": 0,
+    "macro_f1": 0.22483422984063933,
+    "macro_f1_sd": 0.0,
+    "macro_f1_per_seed": [
+     0.22483422984063933
+    ],
+    "label_seeds": [
+     0
+    ],
+    "per_dataset_seed0": {
+     "hospital": {
+      "f1": 0.25794392523364484,
+      "precision": 0.16922133660331085,
+      "recall": 0.5422396856581533,
+      "damage": 0.06623569852752552
+     },
+     "beers": {
+      "f1": 0.024956805528892304,
+      "precision": 0.04077791718946048,
+      "recall": 0.017980636237897647,
+      "damage": 0.004568942072341583
+     },
+     "flights": {
+      "f1": 0.12701579384871156,
+      "precision": 0.21704545454545454,
+      "recall": 0.08977673325499412,
+      "damage": 0.08229861467419189
+     },
+     "rayyan": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.1177875049741345
+     },
+     "movies_1": {
+      "f1": 0.714254624591948,
+      "precision": 0.6447937131630649,
+      "recall": 0.8004878048780488,
+      "damage": 0.024788732394366197
+     }
+    }
+   },
+   {
+    "k": 5,
+    "macro_f1": 0.28190312497642844,
+    "macro_f1_sd": 0.02304448054019736,
+    "macro_f1_per_seed": [
+     0.310851194991017,
+     0.2544645592458815,
+     0.2803936206923868
+    ],
+    "label_seeds": [
+     0,
+     1,
+     2
+    ],
+    "per_dataset_seed0": {
+     "hospital": {
+      "f1": 0.26107226107226106,
+      "precision": 0.17114914425427874,
+      "recall": 0.550098231827112,
+      "damage": 0.06623569852752552
+     },
+     "beers": {
+      "f1": 0.37472353870458136,
+      "precision": 0.43683241252302024,
+      "recall": 0.3280774550484094,
+      "damage": 0.004568942072341583
+     },
+     "flights": {
+      "f1": 0.13317911434236615,
+      "precision": 0.22426265998887035,
+      "recall": 0.09471210340775559,
+      "damage": 0.0844535659312468
+     },
+     "rayyan": {
+      "f1": 0.07034303082935302,
+      "precision": 0.05977859778597786,
+      "recall": 0.08544303797468354,
+      "damage": 0.1177875049741345
+     },
+     "movies_1": {
+      "f1": 0.7149380300065232,
+      "precision": 0.6449588073754413,
+      "recall": 0.8019512195121952,
+      "damage": 0.024788732394366197
+     }
+    }
+   },
+   {
+    "k": 20,
+    "macro_f1": 0.3510152031777078,
+    "macro_f1_sd": 0.01177349490195432,
+    "macro_f1_per_seed": [
+     0.35992589273547004,
+     0.35874068275571674,
+     0.3343790340419366
+    ],
+    "label_seeds": [
+     0,
+     1,
+     2
+    ],
+    "per_dataset_seed0": {
+     "hospital": {
+      "f1": 0.279520295202952,
+      "precision": 0.18264014466546113,
+      "recall": 0.5952848722986247,
+      "damage": 0.06623569852752552
+     },
+     "beers": {
+      "f1": 0.4908554572271387,
+      "precision": 0.5257503949447078,
+      "recall": 0.4603042876901798,
+      "damage": 0.004568942072341583
+     },
+     "flights": {
+      "f1": 0.142998352553542,
+      "precision": 0.23911845730027548,
+      "recall": 0.10199764982373678,
+      "damage": 0.0840430990251411
+     },
+     "rayyan": {
+      "f1": 0.17119341563786009,
+      "precision": 0.14035087719298245,
+      "recall": 0.21940928270042195,
+      "damage": 0.1177875049741345
+     },
+     "movies_1": {
+      "f1": 0.7150619430558574,
+      "precision": 0.6448451587612701,
+      "recall": 0.802439024390244,
+      "damage": 0.024788732394366197
+     }
+    }
+   }
+  ],
+  "shipped_k0_money_table": 0.17424106740013315,
+  "k0_drift_vs_money_table": 0.050593162440506184,
+  "per_dataset_k0": {
+   "hospital": {
+    "f1": 0.25794392523364484,
+    "precision": 0.16922133660331085,
+    "recall": 0.5422396856581533,
+    "damage": 0.06623569852752552
+   },
+   "beers": {
+    "f1": 0.024956805528892304,
+    "precision": 0.04077791718946048,
+    "recall": 0.017980636237897647,
+    "damage": 0.004568942072341583
+   },
+   "flights": {
+    "f1": 0.12701579384871156,
+    "precision": 0.21704545454545454,
+    "recall": 0.08977673325499412,
+    "damage": 0.08229861467419189
+   },
+   "rayyan": {
+    "f1": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "damage": 0.1177875049741345
+   },
+   "movies_1": {
+    "f1": 0.714254624591948,
+    "precision": 0.6447937131630649,
+    "recall": 0.8004878048780488,
+    "damage": 0.024788732394366197
+   }
+  }
+ },
+ "baran": {
+  "system": "Baran (oracle error positions + k gold-labeled tuples)",
+  "protocol_note": "upper bound: oracle error positions + 20 gold-labeled tuples (its package default); damage=0 by construction",
+  "points": [
+   {
+    "k": 0,
+    "status": "ok",
+    "macro_f1": 0.0,
+    "macro_f1_sd": 0.0,
+    "macro_f1_per_seed": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "n_seeds": 3,
+    "per_dataset_seed0": {
+     "beers": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 5.439216752787599e-05
+     },
+     "flights": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.0
+     },
+     "hospital": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.004001847006310605
+     },
+     "movies_1": {
+      "f1": 0.0,
+      "precision": 1.0,
+      "recall": 0.0,
+      "damage": 0.0
+     },
+     "rayyan": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.009649820931157979
+     }
+    }
+   },
+   {
+    "k": 5,
+    "status": "ok",
+    "macro_f1": 0.5040098079831169,
+    "macro_f1_sd": 0.015522120744337906,
+    "macro_f1_per_seed": [
+     0.525648227934239,
+     0.48999084252988745,
+     0.4963903534852244
+    ],
+    "n_seeds": 3,
+    "per_dataset_seed0": {
+     "beers": {
+      "f1": 0.8418664019288044,
+      "precision": 0.8637951105937136,
+      "recall": 0.8210235131396957,
+      "damage": 5.439216752787599e-05
+     },
+     "flights": {
+      "f1": 0.9659050125613111,
+      "precision": 0.9836744639376218,
+      "recall": 0.9487661574618096,
+      "damage": 0.0
+     },
+     "hospital": {
+      "f1": 0.5652667423382519,
+      "precision": 0.6693548387096774,
+      "recall": 0.48919449901768175,
+      "damage": 0.004001847006310605
+     },
+     "movies_1": {
+      "f1": 0.08172231985940245,
+      "precision": 0.41150442477876104,
+      "recall": 0.045365853658536584,
+      "damage": 0.0005007824726134585
+     },
+     "rayyan": {
+      "f1": 0.17348066298342543,
+      "precision": 0.18213457076566125,
+      "recall": 0.16561181434599156,
+      "damage": 0.009649820931157979
+     }
+    }
+   },
+   {
+    "k": 20,
+    "status": "ok",
+    "macro_f1": 0.8112648181611645,
+    "macro_f1_sd": null,
+    "ci95": 0.018112281404822416,
+    "macro_f1_per_seed": [
+     0.8040668443404699,
+     0.7962783024115705,
+     0.8334493077314529
+    ],
+    "n_seeds": 3,
+    "source": "eval/results/baran_raha.json (existing 3-seed run)"
+   }
+  ]
+ },
+ "honesty": "k-label arm touches only the k sampled (cell, gold) pairs per dataset; Baran additionally receives oracle error positions at every k (disclosed asymmetry in its favor)."
+}

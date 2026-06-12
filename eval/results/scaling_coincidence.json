@@ -1,0 +1,59 @@
+{
+ "devstral_cells": 270,
+ "gemma_cells": 270,
+ "intersection": 266,
+ "sym_diff": 8,
+ "identical": false,
+ "only_devstral": [
+  [
+   311,
+   "city",
+   "axxistox",
+   "anniston"
+  ],
+  [
+   493,
+   "measure_name",
+   "hxart attack patixnts givxn ace inhibitor or arb for lxft vxntricular systolic dysfunction (lvsd)",
+   "heart attack patients given ace inhibitor or arb for left ventricular systolic dysfunction (lvsd)"
+  ],
+  [
+   502,
+   "county",
+   "chxrokxx",
+   "cherokee"
+  ],
+  [
+   513,
+   "county",
+   "chxrokxx",
+   "cherokee"
+  ]
+ ],
+ "only_gemma": [
+  [
+   56,
+   "city",
+   "boxz",
+   "boaz"
+  ],
+  [
+   457,
+   "county",
+   "xefferson",
+   "jefferson"
+  ],
+  [
+   473,
+   "measure_name",
+   "heaxt failuxe patients given dischaxge instxuctions",
+   "heart failure patients given discharge instructions"
+  ],
+  [
+   578,
+   "county",
+   "xhambers",
+   "chambers"
+  ]
+ ]
+}

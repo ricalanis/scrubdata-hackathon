@@ -91,9 +91,14 @@ def _cell_equal(a, b) -> bool:
     if am or bm:
         return am and bm
     try:
-        return math.isclose(float(a), float(b), rel_tol=1e-6, abs_tol=1e-6)
+        fa, fb = float(a), float(b)
+        # strings like "Nan" (a person's name) parse to float NaN, which is
+        # unequal to itself under isclose — fall through to string equality
+        if not (math.isnan(fa) or math.isnan(fb)):
+            return math.isclose(fa, fb, rel_tol=1e-6, abs_tol=1e-6)
     except (TypeError, ValueError):
-        return str(a) == str(b)
+        pass
+    return str(a) == str(b)
 
 
 def recovery(clean_df: pd.DataFrame, dirty_df: pd.DataFrame, plan: dict) -> float:

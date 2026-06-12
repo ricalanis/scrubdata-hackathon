@@ -8,8 +8,8 @@
 \usepackage[numbers]{natbib}
 \input{numbers}
 
-\title{Small Fine-Tuned Planners with Execution-Verified Data and Calibrated
-Abstention for Tabular Canonicalization}
+\title{Verified Cleaning Plans: Plan-Level Selective Prediction Turns Local LLM
+Planners into Trustworthy Table Cleaners}
 \author{Ricardo Alanis\\ \small{\texttt{ricardo.alanis@gmail.com}}}
 \date{June 2026}
 
@@ -20,40 +20,38 @@ Abstention for Tabular Canonicalization}
 Cleaning messy tabular data---particularly \emph{canonicalization}, the merging of
 inconsistent surface forms such as \texttt{USA}/\texttt{U.S.A}/\texttt{united states}
 into one canonical value---resists rule-based automation and is routinely done by hand.
-We present ScrubData, a system in which a small ($\leq$4B-parameter) language model acts
-as a \emph{planner}: it reads an aggregated column profile (per-value frequency counts,
-invariant to row count) and emits a structured JSON cleaning plan that a deterministic
-executor applies, making every change auditable and reversible. Three design decisions
-carry the result. (1)~\emph{Execution-verified training data}: every synthetic training
-example is kept only if executing its plan provably recovers the known-clean table.
-(2)~\emph{Reference grounding}: canonical forms are never free-generated; values are
-reconciled against type-scoped reference taxonomies (GeoNames, ISO) with fuzzy retrieval.
-(3)~\emph{Calibrated abstention}: below a confidence threshold the system declines to act
-and flags values for review; we show the confidence is selective-prediction-grade
-(AURC \aurc, precision rises monotonically with threshold). Extending abstention to the
-plan itself --- a deterministic verifier that gates every proposed mapping --- yields a
-zero-configuration, zero-label system that repairs 41\% of the hospital benchmark's
-509 real errors at \unionGatePrec{} precision (strongest of three training seeds;
-3-seed mean \unionGateThreeSeedPrec{} at \unionGateThreeSeedCov{} coverage), with
-every declined merge surfaced for review.
+We present ScrubData, an architecture built around a trust contract. A local LLM
+\emph{planner} reads an aggregated column profile (per-value frequency counts,
+invariant to row count) and \emph{proposes} a structured JSON cleaning plan; a
+deterministic executor \emph{applies} it, making every change auditable and reversible;
+and \emph{plan-level selective prediction} --- a deterministic verifier that scores
+every proposed mapping and drops low-confidence entries to review flags --- extends
+abstention from cell-level confidence to the plan itself. The verified union of the
+gated model plan with a reference-grounded heuristic is the architecture's operating
+point: a zero-configuration, zero-label system that repairs 41\% of the hospital
+benchmark's 509 real errors at \unionGatePrec{} precision (strongest of three training
+seeds; 3-seed mean \unionGateThreeSeedPrec{} at \unionGateThreeSeedCov{} coverage),
+with every declined merge surfaced for review. Four deterministic capabilities ---
+profile-level \emph{suspect surfacing} for high-cardinality columns, reconciliation
+against a pluggable \emph{entity reference} built from open vocabularies,
+\emph{cross-row majority voting} over repeated-entity groups, and
+\emph{convention-conservatism} gates --- carry the system to never-seen tables:
+unseen-source macro F1 \unseenMacroF{} at \unseenMacroDamage{} damage on a
+\nPairs-pair benchmark, and \emph{zero silent edits} across \nWild{} wild tables plus
+a \nTrust-table trust audit, released together as the \textsc{WildClean} benchmark.
 
-Beyond the verifier, four deterministic capabilities --- profile-level
-\emph{suspect surfacing} for high-cardinality columns, reconciliation against a
-pluggable \emph{entity reference} built from open vocabularies, \emph{cross-row
-majority voting} over repeated-entity groups, and \emph{convention-conservatism}
-gates that refuse to re-format internally consistent columns --- carry the system
-to never-seen tables: across a \nPairs-pair benchmark the unseen-source macro F1 is
-\unseenMacroF{} at \unseenMacroDamage{} damage, with grouped-entity tables recovered
-at \ttFOne{} F1 and \emph{zero} damage, and \emph{zero silent edits} across
-\nWild{} wild tables plus a \nTrust-table trust audit. Our second finding is
-negative and load-bearing: five supervised fine-tuning iterations and a
-three-arm GRPO pilot (with a random-reward control) all failed to make the
-\emph{model weights} contribute to held-out generalization --- the deterministic
-machinery, gated by the verifier, is what generalizes, a result whose mechanism is
-corroborated by two concurrent studies. The same architecture covers PII
-protection: a 44M token classifier types columns from bare cell values (100\% on
-names/addresses), and deterministic masking yields zero residual detectable PII.
-All components run locally on commodity hardware; no data leaves the machine.
+Finally, we report where the capability lives. \emph{Execution-verified} synthetic
+supervision --- a training example is kept only if executing its plan provably
+recovers the known-clean table --- buys the 4B fine-tune real in-distribution skill
+and the most precise gated planner we measure (\modelGatePrec{} precision); but five
+further retrains and a three-arm GRPO pilot leave held-out generalization
+statistically bounded (TOST against a pre-registered margin), while zero-shot
+24--31B open-weights planners dropped into the \emph{identical} harness exceed the
+fine-tune's operating point (\scalePrecBig{} precision at \scaleCovBig{} coverage)
+with no task training. The architecture is planner-agnostic and rides capability
+scaling for free. The shipped system runs entirely locally on commodity hardware;
+no data leaves the machine (the scaling-arm planners were measured via hosted
+endpoints; all are locally deployable open weights).
 \end{abstract}
 
 \section{Introduction}
@@ -79,39 +77,39 @@ specification of every change---there are no silent edits by construction
 (\S\ref{sec:method}). Because the prompt scales with the number of \emph{distinct}
 values rather than rows, a million-row table profiles like a hundred-row one.
 
-This paper makes six contributions:
+This paper makes five contributions:
 \begin{enumerate}
-\item \textbf{A planner/executor decomposition for data cleaning} with an auditable
-  trust contract: the model proposes, a deterministic engine executes, every decision is
-  logged with lineage (\S\ref{sec:method}).
-\item \textbf{Execution-verified synthetic supervision}: a data-generation method in
-  which every training example is validated by running the executor on the (dirty table,
-  plan) pair and checking that the known-clean table is recovered; non-recovering
-  examples are discarded (\S\ref{sec:sft}).
-\item \textbf{Reference-grounded canonicalization with calibrated abstention}: canonical
-  forms come from type-scoped reference taxonomies via fuzzy retrieval with an ambiguity
-  margin; below-threshold matches abstain and surface for review. We characterize the
-  confidence with risk--coverage analysis (\S\ref{sec:grounding},
-  \S\ref{sec:calibration}).
-\item \textbf{An un-gameable evaluation}: a 65-dataset suite (real-error benchmarks plus
-  seeded error injection over 15 harvested open-data domains) scored with a
-  churn-neutral, convention-tolerant metric that cannot be inflated by mass rewriting;
-  we report two metric artifacts that our own ablations exposed and corrected
-  (\S\ref{sec:eval}).
+\item \textbf{A planner/executor decomposition with plan-level selective prediction}:
+  the model proposes, a deterministic engine executes with full lineage, and a
+  deterministic verifier gates every proposed mapping, extending abstention to the plan
+  itself. The verified union of the gated model plan with a reference-grounded
+  heuristic repairs 41\% of hospital's \hospErrors{} real errors at \unionGatePrec{}
+  precision with zero configuration and zero labels (\S\ref{sec:method},
+  \S\ref{sec:verifier}, \S\ref{sec:ws1results}).
+\item \textbf{\textsc{WildClean} and an un-gameable evaluation}: a 65-dataset suite
+  (real-error benchmarks plus seeded error injection over 15 harvested open-data
+  domains) scored with a churn-neutral, convention-tolerant metric that cannot be
+  inflated by mass rewriting, with damage and silent edits scored alongside repair F1,
+  degenerate baselines pinning the metric's floor and ceiling, and the scorer itself
+  validated against 30 adversarial known-by-construction cases (\S\ref{sec:eval},
+  \S\ref{sec:degenerate}).
 \item \textbf{Four deterministic capabilities that carry never-seen-table
   generalization}: bounded suspect surfacing for high-cardinality columns, generic
   entity-reference reconciliation with an exact-hit typing floor, cross-row majority
   voting with a false-consensus guard, and convention-conservatism gates --- each
   motivated by a measured failure regime and gated by the verifier
-  (\S\ref{sec:capabilities}, \S\ref{sec:wild}). Released with them is
-  \textsc{WildClean}, to our knowledge the first cleaning benchmark that scores
-  damage and silent edits alongside repair F1.
-\item \textbf{A negative result we argue is the load-bearing one}: five further
-  supervised fine-tunes and a three-arm GRPO pilot with the executor as a verifiable
-  reward all failed to move held-out generalization --- in this protocol class, the
-  model weights contribute format competence and little else; the deterministic
-  machinery and plan-level verification carry the capability
-  (\S\ref{sec:negative}).
+  (\S\ref{sec:capabilities}, \S\ref{sec:wild}).
+\item \textbf{Execution-verified synthetic supervision}, the training method behind
+  the 4B planner instantiation: every training example is validated by running the
+  executor on the (dirty table, plan) pair and checking that the known-clean table is
+  recovered; non-recovering examples are discarded (\S\ref{sec:sft}).
+\item \textbf{A unified finding on where capability lives in this architecture}: five
+  further supervised fine-tunes and a three-arm GRPO pilot with the executor as a
+  verifiable reward leave held-out generalization statistically bounded (TOST), while
+  zero-shot 24--31B planners dropped into the same harness exceed the fine-tune's
+  operating point --- deterministic machinery plus plan-level verification carry the
+  generalization that exists, and raw planner capability, not task fine-tuning, scales
+  it (\S\ref{sec:negative}, \S\ref{sec:scaling}).
 \end{enumerate}
 
 We deliberately report a negative-flavored finding alongside the positive ones: on
@@ -173,8 +171,8 @@ inference rather than bake aliases into weights (TURL's out-of-domain collapse i
 cautionary result). MTab~\cite{mtab} established type-constrained matching with
 abstention in semantic table annotation.
 
-\textbf{Clustering-based cleaning tools.} OpenRefine's key-collision (fingerprint)
-clustering and its nearest-neighbour mode are the de-facto practitioner baseline; we
+\textbf{Clustering-based cleaning tools.} The de-facto practitioner baseline is
+OpenRefine: key-collision (fingerprint) clustering plus a nearest-neighbour mode; we
 reimplement both faithfully, including blocking, and compare head-to-head.
 
 \textbf{Selective prediction.} Risk--coverage analysis and calibration
@@ -290,12 +288,18 @@ enforces the same gates on model-emitted plans at the verification boundary.
 \label{sec:pii}
 The identical contract covers PII: a deterministic tier types columns by checksum and
 pattern validators (Luhn, IBAN mod-97, SSN/email/phone) over distinct values; an
-optional 44M OpenMed-PII token classifier extends coverage to names and addresses,
-gated by a sensitive-type allowlist and a column-level coverage vote. High-sensitivity
-checksum-confirmed columns are masked format-preservingly (keep-last-four), contact
-columns are flagged for review, and identifier columns are excluded from numeric
-reformatting. Masking, salted hashing, and join-stable pseudonymization are deterministic
-executor operations.
+optional 44M OpenMed-PII token classifier~\cite{openmed} extends coverage to names and
+addresses, gated by a sensitive-type allowlist and a column-level coverage vote; and
+masking, salted hashing, and join-stable pseudonymization are deterministic executor
+operations. Measured briefly: the classifier, though trained on sentence-level
+clinical text, transfers to bare cell values --- \piiNameBare{} detection on
+person-name cells and \piiAddrBare{} on address cells ($n{=}40$ sampled cells each);
+the validator tier, evaluated out-of-distribution on per-type columns from the Gretel
+PII test split, types 5/5 covered PII types correctly with 0/7 false positives on
+negative columns drawn from real open data; and after deterministic masking,
+re-running all validators over the output finds \piiLeakRate{} residual PII ---
+residual PII \emph{detectable by our validators}, a circularity we note explicitly:
+the leak test can only see what the validator tier sees.
 
 \section{Evaluation Design}
 \label{sec:eval}
@@ -303,7 +307,16 @@ executor operations.
 (typo/OCR/case/whitespace) over 15 harvested open-data domains (NYC, Chicago, SF, LA,
 Seattle, Texas, WA portals; GitHub) $\approx$ 65 datasets per seed. We aggregate as a
 \emph{double macro}---mean over error types of mean over datasets, harmonically combined
-with the domain macro---so no single table or error type dominates.
+with the domain macro---so no single table or error type dominates:
+\begin{equation*}
+\textsc{north} \;=\; \operatorname{HM}\Biggl(
+\underbrace{\frac{1}{|T|}\sum_{t \in T}\frac{1}{|D_t|}\sum_{d \in D_t} F_1(d)}_{\text{error-type macro}},\;
+\underbrace{\frac{1}{|G|}\sum_{g \in G}\frac{1}{|D_g|}\sum_{d \in D_g} F_1(d)}_{\text{domain macro}}
+\Biggr),
+\end{equation*}
+where $T$ is the set of error types, $G$ the set of data domains, $D_t$ (resp.\ $D_g$)
+the datasets carrying error type $t$ (domain $g$), and $\operatorname{HM}$ the harmonic
+mean.
 
 \textbf{Churn-neutral metric.} A cell change that is case/whitespace-equivalent to the
 input but does not restore the gold counts as nothing: not a fix, not a change, not
@@ -320,79 +333,32 @@ evidence that gameability must be tested, not assumed.
 clustering by construction (the canonical is present and dominant in the column), so we
 report the real-error and injected slices separately.
 
+\textbf{Scorer validation.} Following GroUSE-style evaluator
+testing~\cite{grouse}, the scorer itself is validated against 30 adversarial
+known-by-construction cases: a no-op plan must score 0 fixes and 0 damage, an
+oracle plan exactly 1.0, vandalizing $k$ of $m$ clean cells must score damage
+$k/m$ at precision 0, pure churn (case/whitespace rewrites that do not restore
+gold) must count as nothing although a naive scorer would count it, fixes must
+require actually acting, and silent edits must trip the audit. All 30 pass
+against the shipped scorer unmodified.
+
+\textbf{Contamination.} The Raha-suite benchmarks have been public on GitHub since
+2019 and sit inside every modern base model's training window; we treat them as
+potentially contaminated and split our claims accordingly. A verbatim-completion
+probe makes the concern concrete: prompted with five fields of a gold hospital row,
+a frontier-class model reproduces \textbf{25\%} of the held-out cells exactly
+(30/120 cells over 30 rows, exact-substring match), versus \textbf{0\%} (0/120) on a
+date-stamped post-training-cutoff wild harvest under the identical protocol
+(\texttt{eval/contamination\_probe.py}). The rate is an upper bound on memorization
+--- some completions are guessable from the given fields --- but it is not zero, so
+results on legacy-public benchmarks (including the all-hospital
+Table~\ref{tab:scaling}, whose zero-shot planners may partially benefit from
+memorized gold) carry this caveat, while the architecture's trust claims
+(zero silent edits, damage accounting, abstention) rest on the date-stamped wild
+and GitTables slices, where the probe finds nothing to complete.
+
 \section{Results}
 \label{sec:results}
-
-\subsection{Small fine-tuned planner vs.\ large generic model}
-On frozen synthetic gold, the fine-tuned 4B planner reaches canonicalization micro-F1
-\canonFMultiSeed{} --- versus \canonFBig{} for a much larger zero-shot generalist
-prompted identically and \canonFHeur{} for the rule heuristic (best single run
-\canonFOursBest; operation-F1 \opFOurs, JSON validity \jsonValidOurs). On real hospital
-typos the synthetic-only fine-tune scores 0.000 repair recall; adding 20\%
-real-derived supervision lifts it to \hospModelRecall, and a data-scaling iteration
-(tripling the real-derived share from three paired benchmarks) reaches
-\hospModelRecallVSix{} recall at \hospModelPrecVSix{} precision---approaching the 0.51
-of a frontier-scale zero-shot model. The scaling gain is seed-robust: $+0.09$
-canonicalization F1 over the base mix under identical protocol, with non-overlapping
-3-seed confidence intervals. Real, execution-verified pairs are what transfer:
-the same iteration found frequency-derived and algorithm-cleaned labels both
-\emph{reduce} quality, consistent with our grounding thesis.
-
-\subsection{Grounding vs.\ clustering}
-With the errors-are-rare frequency gates now in both paths, grounding and frequency
-clustering are comparable on hospital alone (repairs-only, churn-neutral:
-\hospPrecGrounded{} precision at \hospRecallGrounded{} recall grounded vs
-\hospPrecFreq{} at \hospRecallFreq{} clustering---hospital's dominant errors are
-in-column typos, clustering's best case). Grounding's margin appears where references
-matter: across the five-benchmark real-error macro it reaches \ablFullRealF{} versus
-\ablNoGroundRealF{} for the frequency-clustering ablation ($+29\%$), and it carries
-the behavioral guarantees below.
-On the full suite against OpenRefine (Table~\ref{tab:money}), the result splits
-cleanly by regime, and we report both. On the \emph{real-error} slice---the regime the
-tool exists for---grounded cleaning reaches REAL-F1 \realFGrounded{}, $3.0\times$
-OpenRefine kNN (\realFORKnn) and $4.5\times$ fingerprint (\realFORFp), with seed CIs of
-$\pm$\northGroundedCI. On the \emph{injected} slice, fingerprint clustering wins
-(\injFORFp{} vs \injFGrounded) at near-zero damage: our case/whitespace injectors are
-exactly the perturbations key-collision normalizes away, so this is its home game and
-we say so. kNN clustering---the method that, like us, attempts typo repair---loses on
-both slices while incurring the highest damage among baselines (\damageORKnn), the
-no-reference over-merging failure the grounding was built to prevent. The shipped
-verified-union system's suite row (REAL-F1 \modelRealF, damage \modelDamage) shows the
-grounding wrapper and heuristic union carry entity canonicalization on these datasets ---
-the model's contribution concentrates on the synthetic regime and hospital repair
-(\S\ref{sec:ws1results}), and the verifier cuts its suite damage to \modelDamage,
-$7\times$ below the grounded heuristic's \damageGrounded. Within our own ablations, removing grounding cedes $22\%$ of real-error
-F1 (\ablNoGroundRealF{} vs \ablFullRealF) and forfeits the behavioral guarantees:
-perfect abstention on adversarial traps (\ablFullAbstain) versus
-\ablNoAbstainAbstain{} without abstention, and reference-vetoed wrong merges (e.g.\
-\texttt{guntxrsvillx}$\to$\texttt{huntsville}).
-
-\begin{table}[t]
-\centering
-\caption{Wide-suite comparison, 3 injection seeds, churn-neutral metric. NORTH is the
-double-macro harmonic mean; REAL-F1 is the real-error slice. (Filled from the final
-run.)}
-\label{tab:money}
-\begin{tabular}{lcccccc}
-\toprule
-System & NORTH & $\pm$95\%CI & REAL-F1 & INJ-F1 & damage & abstain \\
-\midrule
-Grounded (ours) & \northGrounded & \northGroundedCI & \textbf{\realFGrounded} & \injFGrounded & \damageGrounded & \ablFullAbstain \\
-OpenRefine fingerprint & \northORFp & 0.000 & \realFORFp & \injFORFp & \damageORFp & 1.000 \\
-OpenRefine kNN & \northORKnn & 0.002 & \realFORKnn & 0.148 & \damageORKnn & 1.000 \\
-Verified union 4B (shipped)$^{\dagger}$ & -- & -- & \modelRealF & -- & \modelDamage & \modelAbstain \\
-\midrule
-Baran (oracle det.\ + 20 labels)$^{\ddagger}$ & -- & -- & \realFBaran & -- & \damageBaran & -- \\
-Jellyfish-13B (ED+DI)$^{\ddagger}$ & -- & -- & \realFJelly & -- & \damageJelly & -- \\
-\bottomrule
-\end{tabular}
-
-\smallskip
-{\small $^{\dagger}$single seed, REAL + typo-injected slice only (GPU cost); other rows
-are 3-seed means. $^{\ddagger}$real slice only, disclosed protocol asymmetries
-(\S\ref{sec:ws4}): Baran uses oracle error positions + gold labels; Jellyfish is our
-detect-then-impute composition with seen-data caveats.}
-\end{table}
 
 \subsection{Plan-level selective prediction on real errors}
 \label{sec:ws1results}
@@ -437,13 +403,91 @@ operating point ($\tau{=}0.5$) is annotated.}
 \label{fig:pc}
 \end{figure}
 
+\subsection{The 4B fine-tune as one planner instantiation}
+On frozen synthetic gold, the fine-tuned 4B planner reaches canonicalization micro-F1
+\canonFMultiSeed{} --- versus \canonFBig{} for a much larger zero-shot generalist
+prompted identically and \canonFHeur{} for the rule heuristic (best single run
+\canonFOursBest; operation-F1 \opFOurs, JSON validity \jsonValidOurs). On real hospital
+typos the synthetic-only fine-tune scores 0.000 repair recall; adding 20\%
+real-derived supervision lifts it to \hospModelRecall, and a data-scaling iteration
+(tripling the real-derived share from three paired benchmarks) reaches
+\hospModelRecallVSix{} recall at \hospModelPrecVSix{} precision---approaching the
+\frontierZeroShotRecall{} of a frontier-scale zero-shot model. The scaling gain is seed-robust: $+0.09$
+canonicalization F1 over the base mix under identical protocol, with non-overlapping
+3-seed confidence intervals. Real, execution-verified pairs are what transfer:
+the same iteration found frequency-derived and algorithm-cleaned labels both
+\emph{reduce} quality, consistent with our grounding thesis.
+
+\subsection{Grounding vs.\ clustering}
+With the errors-are-rare frequency gates now in both paths, grounding and frequency
+clustering are comparable on hospital alone (repairs-only, churn-neutral:
+\hospPrecGrounded{} precision at \hospRecallGrounded{} recall grounded vs
+\hospPrecFreq{} at \hospRecallFreq{} clustering---hospital's dominant errors are
+in-column typos, clustering's best case). Grounding's margin appears where references
+matter: across the five-benchmark real-error macro it reaches \ablFullRealF{} versus
+\ablNoGroundRealF{} for the frequency-clustering ablation ($+29\%$), and it carries
+the behavioral guarantees below.
+On the full suite against OpenRefine (Table~\ref{tab:money}), the result splits
+cleanly by regime, and we report both. On the \emph{real-error} slice---the regime the
+tool exists for---grounded cleaning reaches REAL-F1 \realFGrounded{}, $3.9\times$
+OpenRefine kNN (\realFORKnn) and $5.8\times$ fingerprint (\realFORFp), with seed CIs of
+$\pm$\northGroundedCI. Provenance: all Table~\ref{tab:money} numbers are regenerated
+at the current system head (2026-06-12, post-capability, scorer fix in); the June-10
+freeze system measured REAL-F1 \realFGroundedFreeze{} on the same protocol --- the
+$+0.05$ difference is the measured contribution of the four deterministic
+capabilities (\S\ref{sec:capabilities}) on the real-error slice. On the \emph{injected} slice, fingerprint clustering wins
+(\injFORFp{} vs \injFGrounded) at near-zero damage: our case/whitespace injectors are
+exactly the perturbations key-collision normalizes away, so this is its home game and
+we say so. kNN clustering---the method that, like us, attempts typo repair---loses on
+both slices while incurring the highest damage among baselines (\damageORKnn), the
+no-reference over-merging failure the grounding was built to prevent. The shipped
+verified-union system's suite row (REAL-F1 \modelRealF, damage \modelDamage) shows the
+grounding wrapper and heuristic union carry entity canonicalization on these datasets ---
+the model's contribution concentrates on the synthetic regime and hospital repair
+(\S\ref{sec:ws1results}), and the verifier cuts its suite damage to \modelDamage,
+$7\times$ below the grounded heuristic's \damageGrounded. Within our own ablations, removing grounding cedes $22\%$ of real-error
+F1 (\ablNoGroundRealF{} vs \ablFullRealF) and forfeits the behavioral guarantees:
+perfect abstention on adversarial traps (\ablFullAbstain) versus
+\ablNoAbstainAbstain{} without abstention, and reference-vetoed wrong merges (e.g.\
+\texttt{guntxrsvillx}$\to$\texttt{huntsville}).
+
+\begin{table}[t]
+\centering
+\caption{Wide-suite comparison, 3 injection seeds, churn-neutral metric. NORTH is the
+double-macro harmonic mean; REAL-F1 is the real-error slice. Regenerated at the
+current system head (2026-06-12); the June-10 freeze system measured
+\realFGroundedFreeze{} REAL-F1 / \northGroundedFreeze{} NORTH on the same protocol.}
+\label{tab:money}
+\begin{tabular}{lcccccc}
+\toprule
+System & NORTH & $\pm$95\%CI & REAL-F1 & INJ-F1 & damage & abstain \\
+\midrule
+Grounded (ours) & \northGrounded & \northGroundedCI & \textbf{\realFGrounded} & \injFGrounded & \damageGrounded & \ablFullAbstain \\
+OpenRefine fingerprint & \northORFp & 0.000 & \realFORFp & \injFORFp & \damageORFp & 1.000 \\
+OpenRefine kNN & \northORKnn & 0.002 & \realFORKnn & 0.148 & \damageORKnn & 1.000 \\
+Verified union 4B (shipped)$^{\dagger}$ & -- & -- & \modelRealF & -- & \modelDamage & \modelAbstain \\
+\midrule
+Baran (oracle det.\ + 20 labels)$^{\ddagger}$ & -- & -- & \realFBaran & -- & \damageBaran & -- \\
+Jellyfish-13B (ED+DI)$^{\ddagger}$ & -- & -- & \realFJelly & -- & \damageJelly & -- \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+{\small $^{\dagger}$single seed, REAL + typo-injected slice only (GPU cost); other rows
+are 3-seed means. $^{\ddagger}$real slice only, disclosed protocol asymmetries
+(\S\ref{sec:ws4}): Baran uses oracle error positions + gold labels; Jellyfish is our
+detect-then-impute composition with seen-data caveats.}
+\end{table}
+
 \subsection{Generalization to never-seen tables}
 \label{sec:wild}
 The freeze-version system above was then pointed at data it had never seen, under
 three new harnesses (all released with this paper as the \textsc{WildClean} bundle).
 \textbf{(1) Paired bench}: \nPairs{} dirty/gold pairs spanning the Raha suite, SemTab
 ToughTables, government open-data typo corpora, entity-matching tables, and
-LLM-cleaning evaluation sets. On the 35 pairs from sources absent from training, the
+LLM-cleaning evaluation sets. On the 35 pairs from sources absent from training ---
+a count that coincidentally equals, but is distinct from, the \nWild{} gold-free wild
+tables of harness~(2) below --- the
 post-freeze system scores \textbf{macro F1 \unseenMacroF{} at damage
 \unseenMacroDamage}. The largest single contribution is the regime
 \S\ref{sec:capabilities}(b) unlocks: on five all-unique entity tables where no
@@ -465,14 +509,34 @@ remains low in absolute terms (GEN-F1 \genFTwo{}, variant-recall \genVRTwo{}, da
 number to anchor the next section's claim about \emph{where} the capability that does
 exist actually lives.
 
-\subsection{Weights do not carry generalization here: a bounded negative result}
+\subsection{Where capability lives: a bounded null for fine-tuning}
 \label{sec:negative}
 Every attempt to move never-seen-table performance through the model weights failed;
 every gain in \S\ref{sec:wild} came from deterministic machinery plus the verifier.
 Five further supervised fine-tunes --- adding 109k harvested real-world alias pairs
 (ToughTables-derived, MusicBrainz search hints, RxNorm, OpenFlights), error-dense
-episode mixes, and a suspects-contract retrain --- left held-out GEN-F1 flat or worse
-than the original recipe; mixing harvested pairs into the training blend
+episode mixes, and a suspects-contract retrain --- left held-out GEN-F1
+\emph{statistically bounded}: every retrain's delta is positive but negligible (mean
+$+0.003$), never approaching the pre-registered $\delta{=}0.05$. ``Bounded'' is a
+tested equivalence claim, not an eyeballed one~\cite{lakens}: across the five-retrain
+series the mean held-out GEN-F1 delta (retrain minus champion) is $+0.0028$
+(90\% bootstrap CI $[+0.0008, +0.0049]$, strictly positive;
+10{,}000 resamples, seed 42; per-dataset granularity, $n{=}15$ over 3 held-out
+sources $\times$ 5 retrains --- per-pair deltas do not exist for the retrain
+series, so within-retrain deltas are clustered and we add a retrain-level
+robustness check, $n{=}5$ macro deltas), and TOST rejects effects beyond the
+pre-registered SESOI of $\pm 0.05$ ($p = 8.0\times10^{-16}$; retrain-level check
+$p = 8.3\times10^{-8}$). Two reconciliations make the claim auditable. First, the
+basis: the equivalence series is scored against the champion's absolute GEN-F1 of
+\genChampionBasis{}, while the \genFTwo{} of \S\ref{sec:wild} is the \emph{shipped
+system} at the post-freeze HEAD with all deterministic capabilities --- the
+equivalence series scores each retrain's model-union path at its own capture time,
+so the two figures share a metric but not a basis. Second, the SESOI: weight
+interventions move GEN-F1 by at most $0.005$, while the deterministic machinery of
+\S\ref{sec:capabilities} moved the unseen-pair macro from $0.10$ to \unseenMacroF{}
+--- $\delta{=}0.05$ sits an order of magnitude above the measured weight effect and
+well below the machinery effect, which is exactly the boundary the test is meant to
+police. Mixing harvested pairs into the training blend
 \emph{diluted} the synthetic skill the executor verifies (a monotonic dilution law
 across mix ratios). A GRPO pilot using the executor as a verifiable reward (the
 direction RLVR table work~\cite{tabler1} motivates) was negative in all three arms at
@@ -496,13 +560,80 @@ directions~\cite{distort,debate}. The practical corollary is unusual but actiona
 a contributor who wants to improve a system like this should write a deterministic
 capability and gate it with the verifier, not collect more training data.
 
+The null extends to test-time compute. Self-consistency over $N{=}8$
+temperature-0.7 samples with cell-edit-level majority voting, run through the
+identical verifier-union pipeline, yields 0.906 precision at 0.456 coverage versus
+0.9055 at 0.4519 for matched greedy decoding on the same local runtime ---
+$+0.004$ coverage at matched precision. This is the visibility law from the
+test-time side: sampling cannot surface repairs the profile does not expose.
+Two side benefits are honestly noted rather than claimed as wins: voting removes
+all 168 singleton (one-of-eight) proposals, and the voted operating point is
+$\tau$-flat over $[0.2, 0.6]$. Separately, the local capture path itself (Q8
+quantization with grammar-constrained decoding) is worth $+3.9$ points of
+coverage over the original Modal capture at equal precision.
+
+\subsection{Zero-label capability scaling: the verifier harness is planner-agnostic}
+\label{sec:scaling}
+The negative result bounds what fine-tuning small weights buys; it says nothing
+about raw capability. To separate the two we dropped zero-shot, $\leq$32B
+open-weights planners --- with \emph{no} task training --- into the identical
+hospital pipeline the 4B fine-tune uses: same prompt contract, same
+verify($\tau{=}0.5$), same union with the grounded heuristic
+(Table~\ref{tab:scaling}). devstral-small-2-24B and gemma4-31B both reach
+\textbf{\scalePrecBig{} precision at \scaleCovBig{} coverage} --- exceeding the
+fine-tune's union point of \unionGatePrec{} at \unionGateCov{} --- while
+nemotron-30B reaches \scalePrecNemo{} at \scaleCovNemo{} with JSON-plan validity
+0.4 (validity is part of the measurement: a planner that cannot reliably emit the
+plan schema loses coverage before capability is measured). gpt-oss-20B is
+excluded as a serving failure, documented rather than scored as capability: the
+hosted proxy returned empty content on every planning call despite full-length
+generation. The arm is multi-family (Mistral, Google, NVIDIA), which addresses
+the single-family bound of \S\ref{sec:negative} for the inference side; the
+weight-training null itself remains Qwen3-scoped. Disclosure: these models were
+measured via hosted inference for speed; all are $\leq$32B open weights and
+locally deployable in principle. The interpretation we draw is the paper's
+sharpest: SFT at 4B does not buy held-out generalization (\S\ref{sec:negative}),
+but raw capability at 24--31B does lift the same harness --- the verifier/union
+architecture is the portable contribution, converting any sufficiently capable
+planner into a trustworthy cleaner.
+
+\begin{table}[t]
+\centering
+\caption{Zero-shot $\leq$32B planners in the identical verify($\tau{=}0.5$)+union
+harness, hospital's \hospErrors{} real errors. Validity = fraction of planning
+calls returning schema-valid JSON. Runtime = wall-clock for the planning calls on
+hosted endpoints (single capture, no seeds; the 4B row is a prior Modal A100
+capture with no comparable local figure). Each scaling row is a single capture;
+the primary evidence is the union coverage delta ($+0.07$) at matched-or-better
+precision, not any single cell. Bold marks the best union operating point.
+gpt-oss-20B excluded (serving failure: empty
+proxy responses, not measurable capability).
+The identical devstral/gemma rows are a verified counting coincidence, not a
+scoring artifact: their applied cell-edit sets share 266 of 270 cells, each
+commits 4 model-specific repairs (all correct), and the totals coincide
+(\texttt{eval/results/scaling\_coincidence.json}).
+}
+\label{tab:scaling}
+\footnotesize
+\begin{tabular}{lccccc}
+\toprule
+Planner & Params & Gated P@C & Union P@C & Validity & Runtime (s) \\
+\midrule
+ScrubData-v6 (Qwen3-4B fine-tune) & 4B & 0.993 @ 0.287 & 0.905 @ 0.413 & --- & --- \\
+devstral-small-2 (Mistral) & 24B & 0.943 @ 0.426 & \textbf{0.915 @ 0.485} & 1.0 & \runtimeDevstral \\
+nemotron-3-nano (NVIDIA) & 30B & 1.000 @ 0.138 & 0.877 @ 0.336 & 0.4 & \runtimeNemo \\
+gemma4 (Google) & 31B & 0.943 @ 0.426 & \textbf{0.915 @ 0.485} & 1.0 & \runtimeGemma \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Ablations}
 All ablations are 3-seed means (CIs $\le\pm0.003$). Removing abstention costs $-0.013$
 NORTH, raises damage to \ablNoAbstainDamage{} (from \ablFullDamage), and collapses trap
-abstention to \ablNoAbstainAbstain. Removing the ambiguity margin costs $-0.005$ with
+abstention to \ablNoAbstainAbstain. Removing the ambiguity margin costs $-0.006$ with
 $+0.001$ damage. Removing case matching costs $-0.002$ under the churn-neutral metric
 (and \emph{gained} $+0.12$ under the uncorrected metric---the artifact). Replacing
-grounding with frequency clustering gains $+0.021$ NORTH, all of it from the injected
+grounding with frequency clustering gains $+0.020$ NORTH, all of it from the injected
 slice (\S\ref{sec:eval}), while ceding $-0.039$ real-error F1---the trade the system
 refuses by design.
 
@@ -530,10 +661,117 @@ zero-config systems (ours, OpenRefine) occupy a different protocol class from
 supervised repair, and the verifier (\S\ref{sec:ws1results}) is what makes the
 zero-config class precise enough to trust, not what closes the labeled gap.
 
+Table~\ref{tab:perdataset} breaks the real-error slice down per dataset at HEAD.
+The verified-union rows are reported with their honest shape: off hospital the
+union turns ultra-conservative --- on rayyan it commits 12 changes at 0.001
+damage; on beers it holds precision 0.546 at recall 0.018. The gate's precision
+premise transfers as \emph{safety} (union damage stays at 0.001--0.080) but not
+as coverage; the movies\_1 plan capture is pending. This directly answers the
+co-adaptation concern: hospital is where the model's learned mappings live, and
+elsewhere the system abstains rather than guesses.
+
+\begin{table}[t]
+\centering
+\caption{Per-dataset real-error results (Raha slice), churn-neutral F1 / damage.
+Grounded is the HEAD deterministic system; OR = OpenRefine reimplementations;
+Union is the verified union planner ($\tau{=}0.5$) where a captured model plan
+exists (movies\_1 capture pending); Baran uses oracle error positions + 20 gold
+labels (mean of 3 label-sampling seeds) and is a supervised reference, not a
+peer.}
+\label{tab:perdataset}
+\footnotesize
+\begin{tabular}{lccccc}
+\toprule
+Dataset & Grounded (HEAD) & OR fingerprint & OR kNN & Verified union & Baran (oracle+20) \\
+\midrule
+hospital & 0.258 / .066 & 0.000 / .000 & 0.189 / .083 & 0.567 / .001 & 0.827 / .004 \\
+beers & 0.025 / .005 & 0.194 / .000 & 0.086 / .074 & 0.035 / .001 & 0.918 / .000 \\
+flights & 0.127 / .082 & 0.000 / .000 & 0.014 / .065 & 0.035 / .080 & 1.000 / .000 \\
+rayyan & 0.000 / .118 & 0.000 / .001 & 0.002 / .008 & 0.000 / .001 & 0.402 / .010 \\
+movies\_1 & 0.714 / .025 & 0.002 / .018 & 0.001 / .072 & --- & 0.909 / .001 \\
+\midrule
+macro F1 & \realFOursHead & 0.039 & 0.058 & --- & \realFBaran \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{A matched label budget separates the supervision regimes}
+\label{sec:labelcurve}
+The Baran comparison above is two points (zero labels, twenty labels); the
+matched-budget curve in Figure~\ref{fig:labelcurve} measures what each label is
+worth to each system on the same five-dataset real-error macro. At zero labels
+Baran --- even \emph{retaining} its oracle error positions --- repairs nothing
+(F1 \realFBaranZero, 3 seeds): its value models have nothing to learn from.
+ScrubData operates at \realFOursHead{} with zero configuration. With labels Baran
+climbs steeply (\realFBaranFive{} at $k{=}5$, \realFBaran{} at $k{=}20$): the two
+systems occupy complementary supervision regimes, a relationship now measured
+rather than asserted. ScrubData's own $k$-label arm uses the labels \emph{only}
+to validate and expand the verifier accept set --- no retraining, no oracle
+positions: $\realFOursFive \pm 0.023$ at $k{=}5$ and $\realFOursTwenty \pm 0.012$
+at $k{=}20$ (3 label-sampling seeds). The disclosed asymmetry stands at every
+budget: Baran keeps oracle error positions throughout, so the curve is an upper
+bound in its favor.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.62\linewidth]{fig_label_curve}
+\caption{Matched-budget label curve, five-dataset real-error macro F1. At
+$k{=}0$ Baran repairs nothing even with oracle error positions retained;
+ScrubData operates at \realFOursHead{} with zero configuration. With labels
+Baran climbs steeply --- complementary supervision regimes, measured. Error
+bars ($\pm$) are standard deviations over 3 label-sampling seeds; the Baran
+$k{=}20$ point reuses the 3-seed baseline run of \S\ref{sec:ws4}.}
+\label{fig:labelcurve}
+\end{figure}
+
+\subsection{Degenerate baselines and cost-weighted damage}
+\label{sec:degenerate}
+Four degenerate policies pin the metric's floor and ceiling on the full 42-pair
+bench (Table~\ref{tab:degenerate}). No-op and oracle land exactly at 0 and 1;
+abstain-all is score-identical to no-op because the repair metric is flag-blind
+by design (abstentions are audited separately); seeded random editing of 5\% of
+cells is vandalism the metric must punish. Since F1 alone under-punishes
+vandalism, we add a cost-weighted score in the Effective-Reliability style,
+$\Phi_c = (\mathrm{fixes} - c\cdot\mathrm{damaged})/\mathrm{errors}$ at
+$c \in \{1, 5, 10\}$: random editing scores $-0.49$ to $-4.89$, while the
+shipped system stays positive at $c{=}1$ (\degShippedPhiOne) --- and goes
+negative at higher $c$, which is the honest reading: at 10:1 cost asymmetry,
+only near-zero-damage operating points (the verified union) are defensible.
+
+One disclosure: the oracle acceptance check itself surfaced a scorer artifact
+--- 3 cells in 1.79M held the literal string \texttt{Nan} (a first name), which
+parses to float NaN and was unequal to itself --- now fixed in
+\texttt{eval/metrics.py} with a regression test; published numbers shift by
+less than $10^{-4}$.
+
+\begin{table}[t]
+\centering
+\caption{Degenerate policies pin the metric (42 pairs, churn-neutral macro;
+random-edit: seeded, 5\% of cells). $\Phi_c$ is micro-summed
+$(\mathrm{fixes} - c\cdot\mathrm{damaged})$ per benchmark error. ``Shipped''
+here is the deterministic grounded path on the 42 pairs (damage
+\degShippedDamage), distinct from the verified-union suite row of
+Table~\ref{tab:money} (damage \modelDamage).}
+\label{tab:degenerate}
+\small
+\begin{tabular}{lccccccc}
+\toprule
+Policy & F1 & P & R & damage & $\Phi_1$ & $\Phi_5$ & $\Phi_{10}$ \\
+\midrule
+no-op & 0.000 & 1.000 & 0.000 & 0.000 & $0.00$ & $0.00$ & $0.00$ \\
+abstain-all & 0.000 & 1.000 & 0.000 & 0.000 & $0.00$ & $0.00$ & $0.00$ \\
+random-edit & 0.000 & 0.001 & 0.001 & 0.049 & $-0.49$ & $-2.45$ & $-4.89$ \\
+oracle & 1.000 & 1.000 & 1.000 & 0.000 & $+1.00$ & $+1.00$ & $+1.00$ \\
+shipped & \degShippedF & \degShippedP & 0.308 & \degShippedDamage & $+0.13$ & $-1.37$ & $-3.26$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Calibration of abstention}
 \label{sec:calibration}
 On a probe of reference-entity typos plus garbage traps, retrieval confidence is a
-usable selective-prediction signal: AURC \aurc, ECE \ece{} (mildly over-confident), and
+usable selective-prediction signal: AURC \aurc, ECE \ece{} (over-confident;
+temperature scaling is future work), and
 precision rises monotonically with threshold---\precAtDefault{} precision at the default
 $\tau{=}0.84$ (coverage \covAtDefault), and $\geq$95\% precision at
 $\tau{=}\threshNinetyFive$ (coverage \covNinetyFive). Figure~\ref{fig:rc} shows the
@@ -547,25 +785,13 @@ annotated; the confidence supports thresholded abstention.}
 \label{fig:rc}
 \end{figure}
 
-\subsection{PII transfer and detection}
-The 44M OpenMed-PII classifier, trained on sentence-level clinical text, transfers to
-bare cell values without templates: \piiNameBare{} detection on person-name cells and
-\piiAddrBare{} on addresses. Raw entity hits on non-PII columns (\piiNegRate) are
-quasi-identifier typings (\texttt{city}, \texttt{occupation}) eliminated by the
-sensitive-type allowlist and coverage vote. The deterministic validator tier, evaluated
-out-of-distribution on per-type columns built from the Gretel PII test split (chosen
-specifically because OpenMed trains on Nemotron-PII), types \textbf{5/5} covered PII
-types correctly with \textbf{0/7} false positives on negative columns drawn from real
-open data. After deterministic masking, re-running all validators over the output finds
-\piiLeakRate{} residual detectable PII.
-
 \section{Limitations}
 Reference coverage is the recall ceiling: entities absent from the taxonomy abstain by
 design, which is safe but not helpful; coverage work (larger gazetteers, ROR for
 organizations) moves recall directly. Our damage metric is convention-tolerant for case
 and whitespace but still counts alias expansion (\texttt{NYC}$\to$\texttt{New York}) as
 damage when the gold keeps the alias---a value-level convention question we leave open.
-The confidence signal is mildly over-confident (ECE \ece); temperature scaling is future
+The confidence signal is over-confident (ECE \ece); temperature scaling is future
 work. The injected half of the suite, while seeded and reproducible, inherits the
 injector's error model; we mitigate with the real-error slice and report both. All
 weight-training experiments (SFT and GRPO) use a single model family (Qwen3), so
@@ -576,26 +802,47 @@ fine-tune headline is reported with multi-seed confidence intervals, but the wid
 model row is single-seed for cost reasons and scoped as such.
 
 \section{Conclusion}
-A small, locally-run planner with execution-verified supervision, reference grounding,
-and calibrated abstention turns LLM data cleaning from a trust liability into an
-auditable system: every change is a named, reversible operation; uncertain actions
-become review flags rather than silent corruptions; and the evaluation itself is built
-to resist gaming. The post-freeze program sharpened the recipe into a finding: across
+A planner/executor decomposition with plan-level selective prediction --- the model
+proposes, a deterministic engine executes, a verifier gates every mapping --- turns
+LLM data cleaning from a trust liability into an auditable system: every change is a
+named, reversible operation; uncertain actions become review flags rather than silent
+corruptions; and the evaluation itself is built to resist gaming. The post-freeze
+program sharpened the architecture into a finding: across
 five further fine-tunes and a three-arm GRPO pilot, the weights never moved
 never-seen-table performance --- deterministic visibility, grounding, consensus, and
 verification did, at zero silent edits across \nWild{} wild tables and a
-\nTrust{}-table trust audit. We believe the recipe---propose/execute decomposition,
+\nTrust{}-table trust audit. The scaling arm completes the picture: the bounded null
+is about fine-tuning small weights, not about capability --- zero-shot
+24--31B planners dropped into the unchanged verifier harness exceed the
+fine-tune's operating point (\S\ref{sec:scaling}), so the architecture is
+planner-agnostic and rides capability scaling for free. The shipped system runs
+entirely locally on commodity hardware and no data leaves the machine; the
+scaling-arm planners were measured via hosted endpoints, but all are locally
+deployable open weights. We believe the recipe---propose/execute decomposition,
 verification-by-execution, retrieval-grounded outputs, and selective prediction over
 deterministic capabilities---is a template for deploying small specialized models on
 other structured tasks.
 
 \section*{Reproducibility}
-Code, evaluation suite, result artifacts, and the fine-tuned weights are public
-(repository linked from the demo Space). The \textsc{WildClean} bundle ---
+Code, evaluation suite, result artifacts, and the fine-tuned weights are public at
+\url{https://github.com/ricalanis/scrubdata-hackathon}. The \textsc{WildClean} bundle ---
 redistributable dirty/gold pairs, the GitTables audit slice, open vocabularies,
 result JSONs, and license-gated loaders for the non-redistributable pairs --- is
-released as a Hugging Face dataset. The shipped product planner is the identical
+released as a Hugging Face dataset at
+\url{https://huggingface.co/datasets/ricalanis/wildclean}. The shipped product planner is the identical
 code path measured here (\texttt{scrubdata/active.py}).
+
+\paragraph{Release integrity.} Our own reproducibility QA discovered that the
+published Q8\_0 GGUF was corrupted by an export bug (the export declared a wrong
+end-of-generation token id inside the Qwen3 vocabulary, degenerating into
+tool-call loops on all runtimes; a base-model control isolated the fault to the
+export, not the adapter). It has been re-exported from the v6 adapter and
+replaced under the same filename, with both sha256 checksums recorded in the
+model card's Integrity section. Third-party reproduction of the model-path
+numbers additionally requires constrained decoding on long prompts ---
+\texttt{format=json} under Ollama, or
+\texttt{suppress\_tokens=[151657,151658]} under transformers --- which is now
+documented in the model card and \texttt{notebooks/Modelfile}.
 
 \paragraph{Setup.} Clone the repository and run \texttt{uv sync} (Python 3.12;
 \texttt{uv} resolves the pinned environment). The non-redistributable benchmark
@@ -629,6 +876,14 @@ Paired bench (\S\ref{sec:wild}) & \texttt{python -m eval.paired\_bench} \\
 Wild bench (\S\ref{sec:wild}) & \texttt{python -m eval.wild\_bench} \\
 GitTables trust audit (\S\ref{sec:wild}) & \texttt{python -m eval.gittables\_audit} \\
 Held-out-source generalization & \texttt{python -m eval.generalization} \\
+\midrule
+Scorer validation (\S\ref{sec:eval}) & \texttt{python -m pytest tests/test\_wildclean\_scorer.py} \\
+Degenerate baselines (Table~\ref{tab:degenerate}) & \texttt{python -m eval.degenerate} \\
+TOST equivalence (\S\ref{sec:negative}) & \texttt{python -m eval.equivalence} \\
+Label curve (Figure~\ref{fig:labelcurve}) & \texttt{python -m eval.label\_curve} \\
+Per-dataset table (Table~\ref{tab:perdataset}) & \texttt{python -m eval.raha\_table} \\
+Self-consistency null (\S\ref{sec:negative}) & \texttt{python -m eval.sc\_rerank --model scrubdata-ft --n 8} \\
+Scaling arm (Table~\ref{tab:scaling}) & \texttt{python -m eval.scaling\_arm} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -698,6 +953,11 @@ Classification for Deep Neural Networks. NeurIPS 2017.
 \bibitem{openmed} M.~Panahi. OpenMed NER: Open-Source, Domain-Adapted State-of-the-Art
 Transformers for Biomedical NER Across 12 Public Datasets. arXiv:2508.01630, 2025
 (preprint).
+\bibitem{lakens} D.~Lakens. Equivalence Tests: A Practical Primer for t Tests,
+Correlations, and Meta-Analyses. Social Psychological and Personality Science
+8(4):355--362, 2017.
+\bibitem{grouse} S.~Muller, A.~Lo\"ison, B.~Omrani, G.~Viaud. GroUSE: A Benchmark
+to Evaluate Evaluators in Grounded Question Answering. arXiv:2409.06595, 2024.
 \end{thebibliography}
 
 \end{document}

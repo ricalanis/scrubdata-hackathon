@@ -12,6 +12,13 @@
 #   ollama create scrubdata-ft -f notebooks/Modelfile
 #   uv run eval/run_finetuned.py --model scrubdata-ft --n 40
 
+# CONSTRAINED DECODING REQUIRED ON LONG PROMPTS: on full planning prompts the Q8 GGUF's
+# first token can degenerate into <tool_call> loops (Qwen3 tool-calling prior). Use
+# format=json in the Ollama API call (grammar-constrained decoding), or under
+# transformers suppress_tokens=[151657, 151658]. See eval/capture_plan_local.py and the
+# model card's Integrity section (the GGUF itself was re-exported 2026-06-12; sha256s
+# recorded there).
+
 # v6 = mixA (more real paired data): hospital repair 0.475/0.185 (v4/v5 was 0/0.42)
 FROM hf.co/ricalanis/scrubdata-qwen3-4b-v6-q8:Q8_0
 TEMPLATE """{{- if .System }}<|im_start|>system

@@ -1,0 +1,27 @@
+[greedy anchor] 205s, capture={'failed_batches': 0, 'salvaged_batches': 1}, union tau=0.5: 0.905 @ 0.452 (shipped 0.905 @ 0.413)
+[sample 1/8] 232s, capture={'failed_batches': 0, 'salvaged_batches': 2}, entries=309, union tau=0.5: 0.905 @ 0.452
+[sample 2/8] 161s, capture={'failed_batches': 0, 'salvaged_batches': 0}, entries=318, union tau=0.5: 0.897 @ 0.446
+[sample 3/8] 133s, capture={'failed_batches': 0, 'salvaged_batches': 0}, entries=259, union tau=0.5: 0.903 @ 0.440
+[sample 4/8] 228s, capture={'failed_batches': 0, 'salvaged_batches': 2}, entries=261, union tau=0.5: 0.905 @ 0.448
+[sample 5/8] 146s, capture={'failed_batches': 0, 'salvaged_batches': 0}, entries=285, union tau=0.5: 0.899 @ 0.438
+[sample 6/8] 141s, capture={'failed_batches': 0, 'salvaged_batches': 0}, entries=254, union tau=0.5: 0.905 @ 0.452
+[sample 7/8] 193s, capture={'failed_batches': 0, 'salvaged_batches': 1}, entries=247, union tau=0.5: 0.905 @ 0.448
+[sample 8/8] 190s, capture={'failed_batches': 0, 'salvaged_batches': 1}, entries=262, union tau=0.5: 0.908 @ 0.448
+
+[vote] union 460 entries -> kept 269 (>= 4/8 votes); hist {6: 20, 7: 63, 2: 14, 8: 164, 1: 168, 3: 9, 4: 11, 5: 11}
+
+=== voted plan + verify + heuristic union (hospital, 509 real errors) ===
+  tau  precision  coverage  changed  fixed
+ 0.00      0.185     0.526     1451    268
+ 0.20      0.906     0.456      256    232
+ 0.30      0.906     0.456      256    232
+ 0.40      0.906     0.456      256    232
+ 0.50      0.906     0.456      256    232
+ 0.60      0.906     0.456      256    232
+ 0.70      0.909     0.450      252    229
+ 0.80      0.904     0.426      240    217
+ 0.90      0.880     0.346      200    176
+ 0.95      0.854     0.275      164    140
+
+voted-union @ tau=0.5: 0.906 @ 0.456  vs shipped 0.905 @ 0.413
+results written to eval/results/sc_rerank.json

@@ -15,15 +15,21 @@
 \newcommand{\hospPrecFreq}{0.871}
 \newcommand{\hospModelRecall}{0.424}   % fine-tuned v5, repair_recall (vs 0.000 synthetic-only)
 
-% Wide-suite comparison (3 seeds, churn-neutral metric) — money table (overnight)
-\newcommand{\northGrounded}{0.203}
-\newcommand{\northGroundedCI}{0.003}
+% Wide-suite comparison (3 seeds, churn-neutral metric) — money table.
+% PRIMARY = HEAD regeneration 2026-06-12 (eval/results/money_table_head.json,
+% post-capability system, NaN metric fix in). Freeze (2026-06-10) values kept
+% as *Freeze macros where the narrative discusses the freeze-version system.
+\newcommand{\northGrounded}{0.224}
+\newcommand{\northGroundedCI}{0.004}
 \newcommand{\northORFp}{0.211}
 \newcommand{\northORKnn}{0.122}
-\newcommand{\realFGrounded}{0.174}
+\newcommand{\realFGrounded}{0.225}
 \newcommand{\realFORKnn}{0.058}
-\newcommand{\damageGrounded}{0.104}
+\newcommand{\damageGrounded}{0.092}
 \newcommand{\damageORKnn}{0.096}
+\newcommand{\northGroundedFreeze}{0.203}
+\newcommand{\realFGroundedFreeze}{0.174}
+\newcommand{\damageGroundedFreeze}{0.104}
 
 % SHIPPED system (verified union, v6 adapter) on suite — scripts/modal_eval_suite.py
 \newcommand{\modelRealF}{0.142}
@@ -57,7 +63,7 @@
 \newcommand{\piiNegRate}{43\%}
 \newcommand{\piiLeakRate}{zero (0/360)} % eval/pii_leak.py, seeded
 \newcommand{\realFORFp}{0.039}
-\newcommand{\injFGrounded}{0.214}
+\newcommand{\injFGrounded}{0.224}
 \newcommand{\injFORFp}{0.282}
 \newcommand{\damageORFp}{0.001}
 \newcommand{\hospModelRecallVSix}{0.475}
@@ -105,3 +111,36 @@
 \newcommand{\precBaran}{0.824}
 \newcommand{\realFJelly}{0.074}     % Jellyfish-13B ED+DI (scripts/modal_jellyfish.py)
 \newcommand{\damageJelly}{0.027}
+
+% W1.a — matched-budget label curve, 5-dataset Raha macro (eval/results/label_curve.json)
+\newcommand{\realFBaranZero}{0.000}    % Baran k=0 (oracle positions retained), 3 seeds
+\newcommand{\realFBaranFive}{0.504}    % Baran k=5
+\newcommand{\realFOursFive}{0.282}     % ours k=5 (labels validate/expand accept set only)
+\newcommand{\realFOursTwenty}{0.351}   % ours k=20
+\newcommand{\realFOursHead}{0.225}     % ours k=0 at HEAD (post-freeze capabilities)
+
+% W4.3/4.4 — degenerate baselines + cost-weighted scores (eval/results/degenerate.json)
+\newcommand{\degShippedF}{0.343}
+\newcommand{\degShippedP}{0.576}
+\newcommand{\degShippedDamage}{0.023}
+\newcommand{\degShippedPhiOne}{$+0.13$}
+
+% W1.c — zero-shot capability scaling arm (eval/results/scaling_arm.json)
+\newcommand{\scalePrecBig}{0.915}      % devstral-24B and gemma4-31B union point
+\newcommand{\scaleCovBig}{0.485}
+\newcommand{\scalePrecNemo}{0.877}
+\newcommand{\scaleCovNemo}{0.336}
+% hosted wall-clock for the 5 planning calls, single capture (scaling_arm.json runtime_s)
+\newcommand{\runtimeDevstral}{135}
+\newcommand{\runtimeNemo}{114}
+\newcommand{\runtimeGemma}{104}
+
+% Frontier zero-shot reference point: hospital repair recall of a vanilla frontier-scale
+% cloud planner run through the same propose/execute harness (2026-06-04..07 architecture
+% validation captures, pre-verifier; recorded in project training-run logs). Quoted in the
+% fine-tune results subsection as the zero-shot ceiling the v6 recall approaches.
+\newcommand{\frontierZeroShotRecall}{0.51}
+
+% R3 — absolute champion GEN-F1 basis of the equivalence retrain series
+% (eval/results/equivalence.json spec.champion_macro_gen_f1 = 0.014606)
+\newcommand{\genChampionBasis}{0.0146}

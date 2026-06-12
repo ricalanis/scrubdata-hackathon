@@ -1,0 +1,317 @@
+{
+ "protocol": {
+  "deterministic_rows": "full plan minus row-dropping ops (_cell_only), churn-neutral score \u2014 identical to run_real_multi",
+  "union_rows": "verify(tau=0.5) -> union with heuristic -> repairs-only (canonicalize decisions; the WS1 gate protocol)",
+  "baran_row": "eval/results/baran_raha.json \u2014 oracle error positions + 20 gold labels (upper bound), mean over 3 label-sampling seeds",
+  "movies_1": "scored on first 2000 rows (_raha_pair), as in the money table"
+ },
+ "systems": {
+  "grounded": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "f1": 0.25794392523364484,
+     "precision": 0.16922133660331085,
+     "recall": 0.5422396856581533,
+     "damage": 0.06623569852752552,
+     "errors": 509,
+     "changed": 1631,
+     "fixed": 276
+    },
+    {
+     "dataset": "beers",
+     "f1": 0.024956805528892304,
+     "precision": 0.04077791718946048,
+     "recall": 0.017980636237897647,
+     "damage": 0.004568942072341583,
+     "errors": 3615,
+     "changed": 1594,
+     "fixed": 65
+    },
+    {
+     "dataset": "flights",
+     "f1": 0.12701579384871156,
+     "precision": 0.21704545454545454,
+     "recall": 0.08977673325499412,
+     "damage": 0.08229861467419189,
+     "errors": 4255,
+     "changed": 1760,
+     "fixed": 382
+    },
+    {
+     "dataset": "rayyan",
+     "f1": 0.0,
+     "precision": 0.0,
+     "recall": 0.0,
+     "damage": 0.1177875049741345,
+     "errors": 948,
+     "changed": 1274,
+     "fixed": 0
+    },
+    {
+     "dataset": "movies_1",
+     "f1": 0.714254624591948,
+     "precision": 0.6447937131630649,
+     "recall": 0.8004878048780488,
+     "damage": 0.024788732394366197,
+     "errors": 2050,
+     "changed": 2545,
+     "fixed": 1641
+    }
+   ],
+   "macro_f1": 0.22483422984063933
+  },
+  "openrefine_fingerprint": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "errors": 509,
+     "changed": 0,
+     "fixed": 0
+    },
+    {
+     "dataset": "beers",
+     "f1": 0.1936897458369851,
+     "precision": 0.4657534246575342,
+     "recall": 0.122268326417704,
+     "damage": 0.0,
+     "errors": 3615,
+     "changed": 949,
+     "fixed": 442
+    },
+    {
+     "dataset": "flights",
+     "f1": 0.0,
+     "precision": 0.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "errors": 4255,
+     "changed": 6,
+     "fixed": 0
+    },
+    {
+     "dataset": "rayyan",
+     "f1": 0.0,
+     "precision": 0.0,
+     "recall": 0.0,
+     "damage": 0.0005968961400716276,
+     "errors": 948,
+     "changed": 17,
+     "fixed": 0
+    },
+    {
+     "dataset": "movies_1",
+     "f1": 0.002271006813020439,
+     "precision": 0.005067567567567568,
+     "recall": 0.0014634146341463415,
+     "damage": 0.01812206572769953,
+     "errors": 2050,
+     "changed": 592,
+     "fixed": 3
+    }
+   ],
+   "macro_f1": 0.03919215053000111
+  },
+  "openrefine_knn": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "f1": 0.18923465096719932,
+     "precision": 0.12038523274478331,
+     "recall": 0.44204322200392926,
+     "damage": 0.0829100610538197,
+     "errors": 509,
+     "changed": 1869,
+     "fixed": 225
+    },
+    {
+     "dataset": "beers",
+     "f1": 0.08606949314631814,
+     "precision": 0.10154193305754043,
+     "recall": 0.07468879668049792,
+     "damage": 0.07391895567038347,
+     "errors": 3615,
+     "changed": 2659,
+     "fixed": 270
+    },
+    {
+     "dataset": "flights",
+     "f1": 0.013770003721622627,
+     "precision": 0.03306523681858802,
+     "recall": 0.008695652173913044,
+     "damage": 0.06536685479733197,
+     "errors": 4255,
+     "changed": 1119,
+     "fixed": 37
+    },
+    {
+     "dataset": "rayyan",
+     "f1": 0.0018001800180017999,
+     "precision": 0.006134969325153374,
+     "recall": 0.0010548523206751054,
+     "damage": 0.007958615200955034,
+     "errors": 948,
+     "changed": 163,
+     "fixed": 1
+    },
+    {
+     "dataset": "movies_1",
+     "f1": 0.0009082652134423252,
+     "precision": 0.0008496176720475786,
+     "recall": 0.000975609756097561,
+     "damage": 0.07176838810641628,
+     "errors": 2050,
+     "changed": 2354,
+     "fixed": 2
+    }
+   ],
+   "macro_f1": 0.058356518613316845
+  },
+  "verified_union_v6_tau0.5": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "f1": 0.5668016194331984,
+     "precision": 0.9051724137931034,
+     "recall": 0.412573673870334,
+     "damage": 0.0010261146170027192,
+     "errors": 509,
+     "changed": 232,
+     "fixed": 210,
+     "plan_source": "v6_hospital_raw_plan.json"
+    },
+    {
+     "dataset": "beers",
+     "f1": 0.034815211569362604,
+     "precision": 0.5462184873949579,
+     "recall": 0.017980636237897647,
+     "damage": 0.0009790590155017678,
+     "errors": 3615,
+     "changed": 119,
+     "fixed": 65,
+     "plan_source": "v6_beers_raw_plan_localq8.json"
+    },
+    {
+     "dataset": "flights",
+     "f1": 0.03500259920291111,
+     "precision": 0.06662269129287599,
+     "recall": 0.02373678025851939,
+     "damage": 0.08045151359671626,
+     "errors": 4255,
+     "changed": 1516,
+     "fixed": 101,
+     "plan_source": "gen_plans_seed21.json"
+    },
+    {
+     "dataset": "rayyan",
+     "f1": 0.0,
+     "precision": 0.0,
+     "recall": 0.0,
+     "damage": 0.001193792280143255,
+     "errors": 948,
+     "changed": 12,
+     "fixed": 0,
+     "plan_source": "gen_plans_seed21.json"
+    },
+    {
+     "dataset": "movies_1",
+     "missing": "no captured v6 raw plan"
+    }
+   ]
+  },
+  "jellyfish_ed_di": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "f1": 0.22504892367906068,
+     "precision": 0.22417153996101363,
+     "recall": 0.22593320235756384,
+     "damage": 0.0033348725052588374
+    },
+    {
+     "dataset": "beers",
+     "f1": 0.10505752116344694,
+     "precision": 0.2439516129032258,
+     "recall": 0.0669432918395574,
+     "damage": 0.02181125917867827
+    },
+    {
+     "dataset": "flights",
+     "f1": 0.0026157467957101757,
+     "precision": 0.002948982601002654,
+     "recall": 0.0023501762632197414,
+     "damage": 0.041867624422780914
+    },
+    {
+     "dataset": "rayyan",
+     "f1": 0.0,
+     "precision": 0.0,
+     "recall": 0.0,
+     "damage": 0.06287306008754477
+    },
+    {
+     "dataset": "movies_1",
+     "f1": 0.036493738819320214,
+     "precision": 0.06845637583892618,
+     "recall": 0.024878048780487806,
+     "damage": 0.004162754303599374
+    }
+   ],
+   "macro_f1": 0.07384318609150761
+  },
+  "baran_oracle20": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "f1": 0.8268680969233834,
+     "precision": 0.7834926241010877,
+     "recall": 0.8755730189914867,
+     "damage": 0.004001847006310605,
+     "n_seeds": 3
+    },
+    {
+     "dataset": "beers",
+     "f1": 0.9181426425323927,
+     "precision": 0.9263122436892998,
+     "recall": 0.9101890272014753,
+     "damage": 5.439216752787599e-05,
+     "n_seeds": 3
+    },
+    {
+     "dataset": "flights",
+     "f1": 1.0,
+     "precision": 1.0,
+     "recall": 1.0,
+     "damage": 0.0,
+     "n_seeds": 3
+    },
+    {
+     "dataset": "rayyan",
+     "f1": 0.4023919283154553,
+     "precision": 0.4732993292645808,
+     "recall": 0.35232067510548526,
+     "damage": 0.009649820931157979,
+     "n_seeds": 3
+    },
+    {
+     "dataset": "movies_1",
+     "f1": 0.9089214230345909,
+     "precision": 0.9376290775283244,
+     "recall": 0.8819512195121951,
+     "damage": 0.0005007824726134585,
+     "n_seeds": 3
+    }
+   ],
+   "macro_f1": 0.8112648181611645
+  }
+ },
+ "macro_check": {
+  "grounded_macro_f1": 0.22483422984063933,
+  "money_table_real_f1": 0.2248342298406393,
+  "match": true
+ }
+}

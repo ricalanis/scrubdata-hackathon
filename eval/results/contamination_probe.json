@@ -1,0 +1,20 @@
+{
+ "model": "glm-5.1",
+ "protocol": "30 rows, 5 given cols, 4 asked cols, exact-substring match",
+ "probes": [
+  {
+   "table": "hospital (Raha benchmark)",
+   "rows": 30,
+   "cells_asked": 120,
+   "verbatim_hits": 30,
+   "rate": 0.25
+  },
+  {
+   "table": "glassdoor_jobs (post-cutoff wild harvest)",
+   "rows": 30,
+   "cells_asked": 120,
+   "verbatim_hits": 0,
+   "rate": 0.0
+  }
+ ]
+}

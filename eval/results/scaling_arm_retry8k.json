@@ -1,0 +1,71 @@
+{
+ "task": "W1.c scaling arm \u2014 hospital 509 real errors, tau=0.5, v6 gate protocol (batched raw plan -> verify -> union)",
+ "rows": [
+  {
+   "model": "scrubdata-ft-v6 (Qwen3-4B fine-tune)",
+   "params_b": 4,
+   "family": "qwen/qwen3 (fine-tuned)",
+   "gated_prec": 0.993,
+   "gated_cov": 0.287,
+   "union_prec": 0.905,
+   "union_cov": 0.413,
+   "validity": null,
+   "runtime_s": null,
+   "verifier_kept": 132,
+   "verifier_dropped": 38,
+   "provenance": "prior measurement (commit aa48108; Modal A100 capture; validity/runtime not recorded at capture)"
+  },
+  {
+   "model": "gpt-oss:20b-cloud",
+   "params_b": 20,
+   "family": "openai/gpt-oss",
+   "validity": 0.0,
+   "runtime_s": 359.7,
+   "n_calls": 5,
+   "errors": [
+    "no_json:",
+    "no_json:",
+    "no_json:",
+    "no_json:",
+    "no_json:"
+   ],
+   "provenance": "this run (zero-shot via Ollama Cloud proxy, num_predict=8000)",
+   "raw_plan": "eval/results/scaling_gpt-oss_20b-cloud_hospital_raw_plan.json",
+   "verifier_kept": 0,
+   "verifier_dropped": 0,
+   "gated_prec": 1.0,
+   "gated_cov": 0.0,
+   "gated_changed": 0,
+   "gated_fixed": 0,
+   "union_prec": 0.845,
+   "union_cov": 0.257,
+   "union_changed": 155,
+   "union_fixed": 131
+  },
+  {
+   "model": "nemotron-3-nano:30b-cloud",
+   "params_b": 30,
+   "family": "nvidia/nemotron",
+   "validity": 0.4,
+   "runtime_s": 114.1,
+   "n_calls": 5,
+   "errors": [
+    "no_json:",
+    "no_json:",
+    "no_json:"
+   ],
+   "provenance": "this run (zero-shot via Ollama Cloud proxy, num_predict=8000)",
+   "raw_plan": "eval/results/scaling_nemotron-3-nano_30b-cloud_hospital_raw_plan.json",
+   "verifier_kept": 63,
+   "verifier_dropped": 6,
+   "gated_prec": 1.0,
+   "gated_cov": 0.138,
+   "gated_changed": 70,
+   "gated_fixed": 70,
+   "union_prec": 0.877,
+   "union_cov": 0.336,
+   "union_changed": 195,
+   "union_fixed": 171
+  }
+ ]
+}

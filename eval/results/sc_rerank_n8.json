@@ -1,0 +1,1021 @@
+{
+ "model": "scrubdata-ft",
+ "n": 8,
+ "temperature": 0.7,
+ "base_seed": 100,
+ "host": "http://127.0.0.1:11436",
+ "threshold": 4,
+ "shipped_baseline": {
+  "precision": 0.905,
+  "coverage": 0.413,
+  "tau": 0.5
+ },
+ "greedy_anchor": {
+  "secs": 205.5,
+  "failed_batches": 0,
+  "point_tau05_union": {
+   "tau": 0.5,
+   "precision": 0.9055,
+   "coverage": 0.4519,
+   "changed": 254,
+   "fixed": 230
+  }
+ },
+ "per_sample": [
+  {
+   "seed": 101,
+   "secs": 232.1,
+   "capture": {
+    "failed_batches": 0,
+    "salvaged_batches": 2
+   },
+   "n_entries": 309,
+   "point_tau05_union": {
+    "tau": 0.5,
+    "precision": 0.9055,
+    "coverage": 0.4519,
+    "changed": 254,
+    "fixed": 230
+   }
+  },
+  {
+   "seed": 102,
+   "secs": 160.7,
+   "capture": {
+    "failed_batches": 0,
+    "salvaged_batches": 0
+   },
+   "n_entries": 318,
+   "point_tau05_union": {
+    "tau": 0.5,
+    "precision": 0.8972,
+    "coverage": 0.446,
+    "changed": 253,
+    "fixed": 227
+   }
+  },
+  {
+   "seed": 103,
+   "secs": 133.2,
+   "capture": {
+    "failed_batches": 0,
+    "salvaged_batches": 0
+   },
+   "n_entries": 259,
+   "point_tau05_union": {
+    "tau": 0.5,
+    "precision": 0.9032,
+    "coverage": 0.4401,
+    "changed": 248,
+    "fixed": 224
+   }
+  },
+  {
+   "seed": 104,
+   "secs": 228.4,
+   "capture": {
+    "failed_batches": 0,
+    "salvaged_batches": 2
+   },
+   "n_entries": 261,
+   "point_tau05_union": {
+    "tau": 0.5,
+    "precision": 0.9048,
+    "coverage": 0.4479,
+    "changed": 252,
+    "fixed": 228
+   }
+  },
+  {
+   "seed": 105,
+   "secs": 146.3,
+   "capture": {
+    "failed_batches": 0,
+    "salvaged_batches": 0
+   },
+   "n_entries": 285,
+   "point_tau05_union": {
+    "tau": 0.5,
+    "precision": 0.8992,
+    "coverage": 0.4381,
+    "changed": 248,
+    "fixed": 223
+   }
+  },
+  {
+   "seed": 106,
+   "secs": 140.9,
+   "capture": {
+    "failed_batches": 0,
+    "salvaged_batches": 0
+   },
+   "n_entries": 254,
+   "point_tau05_union": {
+    "tau": 0.5,
+    "precision": 0.9055,
+    "coverage": 0.4519,
+    "changed": 254,
+    "fixed": 230
+   }
+  },
+  {
+   "seed": 107,
+   "secs": 192.6,
+   "capture": {
+    "failed_batches": 0,
+    "salvaged_batches": 1
+   },
+   "n_entries": 247,
+   "point_tau05_union": {
+    "tau": 0.5,
+    "precision": 0.9048,
+    "coverage": 0.4479,
+    "changed": 252,
+    "fixed": 228
+   }
+  },
+  {
+   "seed": 108,
+   "secs": 190.0,
+   "capture": {
+    "failed_batches": 0,
+    "salvaged_batches": 1
+   },
+   "n_entries": 262,
+   "point_tau05_union": {
+    "tau": 0.5,
+    "precision": 0.9084,
+    "coverage": 0.4479,
+    "changed": 251,
+    "fixed": 228
+   }
+  }
+ ],
+ "vote": {
+  "n_samples": 8,
+  "threshold": 4,
+  "entries_union": 460,
+  "entries_kept": 269,
+  "vote_hist": {
+   "6": 20,
+   "7": 63,
+   "2": 14,
+   "8": 164,
+   "1": 168,
+   "3": 9,
+   "4": 11,
+   "5": 11
+  },
+  "kept_vote_share": {
+   "address_1|1000 fixst stxeet noxth->1000 first street north": 1.0,
+   "address_1|124 s mxmorial dr->124 s memorial dr": 1.0,
+   "address_1|124xsxmemorialxdr->124 s memorial dr": 1.0,
+   "address_1|1256 military street sxuth->1256 military street south": 1.0,
+   "address_1|126xhospitalxave->126 hospital ave": 1.0,
+   "address_1|150 gilxreath drive->150 gilbreath drive": 1.0,
+   "address_1|1720 univxrsity blvd->1720 university blvd": 1.0,
+   "address_1|1912xalabamaxhighwayx157->1912 alabama highway 157": 1.0,
+   "address_1|1x6 hospital ave->126 hospital ave": 1.0,
+   "address_1|201 pine sxreex norxhwesx->201 pine street northwest": 1.0,
+   "address_1|209 xorth maix street->209 north main street": 1.0,
+   "address_1|2505xuxsxhighwayx431xnorth->2505 u s highway 431 north": 1.0,
+   "address_1|301 east 1xth st->301 east 18th st": 1.0,
+   "address_1|301xeastx18thxst->301 east 18th st": 1.0,
+   "address_1|315 w hickxry st->315 w hickory st": 1.0,
+   "address_1|315xwxhickoryxst->315 w hickory st": 1.0,
+   "address_1|33700 highway x3->33700 highway 43": 1.0,
+   "address_1|33700 hxghway 43->33700 highway 43": 1.0,
+   "address_1|400xnxedwardsxstreet->400 n edwards street": 1.0,
+   "address_1|4370xwestxmainxstreet->4370 west main street": 1.0,
+   "address_1|515 miranda sx->515 miranda st": 1.0,
+   "address_1|515 miranxa st->515 miranda st": 1.0,
+   "address_1|515 mirxndx st->515 miranda st": 1.0,
+   "address_1|8000 alabama xigxway 69->8000 alabama highway 69": 1.0,
+   "address_1|810 st vxncents drxve->810 st vincents drive": 1.0,
+   "city|anchoraxe->anchorage": 1.0,
+   "city|andaluxia->andalusia": 1.0,
+   "city|annxston->anniston": 1.0,
+   "city|birminghxm->birmingham": 1.0,
+   "city|birmingxam->birmingham": 1.0,
+   "city|birminxham->birmingham": 1.0,
+   "city|birmixgham->birmingham": 1.0,
+   "city|boxz->boaz": 1.0,
+   "city|bxrmxngham->birmingham": 1.0,
+   "city|enterprxse->enterprise": 1.0,
+   "city|faxette->fayette": 1.0,
+   "city|flxrence->florence": 1.0,
+   "city|fort payxe->fort payne": 1.0,
+   "city|fxorence->florence": 0.875,
+   "city|geoxgiana->georgiana": 1.0,
+   "city|guntxrsvillx->guntersville": 1.0,
+   "city|gxdsden->gadsden": 1.0,
+   "city|hamilxon->hamilton": 1.0,
+   "city|montxomery->montgomery": 0.875,
+   "city|onxonta->oneonta": 1.0,
+   "city|ozarx->ozark": 1.0,
+   "city|sheffxeld->sheffield": 1.0,
+   "city|vallex->Valle": 0.875,
+   "city|vxlley->valley": 1.0,
+   "city|winfielx->winfield": 1.0,
+   "condition|heart faixure->heart failure": 1.0,
+   "condition|heart faxlure->heart failure": 0.875,
+   "condition|heartxattack->heart attack": 0.875,
+   "condition|hearx axxack->heart attack": 1.0,
+   "condition|heaxt attack->heart attack": 0.875,
+   "condition|heaxt failuxe->heart failure": 0.75,
+   "condition|hexrt attxck->heart attack": 0.625,
+   "condition|hexrt fxilure->heart failure": 1.0,
+   "condition|hxart failurx->heart failure": 0.875,
+   "condition|pneumonix->pneumonia": 1.0,
+   "condition|pneumonxa->pneumonia": 1.0,
+   "condition|pnexmonia->pneumonia": 1.0,
+   "condition|pnxumonia->pneumonia": 0.75,
+   "condition|pxeumoxia->pneumonia": 0.75,
+   "condition|surgical infection xrevention->surgical infection prevention": 0.875,
+   "condition|surgical infxction prxvxntion->surgical infection prevention": 1.0,
+   "condition|surgical xnfection prevention->surgical infection prevention": 1.0,
+   "condition|surgxcal infectxon preventxon->surgical infection prevention": 1.0,
+   "condition|suxgical infection pxevention->surgical infection prevention": 0.625,
+   "condition|xneumonia->pneumonia": 0.75,
+   "county|butxer->butler": 0.75,
+   "county|calhoxn->calhoun": 1.0,
+   "county|caxhoun->calhoun": 1.0,
+   "county|chaxbers->chambers": 1.0,
+   "county|chxrokxx->cherokee": 0.5,
+   "county|crxnshaw->crenshaw": 1.0,
+   "county|cxffee->coffee": 0.75,
+   "county|cxllman->cullman": 1.0,
+   "county|dx kalb->de kalb": 0.75,
+   "county|elmoxe->elmore": 0.875,
+   "county|elxore->elmore": 0.875,
+   "county|etowxh->etowah": 0.875,
+   "county|housxon->houston": 1.0,
+   "county|jeffersxn->jefferson": 0.875,
+   "county|jexxerson->jefferson": 1.0,
+   "county|jxffxrson->jefferson": 0.875,
+   "county|laudexdale->lauderdale": 1.0,
+   "county|laudxrdalx->lauderdale": 1.0,
+   "county|madisox->madison": 0.75,
+   "county|madisxn->madison": 0.75,
+   "county|montgomexy->montgomery": 1.0,
+   "county|monxgomery->montgomery": 1.0,
+   "county|mxrshxll->marshall": 1.0,
+   "county|tallaxega->talladega": 0.875,
+   "county|xee->Xexeu": 0.75,
+   "county|xlarke->clarke": 0.5,
+   "emergency_service|xo->Xoy": 0.5,
+   "measure_code|ami-x->ami-2": 1.0,
+   "measure_code|amix1->ami-1": 1.0,
+   "measure_code|amix2->ami-2": 1.0,
+   "measure_code|amx-3->ami-3": 1.0,
+   "measure_code|amx-4->ami-4": 1.0,
+   "measure_code|axi-2->ami-2": 0.875,
+   "measure_code|axi-4->ami-4": 1.0,
+   "measure_code|hf-x->hf-1": 0.5,
+   "measure_code|hf-x->hf-3": 0.5,
+   "measure_code|hfx1->hf-1": 1.0,
+   "measure_code|hfx4->hf-4": 1.0,
+   "measure_code|hx-1->hf-1": 1.0,
+   "measure_code|hx-2->hf-2": 1.0,
+   "measure_code|pn-x->pn-2": 0.75,
+   "measure_code|pn-xb->pn-3b": 1.0,
+   "measure_code|pnx5c->pn-5c": 0.875,
+   "measure_code|pnx6->pn-6": 1.0,
+   "measure_code|px-4->pn-4": 1.0,
+   "measure_code|px-5c->pn-5c": 1.0,
+   "measure_code|scip-inx-4->scip-inf-4": 1.0,
+   "measure_code|scip-vtx-1->scip-vte-1": 1.0,
+   "measure_code|scipxinfx1->scip-inf-1": 1.0,
+   "measure_code|scix-inf-2->scip-inf-2": 1.0,
+   "measure_code|scxp-xnf-3->scip-inf-3": 1.0,
+   "measure_code|sxip-vte-1->scip-vte-1": 0.875,
+   "measure_name|all heart surgerx patients whose blood sugar (blood glucose) is kept under good control in the daxs right after surgerx->all heart surgery patients whose blood sugar (blood glucose) is kept under good control in the days right after surgery": 0.875,
+   "measure_name|allxheartxsurgeryxpatientsxwhosexbloodxsugarx(bloodxglucose)xisxkeptxunderxgoodxcontrolxinxthexdaysxrightxafterxsurgery->all heart surgery patients whose blood sugar (blood glucose) is kept under good control in the days right after surgery": 1.0,
+   "measure_name|childrenxwhoxreceivedxrelieverxmedicationxwhilexhospitalizedxforxasthma->children who received reliever medication while hospitalized for asthma": 1.0,
+   "measure_name|heart attack patients given aspirin at arrivax->heart attack patients given aspirin at arrival": 1.0,
+   "measure_name|heart attaxk patients given aspirin at disxharge->heart attack patients given aspirin at discharge": 0.875,
+   "measure_name|heart failure patients given ace inhibitor or arb for left xentricular systolic dysfunction (lxsd)->heart failure patients given ace inhibitor or arb for left ventricular systolic dysfunction (lvsd)": 1.0,
+   "measure_name|heart xailure patients given smoking cessation advice/counseling->heart failure patients given smoking cessation advice/counseling": 1.0,
+   "measure_name|heartxattackxpatientsxgivenxaspirinxatxarrival->heart attack patients given aspirin at arrival": 1.0,
+   "measure_name|heartxattackxpatientsxgivenxpcixwithinx90xminutesxofxarrival->heart attack patients given pci within 90 minutes of arrival": 0.875,
+   "measure_name|hearx failure paxienxs given smoking cessaxion advice/counseling->heart failure patients given smoking cessation advice/counseling": 1.0,
+   "measure_name|heaxt attack patients given aspixin at dischaxge->heart attack patients given aspirin at discharge": 1.0,
+   "measure_name|heaxt attack patients given beta blockex at dischaxge->heart attack patients given beta blocker at discharge": 1.0,
+   "measure_name|heaxt failuxe patients given an evaluation of left ventxiculax systolic (lvs) function->heart failure patients given an evaluation of left ventricular systolic (lvs) function": 1.0,
+   "measure_name|heaxt failuxe patients given dischaxge instxuctions->heart failure patients given discharge instructions": 1.0,
+   "measure_name|hxart attack patixnts givxn ace inhibitor or arb for lxft vxntricular systolic dysfunction (lvsd)->heart attack patients given ace inhibitor or arb for left ventricular systolic dysfunction (lvsd)": 0.875,
+   "measure_name|pneumonia patients assessed and given influenza vaxxination->pneumonia patients assessed and given influenza vaccination": 0.875,
+   "measure_name|pneumoniaxpatientsxassessedxandxgivenxinfluenzaxvaccination->pneumonia patients assessed and given influenza vaccination": 1.0,
+   "measure_name|pneumonix pxtients given initixl antibiotic(s) within 6 hours after arrivxl->pneumonia patients given initial antibiotic(s) within 6 hours after arrival": 1.0,
+   "measure_name|pnxumonia patixnts whosx initial emxrgxncy room blood culturx was pxrformxd prior to thx administration of thx first hospital dosx of antibiotics->pneumonia patients whose initial emergency room blood culture was performed prior to the administration of the first hospital dose of antibiotics": 0.75,
+   "measure_name|surgery patients who were taking heart drugs caxxed beta bxockers before coming to the hospitax who were kept on the beta bxockers during the period just before and after their surgery->surgery patients who were taking heart drugs called beta blockers before coming to the hospital who were kept on the beta blockers during the period just before and after their surgery": 1.0,
+   "measure_name|surgery patiexts who were takixg heart drugs called beta blockers before comixg to the hospital who were kept ox the beta blockers durixg the period just before axd after their surgery->surgery patients who were taking heart drugs called beta blockers before coming to the hospital who were kept on the beta blockers during the period just before and after their surgery": 0.875,
+   "measure_name|surgery paxienxs needing hair removed from xhe surgical area before surgery who had hair removed using a safer mexhod (elecxric clippers or hair removal cream c nox a razor)->surgery patients needing hair removed from the surgical area before surgery who had hair removed using a safer method (electric clippers or hair removal cream c not a razor)": 1.0,
+   "measure_name|surgery pxtients who were txking hexrt drugs cxlled betx blockers before coming to the hospitxl who were kept on the betx blockers during the period just before xnd xfter their surgery->surgery patients who were taking heart drugs called beta blockers before coming to the hospital who were kept on the beta blockers during the period just before and after their surgery": 0.625,
+   "measure_name|surgery pxtients whose doctors ordered trextments to prevent blood clots xfter certxin types of surgeries->surgery patients whose doctors ordered treatments to prevent blood clots after certain types of surgeries": 1.0,
+   "measure_name|surgeryxpatientsxneedingxhairxremovedxfromxthexsurgicalxareaxbeforexsurgery& xwhoxhadxhairxremovedxusingxaxsaferxmethodx(electricxclippersxorxhairxremovalxcreamx\u00ef\u00bf\u00bdcxnotxaxrazor)->surgery patients needing hair removed from the surgical area before surgery who had hair removed using a safer method (electric clippers or hair removal cream c not a razor)": 0.875,
+   "name|andaluxia regional hoxpital->andalusia regional hospital": 1.0,
+   "name|andaxusia regionax hospitax->andalusia regional hospital": 1.0,
+   "name|baptist medical cexter south->baptist medical center south": 0.875,
+   "name|communitx hospital inc->community hospital inc": 0.75,
+   "name|communixy hospixal inc->community hospital inc": 1.0,
+   "name|crenshaw cxmmunity hxspital->crenshaw community hospital": 1.0,
+   "name|cullmxn regionxl medicxl center->cullman regional medical center": 1.0,
+   "name|dexalb regional medical center->dekalb regional medical center": 0.875,
+   "name|floxers hospital->flowers hospital": 1.0,
+   "name|georgiaxa hospital->georgiana hospital": 1.0,
+   "name|huntsvxlle hospxtal->huntsville hospital": 1.0,
+   "name|jaxkson hospital & xlinix inx->jackson hospital & clinic inc": 1.0,
+   "name|marshall medical cenxer norxh->marshall medical center north": 1.0,
+   "name|medixal xenter enterprise->medical center enterprise": 1.0,
+   "name|medxcal center enterprxse->medical center enterprise": 1.0,
+   "name|riverview rexional medical center->riverview regional medical center": 0.625,
+   "name|rivxrvixw rxgional mxdical cxntxr->riverview regional medical center": 1.0,
+   "name|southeast alabama medxcal center->southeast alabama medical center": 0.875,
+   "name|st vincents bxount->st vincents blount": 1.0,
+   "name|univ ox south alabama medical center->univ of south alabama medical center": 0.875,
+   "name|wedowee hosxital->wedowee hospital": 1.0,
+   "owner|government - hospital xistrict or authority->government - hospital district or authority": 1.0,
+   "owner|government - hospxtal dxstrxct or authorxty->government - hospital district or authority": 0.75,
+   "owner|governmenx - hospixal disxricx or auxhorixy->government - hospital district or authority": 1.0,
+   "owner|governxent - federal->government - federal": 1.0,
+   "owner|goverxmext - hospital district or authority->government - hospital district or authority": 1.0,
+   "owner|proxrietary->proprietary": 0.625,
+   "owner|prxprietary->proprietary": 0.625,
+   "owner|pxopxietaxy->proprietary": 1.0,
+   "owner|voluntary non-profit - church->voluntary non-profit - church": 1.0,
+   "owner|voluntary non-profit - other->voluntary non-profit - private": 0.625,
+   "owner|voluntary non-profit - otxer->voluntary non-profit - other": 1.0,
+   "owner|voluntary non-profit - private->voluntary non-profit - private": 0.875,
+   "owner|voluntary nonxprofit x private->voluntary non-profit - private": 1.0,
+   "owner|voluntaryxnon-profitx-xchurch->voluntary non-profit - church": 1.0,
+   "owner|voluntaryxnon-profitx-xprivate->voluntary non-profit - private": 1.0,
+   "owner|voluntaxy non-pxofit - pxivate->voluntary non-profit - private": 0.5,
+   "owner|volunxary non-profix - privaxe->voluntary non-profit - private": 0.75,
+   "owner|volxntary non-profit - chxrch->voluntary non-profit - church": 1.0,
+   "owner|voxuntary non-profit - church->voluntary non-profit - church": 1.0,
+   "owner|xroprietary->proprietary": 0.5,
+   "sample|100 patients->10 patients": 1.0,
+   "sample|1001 patients->101 patients": 1.0,
+   "sample|1016 patients->101 patients": 1.0,
+   "sample|105 patients->15 patients": 0.875,
+   "sample|106 patients->16 patients": 0.5,
+   "sample|111 patients->11 patients": 1.0,
+   "sample|112 patients->12 patients": 1.0,
+   "sample|115 patients->15 patients": 1.0,
+   "sample|118 patients->18 patients": 1.0,
+   "sample|119 patients->19 patients": 1.0,
+   "sample|120 patients->12 patients": 0.875,
+   "sample|121 patients->12 patients": 1.0,
+   "sample|122 patients->12 patients": 1.0,
+   "sample|127 patients->12 patients": 0.875,
+   "sample|128 patients->12 patients": 0.875,
+   "sample|129 patients->19 patients": 1.0,
+   "sample|1295 patients->125 patients": 1.0,
+   "sample|133 patients->13 patients": 1.0,
+   "sample|134 patients->14 patients": 1.0,
+   "sample|135 patients->15 patients": 0.875,
+   "sample|137 patients->13 patients": 0.5,
+   "sample|140 patients->14 patients": 0.875,
+   "sample|141 patients->14 patients": 1.0,
+   "sample|142 patients->14 patients": 1.0,
+   "sample|144 patients->14 patients": 1.0,
+   "state|ak->Alaska": 0.75,
+   "state|al->Alabama": 1.0,
+   "state|xl->Alabama": 0.5,
+   "state_average|ak_ami-1->al_ami-1": 0.875,
+   "state_average|ak_ami-2->al_ami-2": 0.875,
+   "state_average|ak_pn-3b->al_pn-3b": 0.625,
+   "state_average|ak_scip-inf-1->al_scip-inf-1": 0.875,
+   "state_average|ak_scip-inf-2->al_scip-inf-2": 0.875,
+   "state_average|ak_scip-inf-3->al_scip-inf-3": 0.875,
+   "state_average|ak_scip-inf-4->al_scip-inf-4": 0.875,
+   "state_average|ak_scip-inf-6->al_scip-inf-6": 0.875,
+   "state_average|ak_scip-vte-1->al_scip-vte-1": 0.875,
+   "state_average|ak_scip-vte-2->al_scip-vte-2": 0.875,
+   "state_average|al_amix8a->al_ami-8a": 0.875,
+   "state_average|al_amx-7a->al_ami-7a": 0.875,
+   "state_average|al_pnx2->al_pn-2": 0.875,
+   "state_average|al_pnx6->al_pn-6": 0.875,
+   "state_average|al_scipxinfx2->al_scip-inf-2": 0.875,
+   "state_average|al_scipxvtex1->al_scip-vte-1": 0.875,
+   "state_average|al_scipxvtex2->al_scip-vte-2": 0.875,
+   "state_average|al_scix-vte-1->al_scip-vte-1": 0.875,
+   "state_average|al_scix-vte-2->al_scip-vte-2": 0.875,
+   "state_average|al_sxip-inf-2->al_scip-inf-2": 0.875,
+   "state_average|alxami-7a->al_ami-7a": 0.875,
+   "state_average|alxpn-3b->al_pn-3b": 0.875,
+   "state_average|alxpn-6->al_pn-6": 0.875,
+   "state_average|alxpn-7->al_pn-7": 0.875,
+   "type|acute care hospitaxs->acute care hospitals": 1.0,
+   "type|acute care hoxpitalx->acute care hospitals": 1.0,
+   "type|acute care hxspitals->acute care hospitals": 0.625,
+   "type|acute caxe hospitals->acute care hospitals": 1.0,
+   "type|acute cxre hospitxls->acute care hospitals": 1.0,
+   "type|acute xare hospitals->acute care hospitals": 1.0,
+   "type|acutexcarexhospitals->acute care hospitals": 0.5,
+   "type|acutx carx hospitals->acute care hospitals": 1.0,
+   "type|acxte care hospitals->acute care hospitals": 0.875,
+   "type|axute care hospitals->acute care hospitals": 1.0,
+   "zip|35609->35660": 0.875,
+   "zip|3563x->35631": 0.75,
+   "zip|3590x->35901": 0.75,
+   "zip|3595x->35957": 0.625,
+   "zip|360x9->36049": 0.75,
+   "zip|3642x->36420": 0.875,
+   "zip|36x01->36201": 0.75,
+   "zip|36x49->36049": 1.0,
+   "zip|36x78->36278": 1.0,
+   "zip|3x007->35007": 1.0,
+   "zip|3x0x7->36078": 0.625,
+   "zip|3x10x->36106": 1.0,
+   "zip|3x1x0->36106": 1.0,
+   "zip|3x233->35233": 0.875,
+   "zip|3x23x->35233": 1.0,
+   "zip|3x305->36305": 1.0,
+   "zip|3x640->36420": 1.0,
+   "zip|3xx94->35594": 1.0,
+   "zip|99559->99508": 0.875
+  }
+ },
+ "voted_curve": [
+  {
+   "tau": 0.0,
+   "precision": 0.1847,
+   "coverage": 0.5265,
+   "changed": 1451,
+   "fixed": 268
+  },
+  {
+   "tau": 0.2,
+   "precision": 0.9062,
+   "coverage": 0.4558,
+   "changed": 256,
+   "fixed": 232
+  },
+  {
+   "tau": 0.3,
+   "precision": 0.9062,
+   "coverage": 0.4558,
+   "changed": 256,
+   "fixed": 232
+  },
+  {
+   "tau": 0.4,
+   "precision": 0.9062,
+   "coverage": 0.4558,
+   "changed": 256,
+   "fixed": 232
+  },
+  {
+   "tau": 0.5,
+   "precision": 0.9062,
+   "coverage": 0.4558,
+   "changed": 256,
+   "fixed": 232
+  },
+  {
+   "tau": 0.6,
+   "precision": 0.9062,
+   "coverage": 0.4558,
+   "changed": 256,
+   "fixed": 232
+  },
+  {
+   "tau": 0.7,
+   "precision": 0.9087,
+   "coverage": 0.4499,
+   "changed": 252,
+   "fixed": 229
+  },
+  {
+   "tau": 0.8,
+   "precision": 0.9042,
+   "coverage": 0.4263,
+   "changed": 240,
+   "fixed": 217
+  },
+  {
+   "tau": 0.9,
+   "precision": 0.88,
+   "coverage": 0.3458,
+   "changed": 200,
+   "fixed": 176
+  },
+  {
+   "tau": 0.95,
+   "precision": 0.8537,
+   "coverage": 0.275,
+   "changed": 164,
+   "fixed": 140
+  }
+ ],
+ "voted_point_tau05_union": {
+  "tau": 0.5,
+  "precision": 0.9062,
+  "coverage": 0.4558,
+  "changed": 256,
+  "fixed": 232
+ },
+ "voted_plan": {
+  "dataset_summary": "1000 rows \u00d7 20 columns (planned in 5 batches).",
+  "table_operations": [
+   {
+    "op": "drop_empty_columns",
+    "columns": [
+     "address_2",
+     "address_3"
+    ],
+    "rationale": "Column(s) with no data."
+   }
+  ],
+  "columns": [
+   {
+    "name": "score",
+    "detected_semantic_type": "percent",
+    "issues": [
+     "numeric_stored_as_text",
+     "uniform_percent_convention",
+     "disguised_nulls"
+    ],
+    "operations": [
+     {
+      "op": "parse_percent",
+      "rationale": "Parsed percent text to a fraction; removed % symbols."
+     }
+    ]
+   },
+   {
+    "name": "owner",
+    "detected_semantic_type": "categorical",
+    "issues": [],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "volunxary non-profix - privaxe": "voluntary non-profit - private",
+       "voxuntary non-profit - church": "voluntary non-profit - church",
+       "governmenx - hospixal disxricx or auxhorixy": "government - hospital district or authority",
+       "governxent - federal": "government - federal",
+       "goverxmext - hospital district or authority": "government - hospital district or authority",
+       "voluntary nonxprofit x private": "voluntary non-profit - private",
+       "proxrietary": "proprietary",
+       "volxntary non-profit - chxrch": "voluntary non-profit - church",
+       "xroprietary": "proprietary",
+       "voluntaryxnon-profitx-xprivate": "voluntary non-profit - private",
+       "voluntary non-profit - private": "voluntary non-profit - private",
+       "voluntaxy non-pxofit - pxivate": "voluntary non-profit - private",
+       "pxopxietaxy": "proprietary",
+       "voluntary non-profit - other": "voluntary non-profit - private",
+       "prxprietary": "proprietary",
+       "government - hospital xistrict or authority": "government - hospital district or authority",
+       "government - hospxtal dxstrxct or authorxty": "government - hospital district or authority",
+       "voluntary non-profit - church": "voluntary non-profit - church",
+       "voluntaryxnon-profitx-xchurch": "voluntary non-profit - church",
+       "voluntary non-profit - otxer": "voluntary non-profit - other"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "sample",
+    "detected_semantic_type": "text",
+    "issues": [
+     "disguised_nulls"
+    ],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "135 patients": "15 patients",
+       "106 patients": "16 patients",
+       "128 patients": "12 patients",
+       "129 patients": "19 patients",
+       "127 patients": "12 patients",
+       "122 patients": "12 patients",
+       "134 patients": "14 patients",
+       "119 patients": "19 patients",
+       "1295 patients": "125 patients",
+       "142 patients": "14 patients",
+       "105 patients": "15 patients",
+       "121 patients": "12 patients",
+       "1001 patients": "101 patients",
+       "137 patients": "13 patients",
+       "118 patients": "18 patients",
+       "140 patients": "14 patients",
+       "111 patients": "11 patients",
+       "141 patients": "14 patients",
+       "120 patients": "12 patients",
+       "100 patients": "10 patients",
+       "133 patients": "13 patients",
+       "1016 patients": "101 patients",
+       "144 patients": "14 patients",
+       "112 patients": "12 patients",
+       "115 patients": "15 patients"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "measure_name",
+    "detected_semantic_type": "categorical",
+    "issues": [
+     "inconsistent_categories",
+     "whitespace"
+    ],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "heaxt attack patients given beta blockex at dischaxge": "heart attack patients given beta blocker at discharge",
+       "surgery patiexts who were takixg heart drugs called beta blockers before comixg to the hospital who were kept ox the beta blockers durixg the period just before axd after their surgery": "surgery patients who were taking heart drugs called beta blockers before coming to the hospital who were kept on the beta blockers during the period just before and after their surgery",
+       "allxheartxsurgeryxpatientsxwhosexbloodxsugarx(bloodxglucose)xisxkeptxunderxgoodxcontrolxinxthexdaysxrightxafterxsurgery": "all heart surgery patients whose blood sugar (blood glucose) is kept under good control in the days right after surgery",
+       "heart attaxk patients given aspirin at disxharge": "heart attack patients given aspirin at discharge",
+       "heaxt failuxe patients given an evaluation of left ventxiculax systolic (lvs) function": "heart failure patients given an evaluation of left ventricular systolic (lvs) function",
+       "hearx failure paxienxs given smoking cessaxion advice/counseling": "heart failure patients given smoking cessation advice/counseling",
+       "surgery patients who were taking heart drugs caxxed beta bxockers before coming to the hospitax who were kept on the beta bxockers during the period just before and after their surgery": "surgery patients who were taking heart drugs called beta blockers before coming to the hospital who were kept on the beta blockers during the period just before and after their surgery",
+       "heaxt attack patients given aspixin at dischaxge": "heart attack patients given aspirin at discharge",
+       "heart xailure patients given smoking cessation advice/counseling": "heart failure patients given smoking cessation advice/counseling",
+       "surgery pxtients who were txking hexrt drugs cxlled betx blockers before coming to the hospitxl who were kept on the betx blockers during the period just before xnd xfter their surgery": "surgery patients who were taking heart drugs called beta blockers before coming to the hospital who were kept on the beta blockers during the period just before and after their surgery",
+       "heart failure patients given ace inhibitor or arb for left xentricular systolic dysfunction (lxsd)": "heart failure patients given ace inhibitor or arb for left ventricular systolic dysfunction (lvsd)",
+       "surgery pxtients whose doctors ordered trextments to prevent blood clots xfter certxin types of surgeries": "surgery patients whose doctors ordered treatments to prevent blood clots after certain types of surgeries",
+       "heartxattackxpatientsxgivenxaspirinxatxarrival": "heart attack patients given aspirin at arrival",
+       "childrenxwhoxreceivedxrelieverxmedicationxwhilexhospitalizedxforxasthma": "children who received reliever medication while hospitalized for asthma",
+       "pneumoniaxpatientsxassessedxandxgivenxinfluenzaxvaccination": "pneumonia patients assessed and given influenza vaccination",
+       "pneumonix pxtients given initixl antibiotic(s) within 6 hours after arrivxl": "pneumonia patients given initial antibiotic(s) within 6 hours after arrival",
+       "all heart surgerx patients whose blood sugar (blood glucose) is kept under good control in the daxs right after surgerx": "all heart surgery patients whose blood sugar (blood glucose) is kept under good control in the days right after surgery",
+       "heaxt failuxe patients given dischaxge instxuctions": "heart failure patients given discharge instructions",
+       "heart attack patients given aspirin at arrivax": "heart attack patients given aspirin at arrival",
+       "pneumonia patients assessed and given influenza vaxxination": "pneumonia patients assessed and given influenza vaccination",
+       "surgery paxienxs needing hair removed from xhe surgical area before surgery who had hair removed using a safer mexhod (elecxric clippers or hair removal cream c nox a razor)": "surgery patients needing hair removed from the surgical area before surgery who had hair removed using a safer method (electric clippers or hair removal cream c not a razor)",
+       "hxart attack patixnts givxn ace inhibitor or arb for lxft vxntricular systolic dysfunction (lvsd)": "heart attack patients given ace inhibitor or arb for left ventricular systolic dysfunction (lvsd)",
+       "heartxattackxpatientsxgivenxpcixwithinx90xminutesxofxarrival": "heart attack patients given pci within 90 minutes of arrival",
+       "pnxumonia patixnts whosx initial emxrgxncy room blood culturx was pxrformxd prior to thx administration of thx first hospital dosx of antibiotics": "pneumonia patients whose initial emergency room blood culture was performed prior to the administration of the first hospital dose of antibiotics",
+       "surgeryxpatientsxneedingxhairxremovedxfromxthexsurgicalxareaxbeforexsurgery& xwhoxhadxhairxremovedxusingxaxsaferxmethodx(electricxclippersxorxhairxremovalxcreamx\u00ef\u00bf\u00bdcxnotxaxrazor)": "surgery patients needing hair removed from the surgical area before surgery who had hair removed using a safer method (electric clippers or hair removal cream c not a razor)"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "city",
+    "detected_semantic_type": "categorical",
+    "issues": [
+     "Inconsistent_categories: 24 real variant/typo value(s) map to their canonical form observed in the clean reference."
+    ],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "fort payxe": "fort payne",
+       "enterprxse": "enterprise",
+       "vallex": "Valle",
+       "hamilxon": "hamilton",
+       "birmixgham": "birmingham",
+       "ozarx": "ozark",
+       "onxonta": "oneonta",
+       "faxette": "fayette",
+       "sheffxeld": "sheffield",
+       "bxrmxngham": "birmingham",
+       "boxz": "boaz",
+       "flxrence": "florence",
+       "vxlley": "valley",
+       "geoxgiana": "georgiana",
+       "birminxham": "birmingham",
+       "montxomery": "montgomery",
+       "anchoraxe": "anchorage",
+       "winfielx": "winfield",
+       "andaluxia": "andalusia",
+       "guntxrsvillx": "guntersville",
+       "fxorence": "florence",
+       "birminghxm": "birmingham",
+       "gxdsden": "gadsden",
+       "annxston": "anniston",
+       "birmingxam": "birmingham"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "name",
+    "detected_semantic_type": "categorical",
+    "issues": [],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "marshall medical cenxer norxh": "marshall medical center north",
+       "southeast alabama medxcal center": "southeast alabama medical center",
+       "baptist medical cexter south": "baptist medical center south",
+       "univ ox south alabama medical center": "univ of south alabama medical center",
+       "communitx hospital inc": "community hospital inc",
+       "cullmxn regionxl medicxl center": "cullman regional medical center",
+       "communixy hospixal inc": "community hospital inc",
+       "riverview rexional medical center": "riverview regional medical center",
+       "rivxrvixw rxgional mxdical cxntxr": "riverview regional medical center",
+       "huntsvxlle hospxtal": "huntsville hospital",
+       "jaxkson hospital & xlinix inx": "jackson hospital & clinic inc",
+       "wedowee hosxital": "wedowee hospital",
+       "st vincents bxount": "st vincents blount",
+       "medixal xenter enterprise": "medical center enterprise",
+       "andaluxia regional hoxpital": "andalusia regional hospital",
+       "andaxusia regionax hospitax": "andalusia regional hospital",
+       "medxcal center enterprxse": "medical center enterprise",
+       "floxers hospital": "flowers hospital",
+       "crenshaw cxmmunity hxspital": "crenshaw community hospital",
+       "dexalb regional medical center": "dekalb regional medical center",
+       "georgiaxa hospital": "georgiana hospital"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "address_1",
+    "detected_semantic_type": "categorical",
+    "issues": [],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "315xwxhickoryxst": "315 w hickory st",
+       "201 pine sxreex norxhwesx": "201 pine street northwest",
+       "124xsxmemorialxdr": "124 s memorial dr",
+       "400xnxedwardsxstreet": "400 n edwards street",
+       "515 mirxndx st": "515 miranda st",
+       "1256 military street sxuth": "1256 military street south",
+       "1912xalabamaxhighwayx157": "1912 alabama highway 157",
+       "1000 fixst stxeet noxth": "1000 first street north",
+       "1720 univxrsity blvd": "1720 university blvd",
+       "315 w hickxry st": "315 w hickory st",
+       "301 east 1xth st": "301 east 18th st",
+       "33700 highway x3": "33700 highway 43",
+       "515 miranda sx": "515 miranda st",
+       "8000 alabama xigxway 69": "8000 alabama highway 69",
+       "301xeastx18thxst": "301 east 18th st",
+       "1x6 hospital ave": "126 hospital ave",
+       "810 st vxncents drxve": "810 st vincents drive",
+       "33700 hxghway 43": "33700 highway 43",
+       "150 gilxreath drive": "150 gilbreath drive",
+       "515 miranxa st": "515 miranda st",
+       "4370xwestxmainxstreet": "4370 west main street",
+       "2505xuxsxhighwayx431xnorth": "2505 u s highway 431 north",
+       "209 xorth maix street": "209 north main street",
+       "124 s mxmorial dr": "124 s memorial dr",
+       "126xhospitalxave": "126 hospital ave"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "zip",
+    "detected_semantic_type": "text",
+    "issues": [
+     "Ambiguous_or_missing_source_values: 24 value(s) map to multiple cleans or are missing in the source; left for manual review."
+    ],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "360x9": "36049",
+       "3x23x": "35233",
+       "3590x": "35901",
+       "3x640": "36420",
+       "3x305": "36305",
+       "3642x": "36420",
+       "99559": "99508",
+       "3x0x7": "36078",
+       "36x01": "36201",
+       "3563x": "35631",
+       "3x233": "35233",
+       "3x007": "35007",
+       "3x1x0": "36106",
+       "35609": "35660",
+       "36x49": "36049",
+       "3xx94": "35594",
+       "36x78": "36278",
+       "3595x": "35957",
+       "3x10x": "36106"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "type",
+    "detected_semantic_type": "categorical",
+    "issues": [],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "acute care hxspitals": "acute care hospitals",
+       "acxte care hospitals": "acute care hospitals",
+       "acute caxe hospitals": "acute care hospitals",
+       "axute care hospitals": "acute care hospitals",
+       "acute cxre hospitxls": "acute care hospitals",
+       "acute xare hospitals": "acute care hospitals",
+       "acutx carx hospitals": "acute care hospitals",
+       "acute care hoxpitalx": "acute care hospitals",
+       "acute care hospitaxs": "acute care hospitals",
+       "acutexcarexhospitals": "acute care hospitals"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "condition",
+    "detected_semantic_type": "categorical",
+    "issues": [
+     "inconsistent_categories"
+    ],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "hexrt attxck": "heart attack",
+       "heart faxlure": "heart failure",
+       "hearx axxack": "heart attack",
+       "heart faixure": "heart failure",
+       "hxart failurx": "heart failure",
+       "pneumonxa": "pneumonia",
+       "pnexmonia": "pneumonia",
+       "hexrt fxilure": "heart failure",
+       "heaxt failuxe": "heart failure",
+       "surgxcal infectxon preventxon": "surgical infection prevention",
+       "surgical infection xrevention": "surgical infection prevention",
+       "pneumonix": "pneumonia",
+       "surgical xnfection prevention": "surgical infection prevention",
+       "surgical infxction prxvxntion": "surgical infection prevention",
+       "heartxattack": "heart attack",
+       "pxeumoxia": "pneumonia",
+       "heaxt attack": "heart attack",
+       "pnxumonia": "pneumonia",
+       "suxgical infection pxevention": "surgical infection prevention",
+       "xneumonia": "pneumonia"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "measure_code",
+    "detected_semantic_type": "categorical",
+    "issues": [
+     "inconsistent_categories"
+    ],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "scip-vtx-1": "scip-vte-1",
+       "amix1": "ami-1",
+       "scipxinfx1": "scip-inf-1",
+       "scip-inx-4": "scip-inf-4",
+       "pnx5c": "pn-5c",
+       "scix-inf-2": "scip-inf-2",
+       "hfx4": "hf-4",
+       "pnx6": "pn-6",
+       "axi-2": "ami-2",
+       "sxip-vte-1": "scip-vte-1",
+       "axi-4": "ami-4",
+       "px-4": "pn-4",
+       "px-5c": "pn-5c",
+       "amix2": "ami-2",
+       "hx-2": "hf-2",
+       "amx-4": "ami-4",
+       "pn-xb": "pn-3b",
+       "pn-x": "pn-2",
+       "scxp-xnf-3": "scip-inf-3",
+       "amx-3": "ami-3",
+       "hf-x": "hf-1",
+       "hfx1": "hf-1",
+       "hx-1": "hf-1",
+       "ami-x": "ami-2"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "county",
+    "detected_semantic_type": "categorical",
+    "issues": [
+     "Inconsistent_categories: 24 real variant/typo value(s) map to their canonical form observed in the clean reference."
+    ],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "monxgomery": "montgomery",
+       "mxrshxll": "marshall",
+       "jeffersxn": "jefferson",
+       "chxrokxx": "cherokee",
+       "crxnshaw": "crenshaw",
+       "laudxrdalx": "lauderdale",
+       "caxhoun": "calhoun",
+       "dx kalb": "de kalb",
+       "tallaxega": "talladega",
+       "butxer": "butler",
+       "elxore": "elmore",
+       "calhoxn": "calhoun",
+       "housxon": "houston",
+       "xlarke": "clarke",
+       "xee": "Xexeu",
+       "cxllman": "cullman",
+       "jxffxrson": "jefferson",
+       "montgomexy": "montgomery",
+       "etowxh": "etowah",
+       "elmoxe": "elmore",
+       "laudexdale": "lauderdale",
+       "madisxn": "madison",
+       "madisox": "madison",
+       "jexxerson": "jefferson",
+       "chaxbers": "chambers",
+       "cxffee": "coffee"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "state_average",
+    "detected_semantic_type": "categorical",
+    "issues": [
+     "inconsistent_categories",
+     "ambiguous_or_missing_source_values"
+    ],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "ak_scip-inf-6": "al_scip-inf-6",
+       "alxami-7a": "al_ami-7a",
+       "ak_scip-inf-4": "al_scip-inf-4",
+       "al_pnx2": "al_pn-2",
+       "al_pnx6": "al_pn-6",
+       "alxpn-7": "al_pn-7",
+       "al_scipxvtex2": "al_scip-vte-2",
+       "alxpn-6": "al_pn-6",
+       "ak_scip-inf-1": "al_scip-inf-1",
+       "ak_scip-vte-1": "al_scip-vte-1",
+       "al_amix8a": "al_ami-8a",
+       "ak_ami-1": "al_ami-1",
+       "al_scipxinfx2": "al_scip-inf-2",
+       "ak_pn-3b": "al_pn-3b",
+       "al_scix-vte-2": "al_scip-vte-2",
+       "ak_ami-2": "al_ami-2",
+       "ak_scip-inf-3": "al_scip-inf-3",
+       "al_scix-vte-1": "al_scip-vte-1",
+       "al_scipxvtex1": "al_scip-vte-1",
+       "ak_scip-vte-2": "al_scip-vte-2",
+       "ak_scip-inf-2": "al_scip-inf-2",
+       "alxpn-3b": "al_pn-3b",
+       "al_sxip-inf-2": "al_scip-inf-2",
+       "al_amx-7a": "al_ami-7a"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "state",
+    "detected_semantic_type": "state",
+    "issues": [
+     "Incomplete_or_missing_state_codes: Some state abbreviations need expansion to their full name."
+    ],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "al": "Alabama",
+       "xl": "Alabama",
+       "ak": "Alaska"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   },
+   {
+    "name": "emergency_service",
+    "detected_semantic_type": "categorical",
+    "issues": [],
+    "operations": [
+     {
+      "op": "canonicalize_categories",
+      "mapping": {
+       "xo": "Xoy"
+      },
+      "rationale": "Self-consistency majority vote over 8 samples."
+     }
+    ]
+   }
+  ],
+  "flags": []
+ }
+}

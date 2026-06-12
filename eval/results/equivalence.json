@@ -1,0 +1,93 @@
+{
+  "spec": {
+    "sesoi": 0.05,
+    "sesoi_preregistered": "docs/ROADMAP_PUBLICATION.md W2.d",
+    "n_boot": 10000,
+    "seed": 42,
+    "ci_level": 0.9,
+    "champion": "generalization_champion.json",
+    "champion_macro_gen_f1": 0.014606
+  },
+  "granularity": "per-dataset (3 held-out sources x 5 retrains = 15 paired deltas). Per-pair rows do not exist for the retrain series (only the shipped pipeline was scored on the 42-pair bench); within-retrain deltas are clustered, hence the retrain-level robustness check below.",
+  "per_retrain": [
+    {
+      "retrain": "challenger seed31",
+      "file": "generalization_challenger.json",
+      "macro_gen_f1": 0.018031,
+      "macro_delta": 0.003426,
+      "per_dataset_delta": {
+        "flights": -0.000224,
+        "rayyan": 0.0,
+        "ed2_restaurants": 0.010502
+      }
+    },
+    {
+      "retrain": "v7 seed32 (unicode-punct archetype)",
+      "file": "generalization_v7.json",
+      "macro_gen_f1": 0.018056,
+      "macro_delta": 0.00345,
+      "per_dataset_delta": {
+        "flights": -0.000224,
+        "rayyan": 0.0,
+        "ed2_restaurants": 0.010576
+      }
+    },
+    {
+      "retrain": "v8 seed33 (+109k harvested alias vocabs)",
+      "file": "generalization_v8.json",
+      "macro_gen_f1": 0.01499,
+      "macro_delta": 0.000384,
+      "per_dataset_delta": {
+        "flights": -0.000224,
+        "rayyan": 0.0,
+        "ed2_restaurants": 0.001376
+      }
+    },
+    {
+      "retrain": "v9 seed34 (+MusicBrainz hints, gidcl pairs)",
+      "file": "generalization_v9.json",
+      "macro_gen_f1": 0.018056,
+      "macro_delta": 0.00345,
+      "per_dataset_delta": {
+        "flights": -0.000224,
+        "rayyan": 0.0,
+        "ed2_restaurants": 0.010576
+      }
+    },
+    {
+      "retrain": "v10 seed35 (suspects-contract)",
+      "file": "generalization_v10.json",
+      "macro_gen_f1": 0.017985,
+      "macro_delta": 0.003379,
+      "per_dataset_delta": {
+        "flights": -0.000224,
+        "rayyan": 0.0,
+        "ed2_restaurants": 0.010363
+      }
+    }
+  ],
+  "pooled_per_dataset": {
+    "p_lower": 1.6749348114846273e-16,
+    "p_upper": 8.026727463976254e-16,
+    "p_tost": 8.026727463976254e-16,
+    "n": 15,
+    "mean": 0.0028180313740872823,
+    "sd": 0.004813618391779787,
+    "ci90_bootstrap": [
+      0.0008,
+      0.004909
+    ],
+    "ci90_width": 0.00411,
+    "equivalent_at_sesoi": true
+  },
+  "retrain_level_robustness": {
+    "p_lower": 5.283351030621728e-08,
+    "p_upper": 8.29508218524675e-08,
+    "p_tost": 8.29508218524675e-08,
+    "n": 5,
+    "mean": 0.0028178,
+    "sd": 0.0013608442967511013
+  },
+  "caveat": "GEN-F1 sits near floor (champion 0.015 absolute), so the bound certifies absence of movement on a low-dynamic-range metric; the CI width (~0.004) shows the data could have detected effects an order of magnitude smaller than the 0.05 SESOI.",
+  "paper_sentence": "Across the five-retrain series the mean held-out GEN-F1 delta (retrain minus champion, per-dataset, n=15) is +0.0028 (90\\% bootstrap CI [+0.0008, +0.0049]); TOST rejects effects larger than the pre-registered $\\pm$0.05 SESOI (p = 8.0e-16), and the retrain-level check (n=5 macro deltas) agrees (p = 8.3e-08)."
+}
