@@ -33,15 +33,25 @@ and flags values for review; we show the confidence is selective-prediction-grad
 (AURC \aurc, precision rises monotonically with threshold). Extending abstention to the
 plan itself --- a deterministic verifier that gates every proposed mapping --- yields a
 zero-configuration, zero-label system that repairs 41\% of a real benchmark's errors at
-\unionGatePrec{} precision, with every declined merge surfaced for review. On alias-level
-canonicalization, our fine-tuned 4B planner reaches micro-F1 \canonFOursBest{} versus
-\canonFBig{} for a much larger zero-shot model and \canonFHeur{} for a rule heuristic.
-On a 65-dataset validation suite with a churn-neutral metric, grounding with abstention
-matches frequency-based clustering on real-error F1 while perfectly rejecting adversarial
-trap values that clustering systems wrong-merge. The same architecture generalizes to PII
+\unionGatePrec{} precision, with every declined merge surfaced for review.
+
+Beyond the verifier, four deterministic capabilities --- profile-level
+\emph{suspect surfacing} for high-cardinality columns, reconciliation against a
+pluggable \emph{entity reference} built from open vocabularies, \emph{cross-row
+majority voting} over repeated-entity groups, and \emph{convention-conservatism}
+gates that refuse to re-format internally consistent columns --- carry the system
+to never-seen tables: across a \nPairs-pair benchmark the unseen-source macro F1 is
+\unseenMacroF{} at \unseenMacroDamage{} damage, with grouped-entity tables recovered
+at \ttFOne{} F1 and \emph{zero} damage, and \emph{zero silent edits} across
+\nWild{} wild tables plus a \nTrust-table trust audit. Our second finding is
+negative and load-bearing: five supervised fine-tuning iterations and a
+three-arm GRPO pilot (with a random-reward control) all failed to make the
+\emph{model weights} contribute to held-out generalization --- the deterministic
+machinery, gated by the verifier, is what generalizes, a result independently
+corroborated by three concurrent studies. The same architecture covers PII
 protection: a 44M token classifier types columns from bare cell values (100\% on
-names/addresses), and deterministic masking yields zero residual detectable PII. All
-components run locally on commodity hardware; no data leaves the machine.
+names/addresses), and deterministic masking yields zero residual detectable PII.
+All components run locally on commodity hardware; no data leaves the machine.
 \end{abstract}
 
 \section{Introduction}
@@ -67,7 +77,7 @@ specification of every change---there are no silent edits by construction
 (\S\ref{sec:method}). Because the prompt scales with the number of \emph{distinct}
 values rather than rows, a million-row table profiles like a hundred-row one.
 
-This paper makes four contributions:
+This paper makes six contributions:
 \begin{enumerate}
 \item \textbf{A planner/executor decomposition for data cleaning} with an auditable
   trust contract: the model proposes, a deterministic engine executes, every decision is
@@ -86,6 +96,20 @@ This paper makes four contributions:
   churn-neutral, convention-tolerant metric that cannot be inflated by mass rewriting;
   we report two metric artifacts that our own ablations exposed and corrected
   (\S\ref{sec:eval}).
+\item \textbf{Four deterministic capabilities that carry never-seen-table
+  generalization}: bounded suspect surfacing for high-cardinality columns, generic
+  entity-reference reconciliation with an exact-hit typing floor, cross-row majority
+  voting with a false-consensus guard, and convention-conservatism gates --- each
+  motivated by a measured failure regime and gated by the verifier
+  (\S\ref{sec:capabilities}, \S\ref{sec:wild}). Released with them is
+  \textsc{WildClean}, to our knowledge the first cleaning benchmark that scores
+  damage and silent edits alongside repair F1.
+\item \textbf{A negative result we argue is the load-bearing one}: five further
+  supervised fine-tunes and a three-arm GRPO pilot with the executor as a verifiable
+  reward all failed to move held-out generalization --- in this protocol class, the
+  model weights contribute format competence and little else; the deterministic
+  machinery and plan-level verification carry the capability
+  (\S\ref{sec:negative}).
 \end{enumerate}
 
 We deliberately report a negative-flavored finding alongside the positive ones: on
@@ -107,6 +131,24 @@ repairs---an insight our reference-veto inherits. GARF~\cite{garf} learns repair
 self-supervised from the data itself; it also demonstrates the structural limit we
 observe for frequency-only methods: a lone categorical column offers no co-occurring
 signal to vote against an error.
+
+\textbf{The 2025--26 landscape.} Post-Cocoon work concentrates on zero-label
+\emph{detection}: ZeroED~\cite{zeroed} (cloud-LLM cluster labeling, hospital
+detection F1 0.81, collapsing to 0.27 on smaller models), ForestED~\cite{forested}
+(LLM-induced decision trees, 0.756), and Auto-Test~\cite{autotest} (corpus-mined
+semantic-domain constraints, no LLM at inference) --- none performs zero-label
+\emph{repair}. GIDCL~\cite{gidcl} sets the labeled-class repair ceiling
+(hospital \gidclHosp{} with 20 labels and a LoRA trained per cleaned table);
+Cocoon~\cite{cocoon} remains an unreproduced preprint (15 citing papers, none a
+reproduction). Three concurrent results independently corroborate this paper's
+central negative finding that machinery, not weights, carries cleaning
+generalization: an agentic-cleaning ablation where a deterministic harness
+contributes most of the gain at 4B scale~\cite{spreadsheetrl}, a study showing
+even frontier models cannot correct table distortions without explicit
+priors~\cite{distort}, and a large multi-agent-debate evaluation in which LLM
+self-critique \emph{degrades} repair and only an adversarially separate,
+execution-grounded critic helps~\cite{debate} --- the architecture our verifier
+instantiates.
 
 \textbf{LLMs for data wrangling.} Narayan et al.~\cite{wrangle} showed frontier
 foundation models handle entity matching and imputation few-shot;
@@ -204,6 +246,40 @@ $\tau$ yields a plan-level precision--coverage curve. The shipped composition,
 the \emph{verified union planner}, is the verifier-gated model plan ($\tau{=}0.5$)
 unioned with the grounded heuristic's mappings (the model wins per surface form);
 the same code path is the product default.
+
+\subsection{Visibility and consensus: four deterministic capabilities}
+\label{sec:capabilities}
+Four further mechanisms, each motivated by a measured failure regime on never-seen
+tables, complete the deterministic machinery. \textbf{(a) Suspect surfacing.} The
+profile's value-frequency view is capped, so high-cardinality columns hide their
+dirty cells from any planner. Every column profile now carries a bounded
+\texttt{suspect\_values} section: rare anomalous surfaces with evidence-backed
+repair candidates (frequency dominance, edit similarity, reference membership).
+The heuristic planner repairs from suspects under a strict verifier bar
+($\tau_{hc}{=}0.8$) and flags the rest. \textbf{(b) Generic entity reference.}
+Open vocabularies (SemTab ToughTables aliases --- derived excluding our benchmark
+tables; MusicBrainz search-hint misspellings; RxNorm; Wikidata; ROR) register as a
+pluggable reference type. Because the reference is broad, entity-typing a column
+additionally requires that ${\ge}20\%$ of its distinct values match the reference
+\emph{exactly} --- fuzzy coverage alone over-fires on name-like columns (measured).
+This resolves the regime where every surface in a column is unique (no in-column
+frequency signal exists at all): five such benchmark tables go from 0.0 to
+\ttFOne{} F1 at \emph{zero} damage. \textbf{(c) Cross-row majority voting.} Tables
+that repeat a real-world entity across rows (a flight reported by many sources)
+carry their own repair signal. A detection step finds compact-token key columns
+with small groups (median multiplicity 3--30) and columns whose groups show
+\emph{majority-bearing} disagreement with per-group information; a table-level
+operation then resolves thin dissenting minorities to the group majority. A
+\emph{false-consensus} guard declines when minority shares look like legitimate
+correlated updates rather than reporting errors (mean minority share ${\ge}0.25$)
+--- a flat volume cap was measured to destroy the legitimate dense-disagreement
+regime and replaced. \textbf{(d) Convention conservatism.} The planner never
+re-formats an internally consistent column: date and percent ops are gated on
+dominant-shape inconsistency (digit and alpha runs collapsed; 90\% rule),
+ZIP/postal-named columns are never typed as phones or dates, and Excel-serial
+date typing requires a date-suggestive column name. Suppressed minority values
+surface as review flags --- abstention is visible, never silent. The verifier
+enforces the same gates on model-emitted plans at the verification boundary.
 
 \subsection{PII as a second task instance}
 \label{sec:pii}
@@ -356,6 +432,58 @@ operating point ($\tau{=}0.5$) is annotated.}
 \label{fig:pc}
 \end{figure}
 
+\subsection{Generalization to never-seen tables}
+\label{sec:wild}
+The freeze-version system above was then pointed at data it had never seen, under
+three new harnesses (all released with this paper as the \textsc{WildClean} bundle).
+\textbf{(1) Paired bench}: \nPairs{} dirty/gold pairs spanning the Raha suite, SemTab
+ToughTables, government open-data typo corpora, entity-matching tables, and
+LLM-cleaning evaluation sets. On the 35 pairs from sources absent from training, the
+post-freeze system scores \textbf{macro F1 \unseenMacroF{} at damage
+\unseenMacroDamage}. The largest single contribution is the regime
+\S\ref{sec:capabilities}(b) unlocks: on five all-unique entity tables where no
+in-column frequency signal exists, F1 moves from $0.0$ to \ttFOne{} at zero damage.
+Cross-row voting (\S\ref{sec:capabilities}c) is the second: flights---many sources
+reporting the same flight---goes from \flightsBaseF{} to \flightsVoteF{} F1
+heuristic-only, and the heuristic hospital path doubles from \hospBaseHeur{} to
+\hospVoteHeur{}. The hospital union gate is invariant under all of this
+(\unionGatePrec{} at \unionGateCov). \textbf{(2) Wild bench}: \nWild{} uncurated
+in-the-wild tables (open-data portals, GitHub, Kaggle) with no gold; we score seeded
+inject--recovery on each table's own data (mean recovery \wildRecovery) plus a
+behavioral audit: every run yields a valid plan, every changed cell is attributable
+to a logged operation --- \textbf{zero silent edits across all \nWild{} tables}.
+\textbf{(3) Trust audit at scale}: \nTrust{} GitTables tables, same property ---
+\nTrust{}/\nTrust{} valid plans, zero crashes, zero silent edits. The held-out-source
+generalization metric (train and evaluation drawn from disjoint benchmark sources)
+remains low in absolute terms (GEN-F1 \genFTwo{}, variant-recall \genVRTwo{}, damage
+\genDamageTwo): cleaning unfamiliar tables is far from solved, and we report the
+number to anchor the next section's claim about \emph{where} the capability that does
+exist actually lives.
+
+\subsection{Weights do not carry generalization: negative training results}
+\label{sec:negative}
+Every attempt to move never-seen-table performance through the model weights failed;
+every gain in \S\ref{sec:wild} came from deterministic machinery plus the verifier.
+Five further supervised fine-tunes --- adding 109k harvested real-world alias pairs
+(ToughTables-derived, MusicBrainz search hints, RxNorm, OpenFlights), error-dense
+episode mixes, and a suspects-contract retrain --- left held-out GEN-F1 flat or worse
+than the original recipe; mixing harvested pairs into the training blend
+\emph{diluted} the synthetic skill the executor verifies (a monotonic dilution law
+across mix ratios). A GRPO pilot using the executor as a verifiable reward (the
+direction RLVR table work~\cite{tabler1} motivates) was negative in all three arms at
+4B/LoRA scale: the main arm and a KL-anchored variant degraded plan-format validity,
+and a random-reward control arm reproduced the same drift, identifying it as an RL
+artifact rather than signal~\cite{spurious}. We report this as the paper's central
+empirical claim rather than a failure of effort: in this protocol class, at this
+scale, \textbf{the planner's weights contribute approximately nothing to
+generalization beyond format competence} --- profiling visibility, reference
+grounding, cross-row consensus, convention conservatism, and plan-level verification
+carry it. Concurrent work reaches the same conclusion from three independent
+directions~\cite{spreadsheetrl,distort,debate}. The practical corollary is
+unusual but actionable: a contributor who wants to improve a system like this should
+write a deterministic capability and gate it with the verifier, not collect more
+training data.
+
 \subsection{Ablations}
 All ablations are 3-seed means (CIs $\le\pm0.003$). Removing abstention costs $-0.013$
 NORTH, raises damage to \ablNoAbstainDamage{} (from \ablFullDamage), and collapses trap
@@ -437,9 +565,14 @@ A small, locally-run planner with execution-verified supervision, reference grou
 and calibrated abstention turns LLM data cleaning from a trust liability into an
 auditable system: every change is a named, reversible operation; uncertain actions
 become review flags rather than silent corruptions; and the evaluation itself is built
-to resist gaming. We believe the recipe---propose/execute decomposition,
-verification-by-execution, retrieval-grounded outputs, and selective prediction---is a
-template for deploying small specialized models on other structured tasks.
+to resist gaming. The post-freeze program sharpened the recipe into a finding: across
+five further fine-tunes and a three-arm GRPO pilot, the weights never moved
+never-seen-table performance --- deterministic visibility, grounding, consensus, and
+verification did, at zero silent edits across \nWild{} wild tables and a
+\nTrust{}-table trust audit. We believe the recipe---propose/execute decomposition,
+verification-by-execution, retrieval-grounded outputs, and selective prediction over
+deterministic capabilities---is a template for deploying small specialized models on
+other structured tasks.
 
 \section*{Reproducibility}
 Code, evaluation suite, result artifacts, and the fine-tuned weights are public
@@ -452,8 +585,15 @@ eval/results/v6\_hospital\_raw\_plan.json --union}), Baran
 then \texttt{python -m eval.baselines\_learned --score-baran}), Jellyfish
 (\texttt{modal run scripts/modal\_jellyfish.py}), ablations
 (\texttt{python -m eval.ablations}), calibration (\texttt{python -m eval.calibration}),
-and the PII leak test (\texttt{python -m eval.pii\_leak}). The shipped product planner
-is the identical code path measured here (\texttt{scrubdata/active.py}).
+and the PII leak test (\texttt{python -m eval.pii\_leak}). The generalization
+harnesses regenerate likewise: paired bench (\texttt{python -m eval.paired\_bench}),
+wild bench (\texttt{python -m eval.wild\_bench}), GitTables trust audit
+(\texttt{python -m eval.gittables\_audit}), and held-out-source generalization
+(\texttt{python -m eval.generalization}). The \textsc{WildClean} bundle ---
+redistributable dirty/gold pairs, the GitTables audit slice, open vocabularies,
+result JSONs, and license-gated loaders for the non-redistributable pairs --- is
+released as a Hugging Face dataset. The shipped product planner is the identical
+code path measured here (\texttt{scrubdata/active.py}).
 
 \begin{thebibliography}{20}
 \bibitem{raha} M.~Mahdavi et al. Raha: A configuration-free error detection system.
@@ -467,6 +607,26 @@ repairs with probabilistic inference. VLDB 2017. arXiv:1702.00820.
 your data? VLDB 2022. arXiv:2205.09911.
 \bibitem{jellyfish} H.~Zhang et al. Jellyfish: A large language model for data
 preprocessing. EMNLP 2024.
+\bibitem{cocoon} Anonymous. Cocoon: Semantic data cleaning with LLMs.
+arXiv:2410.15547, 2024 (unreviewed preprint).
+\bibitem{zeroed} ZeroED: Hybrid zero-shot error detection through LLM reasoning.
+arXiv:2504.05345, ICDE 2025.
+\bibitem{forested} Ensembling LLM-induced decision trees for explainable and robust
+error detection. arXiv:2512.07246, 2025.
+\bibitem{autotest} Q.~Chen et al. Auto-Test: Learning semantic-domain constraints
+for unsupervised error detection. SIGMOD 2025. arXiv:2504.10762.
+\bibitem{gidcl} GIDCL: Generative-discriminative iterative data cleaning with LLMs.
+SIGMOD 2025.
+\bibitem{spreadsheetrl} Spreadsheet-RL: Reinforcement learning for spreadsheet
+manipulation with execution verification, 2026.
+\bibitem{distort} An empirical study of LLM robustness to tabular distortions.
+arXiv:2601.05009, 2026.
+\bibitem{debate} When helping hurts and how to fix it: Multi-agent debate for data
+cleaning. arXiv:2606.02866, 2026.
+\bibitem{tabler1} Table-R1: Region-based reinforcement learning with verifiable
+rewards for table reasoning. arXiv:2505.23621, 2025.
+\bibitem{spurious} Spurious rewards: Rethinking training signals in RLVR.
+arXiv:2506.10947, 2025.
 \bibitem{tablegpt} P.~Li et al. Table-GPT: Table-tuned GPT for diverse table tasks.
 SIGMOD 2024.
 \bibitem{retclean} M.~Ahmad et al. RetClean: Retrieval-based data cleaning using LLMs
