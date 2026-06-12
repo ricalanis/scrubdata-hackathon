@@ -241,15 +241,29 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 17.
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
-] [2] [3] [4] [5] [6] [7]
+]
+
+LaTeX Font Warning: Font shape `TU/lmr/bx/sc' undefined
+(Font)              using `TU/lmr/bx/n' instead on input line 92.
+
+[2] [3] [4] [5] [6]
 File: fig_precision_coverage.pdf Graphic file (type pdf)
 <use fig_precision_coverage.pdf>
- [8] [9] [10]
+ [7] [8] [9] [10] [11]
 File: fig_label_curve.pdf Graphic file (type pdf)
 <use fig_label_curve.pdf>
- [11]
+ [12]
 File: fig_risk_coverage.pdf Graphic file (type pdf)
 <use fig_risk_coverage.pdf>
- [12] [13]
-[14] [15] [16] (main.aux) )
-Output written on main.xdv (16 pages, 514992 bytes).
+ [13]
+Underfull \hbox (badness 10000) in paragraph at lines 842--852
+\TU/lmr/m/n/10.95 The model weights are public: $[][][][][] [] [] [] [][][][][]
+[][][][][][] [] [][] [] [][][][][][][][][] []
+ []
+
+[14] [15] [16] [17] (main.aux)
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+ )
+Output written on main.xdv (17 pages, 553908 bytes).

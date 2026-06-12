@@ -1,5 +1,5 @@
 ---
-title: Hackaton Small
+title: ScrubData
 emoji: 🏔️
 colorFrom: green
 colorTo: indigo
@@ -54,7 +54,7 @@ runnable via llama.cpp GGUF.
 
 ## Measured (not vibes)
 
-- **Canonicalization micro-F1 0.90 (best seed; 0.80 ± 0.01 over 3 seeds)** for the 4B
+- **Canonicalization micro-F1 0.90 (best single run; 0.80 ± 0.01 over 3 training seeds)** for the 4B
   fine-tune vs **0.45** for a much larger generic model vs **0.15** for rules.
 - Real errors (5-benchmark macro): grounded cleaning reaches REAL-F1 **0.225**, 3.9×
   OpenRefine kNN (0.058) and 5.7× fingerprint (0.039); the verified-union gate repairs
@@ -77,7 +77,7 @@ SCRUBDATA_MODEL=scrubdata-ft uv run server.py      # model planner, heuristic fa
 
 SCRUBDATA_PII_NER=1 uv run server.py               # +44M NER for name/address columns
 uv run python -m scrubdata.cli messy.csv -o clean.csv --plan plan.json
-uv run pytest tests/                               # engine tests (29)
+uv run pytest tests/                               # engine + scorer tests (68)
 ```
 
 ## Repo map
@@ -90,8 +90,8 @@ uv run pytest tests/                               # engine tests (29)
   (`real_data.py`: paired benchmarks + frequency-derived unpaired open data).
 - `eval/` — frozen gold · wide suite + double-macro north-star (`run_real_multi.py`) ·
   ablations · calibration (risk–coverage) · PII leak test.
-- `docs/paper/` — preprint: *Small fine-tuned planners with execution-verified data and
-  calibrated abstention for tabular canonicalization*.
+- `docs/paper/` — preprint: *Verified Cleaning Plans: Plan-Level Selective Prediction
+  Turns Local LLM Planners into Trustworthy Table Cleaners*.
 - `scripts/` — Modal train/eval (headless GPU loop), trace publishing.
 
 ## Submission checklist

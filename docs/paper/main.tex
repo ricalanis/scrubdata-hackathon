@@ -382,7 +382,10 @@ $\tau\in[0.2,0.8]$, so the operating point is not threshold-brittle, and the res
 seed-robust: across three training seeds of the same data recipe the union operating
 point is \unionGateThreeSeedPrec{} precision at \unionGateThreeSeedCov{} coverage
 (the shipped adapter is the strongest seed), with every seed clearing the
-$0.70$-precision/$0.30$-coverage bar decisively.
+$0.70$-precision/$0.30$-coverage bar decisively. All 3-seed intervals in this paper
+are normal-approximation 95\% CIs ($1.96\,\sigma/\sqrt{3}$); the $t$-based
+interval at $n{=}3$ is ${\sim}2.7\times$ wider ($\pm 0.031$ here) and every
+qualitative claim survives it --- the weakest seed alone clears the bar.
 
 \textbf{Candidate-constrained planning (negative result).} We also tested constraining
 the planner's \emph{inputs}: the profiler emits evidence-backed (variant$\,\to\,$
@@ -577,8 +580,9 @@ cannot surface repairs the profile does not expose, and it actively discards
 verified-recoverable coverage. But pooling \emph{every} mapping from all 16
 samples and letting the verifier filter the union gives the best operating point
 we measure for the 4B: \textbf{0.911 precision at 0.483 coverage} ($+0.6$ points
-precision, $+7.1$ points coverage over the shipped gate; two independent runs
-agree to $\pm 0.001$). The lesson is the paper's thesis in miniature: sampling
+precision, $+7.1$ points coverage over the shipped gate; an independent $N{=}8$
+replication reproduces the \emph{voted} point to $\pm 0.0003$ precision /
+$\pm 0.002$ coverage, and the greedy anchor exactly). The lesson is the paper's thesis in miniature: sampling
 helps only as a \emph{candidate generator}; consensus adds nothing the verifier
 does not already provide --- pool candidates, verify, do not vote. Separately,
 the local capture path itself (Q8 quantization with grammar-constrained decoding)
@@ -618,7 +622,11 @@ calls returning schema-valid JSON. Runtime = wall-clock for the planning calls o
 hosted endpoints (single capture, no seeds; the 4B row is a prior Modal A100
 capture with no comparable local figure). Each scaling row is a single capture;
 the primary evidence is the union coverage delta ($+0.07$) at matched-or-better
-precision, not any single cell. Bold marks the best union operating point.
+precision, not any single cell. For context, 16-sample pooling lifts the 4B
+fine-tune to $0.911@0.483$ at $16\times$ planning compute
+(\S\ref{sec:negative}); the 24--31B planners reach $0.915@0.485$ in a single
+greedy pass --- single-pass capability versus test-time compute, both converted
+into trustworthy operating points by the same verifier. Bold marks the best union operating point.
 gpt-oss-20B excluded (serving failure: empty
 proxy responses, not measurable capability).
 The identical devstral/gemma rows are a verified counting coincidence, not a
@@ -901,7 +909,7 @@ Degenerate baselines (Table~\ref{tab:degenerate}) & \texttt{python -m eval.degen
 TOST equivalence (\S\ref{sec:negative}) & \texttt{python -m eval.equivalence} \\
 Label curve (Figure~\ref{fig:labelcurve}) & \texttt{python -m eval.label\_curve} \\
 Per-dataset table (Table~\ref{tab:perdataset}) & \texttt{python -m eval.raha\_table} \\
-Self-consistency null (\S\ref{sec:negative}) & \texttt{python -m eval.sc\_rerank --model scrubdata-ft --n 16} \\
+Self-consistency vote/pool (\S\ref{sec:negative}) & \texttt{python -m eval.sc\_rerank --model scrubdata-ft --n 16} \\
 Scaling arm (Table~\ref{tab:scaling}) & \texttt{python -m eval.scaling\_arm} \\
 \bottomrule
 \end{tabular}
