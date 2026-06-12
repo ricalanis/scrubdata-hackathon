@@ -168,9 +168,9 @@ inference rather than bake aliases into weights (TURL's out-of-domain collapse i
 cautionary result). MTab~\cite{mtab} established type-constrained matching with
 abstention in semantic table annotation.
 
-\textbf{Clustering-based cleaning tools.} OpenRefine's key-collision (fingerprint) and
-nearest-neighbour clustering are the de-facto practitioner baseline; we reimplement both
-faithfully (including blocking) and compare head-to-head.
+\textbf{Clustering-based cleaning tools.} OpenRefine's key-collision (fingerprint)
+clustering and its nearest-neighbour mode are the de-facto practitioner baseline; we
+reimplement both faithfully, including blocking, and compare head-to-head.
 
 \textbf{Selective prediction.} Risk--coverage analysis and calibration
 metrics~\cite{selective} formalize ``knowing when not to act''; to our knowledge their
@@ -576,24 +576,47 @@ other structured tasks.
 
 \section*{Reproducibility}
 Code, evaluation suite, result artifacts, and the fine-tuned weights are public
-(repository linked from the demo Space). Each reported number regenerates from one
-command at the released revision: the money table
-(\texttt{python -m eval.run\_real\_multi --out ...}), the precision--coverage curve and
-shipped operating point (\texttt{python -m eval.precision\_curve --plan
-eval/results/v6\_hospital\_raw\_plan.json --union}), Baran
-(\texttt{python eval/run\_baran.py} in the pinned environment documented in that file,
-then \texttt{python -m eval.baselines\_learned --score-baran}), Jellyfish
-(\texttt{modal run scripts/modal\_jellyfish.py}), ablations
-(\texttt{python -m eval.ablations}), calibration (\texttt{python -m eval.calibration}),
-and the PII leak test (\texttt{python -m eval.pii\_leak}). The generalization
-harnesses regenerate likewise: paired bench (\texttt{python -m eval.paired\_bench}),
-wild bench (\texttt{python -m eval.wild\_bench}), GitTables trust audit
-(\texttt{python -m eval.gittables\_audit}), and held-out-source generalization
-(\texttt{python -m eval.generalization}). The \textsc{WildClean} bundle ---
+(repository linked from the demo Space). The \textsc{WildClean} bundle ---
 redistributable dirty/gold pairs, the GitTables audit slice, open vocabularies,
 result JSONs, and license-gated loaders for the non-redistributable pairs --- is
 released as a Hugging Face dataset. The shipped product planner is the identical
 code path measured here (\texttt{scrubdata/active.py}).
+
+\paragraph{Setup.} Clone the repository and run \texttt{uv sync} (Python 3.12;
+\texttt{uv} resolves the pinned environment). The non-redistributable benchmark
+pairs materialize from their original sources with the \textsc{WildClean}
+\texttt{loaders.py}. Model-path results additionally need the released Q8\_0 GGUF
+served by a local Ollama (\texttt{SCRUBDATA\_MODEL}); every deterministic-path
+number runs with no model at all. Baran runs in the separate pinned environment
+documented at the top of \texttt{eval/run\_baran.py}; Jellyfish-13B runs remotely
+via Modal.
+
+\paragraph{One command per reported number} (all from the repository root, at the
+released revision):
+
+\begin{center}
+\footnotesize
+\begin{tabular}{@{}ll@{}}
+\toprule
+Reported result & Command \\
+\midrule
+Money table (Table~\ref{tab:money}) & \texttt{python -m eval.run\_real\_multi --out eval/results} \\
+Precision--coverage curve + gate & \texttt{python -m eval.precision\_curve} \\
+\quad (Figure~\ref{fig:pc}, \S\ref{sec:ws1results}) & \texttt{\ \ --plan eval/results/v6\_hospital\_raw\_plan.json --union} \\
+Ablations & \texttt{python -m eval.ablations} \\
+Calibration (Figure~\ref{fig:rc}) & \texttt{python -m eval.calibration} \\
+PII leak test & \texttt{python -m eval.pii\_leak} \\
+Baran baseline & \texttt{python eval/run\_baran.py}, then \\
+ & \texttt{python -m eval.baselines\_learned --score-baran} \\
+Jellyfish baseline & \texttt{modal run scripts/modal\_jellyfish.py} \\
+\midrule
+Paired bench (\S\ref{sec:wild}) & \texttt{python -m eval.paired\_bench} \\
+Wild bench (\S\ref{sec:wild}) & \texttt{python -m eval.wild\_bench} \\
+GitTables trust audit (\S\ref{sec:wild}) & \texttt{python -m eval.gittables\_audit} \\
+Held-out-source generalization & \texttt{python -m eval.generalization} \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \begin{thebibliography}{20}
 \bibitem{raha} M.~Mahdavi et al. Raha: A configuration-free error detection system.
