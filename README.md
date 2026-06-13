@@ -8,10 +8,25 @@ sdk_version: 6.16.0
 app_file: server.py
 pinned: true
 license: mit
+tags:
+  - track:backyard
+  - achievement:offgrid
+  - achievement:welltuned
+  - achievement:offbrand
+  - achievement:llama
+  - achievement:sharing
+  - achievement:fieldnotes
 ---
 # ScrubData — hands-off data cleaning, with the receipts
 
 Entry for the **Build Small Hackathon** (Gradio · Hugging Face), 🏡 Backyard AI track.
+Runs a ≤4B model locally → also in the running for **Tiny Titan**, **Off-Brand**,
+**Best Demo**, **Best Agent**, and **Bonus Quest Champion** (all six quests claimed above).
+
+<!-- SUBMISSION LINKS (fill before submitting on June 15):
+  Demo video: <YouTube/Space/public URL>
+  Social post: <X/LinkedIn URL>
+  These two links + this write-up are required by the build-small-hackathon /submit tool. -->
 
 > **Drop a messy export. Get clean data back — every change named, reversible, and
 > explained. Anything sensitive is protected locally. The judgment calls stay yours.**
@@ -94,10 +109,19 @@ uv run pytest tests/                               # engine + scorer tests (68)
   Turns Local LLM Planners into Trustworthy Table Cleaners*.
 - `scripts/` — Modal train/eval (headless GPU loop), trace publishing.
 
-## Submission checklist
-- [x] Model ≤ 4B (Tiny Titan) — `Qwen3-4B-Instruct-2507`
-- [x] Custom `gr.Server` UI (Off-Brand) — warm, plain-English, audit-first
-- [x] Fine-tune published (Well-Tuned) — `ricalanis/scrubdata-qwen3-4b` (+GGUF, Llama Champion)
-- [x] Agent traces published (Open-trace) — `build-small-hackathon/scrubdata-traces`
-- [x] Gradio app live on a HF Space under `build-small-hackathon`
-- [ ] Short demo video · social post
+## Submission checklist (verified against the build-small-hackathon `/submit` tool)
+- [x] Public Gradio Space in the `build-small-hackathon` org
+- [x] Every model ≤ 32B (here ≤ 4B → **Tiny Titan**-eligible): `Qwen3-4B-Instruct-2507`
+- [x] README `tags:` set — `track:backyard` + all six `achievement:*` quests (above)
+- [x] **Off the Grid** (`offgrid`) — no cloud APIs; default path is local-only (verified: zero external egress)
+- [x] **Well-Tuned** (`welltuned`) — fine-tune published: `ricalanis/scrubdata-qwen3-4b` (+ `-v6-q8` GGUF)
+- [x] **Off-Brand** (`offbrand`) — custom `gr.Server` HTML/CSS frontend, not default Gradio
+- [x] **Llama Champion** (`llama`) — runs through llama.cpp (Q8_0 GGUF)
+- [x] **Sharing is Caring** (`sharing`) — agent traces on the Hub: `build-small-hackathon/scrubdata-traces`
+- [x] **Field Notes** (`fieldnotes`) — build report: `docs/FIELD_NOTES.md`
+- [x] Write-up in this README (idea + tech)
+- [ ] **Demo video** link in README (record on the Maria sample — see `docs/SUBMISSION.md`)
+- [ ] **Social post** link in README
+- [ ] Confirm deadline time/timezone on the hackathon page (June 15 2026)
+
+Judged (no tag needed, just qualify): Tiny Titan · Off-Brand prize · Best Demo · Best Agent · Bonus Quest Champion.
