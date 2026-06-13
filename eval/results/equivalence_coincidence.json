@@ -1,0 +1,12 @@
+{
+ "question": "equivalence.json rows v7(seed32) and v9(seed34) are bit-identical (all metrics to 16 decimals) \u2014 duplicated capture or real convergence?",
+ "verdict": "REAL CONVERGENCE (verifier-collapse), not a duplicated file",
+ "evidence": {
+  "files_differ": "generalization_v7.json md5 a9bfac56..., generalization_v9.json md5 434ff3c8... (labels differ, metrics identical)",
+  "raw_plans_differ": "gen_plans_seed32 vs seed34: flights 9 vs 82 canonicalize entries, 0 shared; rayyan 0 vs 0; ed2_restaurants 0 vs 0",
+  "collapse_proof": "flights union f1 = 0.0435927442949093 for BOTH retrains == grounded-heuristic baseline flights f1 EXACTLY (generalization_baseline.json) \u2014 the verifier (tau=0.5) killed every model entry from both plans on the held-out source, so each union degenerates to the same deterministic plan",
+  "zero-entry sources": "on rayyan and ed2_restaurants neither model emitted any canonicalize entry, so identity is structural"
+ },
+ "implication_for_TOST": "of the n=15 per-dataset deltas, the v7 and v9 rows carry no mutually independent information (and rayyan deltas are 0 in all retrains; flights deltas constant) \u2014 the honest unit is the n=5 retrain-level test already reported (p=8.3e-8); dropping the duplicate row leaves the verdict unchanged",
+ "date": "2026-06-12"
+}

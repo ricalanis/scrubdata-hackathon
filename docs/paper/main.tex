@@ -551,7 +551,16 @@ sources $\times$ 5 retrains --- per-pair deltas do not exist for the retrain
 series, so within-retrain deltas are clustered and we add a retrain-level
 robustness check, $n{=}5$ macro deltas), and TOST rejects effects beyond the
 pre-registered SESOI of $\pm 0.05$ ($p = 8.0\times10^{-16}$; retrain-level check
-$p = 8.3\times10^{-8}$). Two reconciliations make the claim auditable. First, the
+$p = 8.3\times10^{-8}$). One disclosure sharpens the clustering caveat: two
+retrains' held-out rows are \emph{bit-identical} --- mechanically verified as
+verifier-collapse, not a data error (their raw plans share zero mapping entries,
+9 vs.\ 82 on flights, yet the verifier kills all of both, so each union
+degenerates to the same deterministic plan;
+\texttt{eval/results/equivalence\_coincidence.json}) --- so the $n{=}15$ rows
+carry fewer independent observations than their count suggests, which is exactly
+why the $n{=}5$ retrain-level test is the one we lean on. The collapse itself is
+the finding in miniature: different weights, same held-out behavior, because the
+verifier and the deterministic machinery decide what survives. Two reconciliations make the claim auditable. First, the
 basis: the equivalence series is scored against the champion's absolute GEN-F1 of
 \genChampionBasis{}, while the \genFTwo{} of \S\ref{sec:wild} is the \emph{shipped
 system} at the post-freeze HEAD with all deterministic capabilities --- the
