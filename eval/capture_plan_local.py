@@ -67,13 +67,14 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", required=True)
     ap.add_argument("--model", default="scrubdata-ft")
+    ap.add_argument("--timeout", type=int, default=600)
     args = ap.parse_args()
 
     dirty, _clean = _raha_pair(args.dataset)   # same table the scorer sees
     print(f"capturing plan: {args.dataset} ({len(dirty)} rows x {dirty.shape[1]} cols)",
           flush=True)
     t0 = time.time()
-    plan = make_batched_planner(make_json_constrained_planner(args.model),
+    plan = make_batched_planner(make_json_constrained_planner(args.model, timeout=args.timeout),
                                 batch_size=4)(dirty)
     dt = time.time() - t0
     n_ops = sum(len(c.get("operations", [])) for c in plan.get("columns", []))

@@ -11,7 +11,7 @@
     "damage": 0.0
    },
    "micro": {
-    "errors": 163610,
+    "errors": 163607,
     "fixed": 0,
     "changed": 0,
     "damage_cells": 0
@@ -30,7 +30,7 @@
      "per_error": 0.0
     }
    },
-   "sec": 96.3,
+   "sec": 63.4,
    "per_pair": [
     {
      "name": "beers",
@@ -42,7 +42,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.9
+     "sec": 1.0
     },
     {
      "name": "cleanml_company",
@@ -54,7 +54,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 11.1
+     "sec": 6.3
     },
     {
      "name": "cleanml_movie",
@@ -66,7 +66,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 3.8
+     "sec": 2.4
     },
     {
      "name": "dblp_acm",
@@ -90,7 +90,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.5
+     "sec": 0.3
     },
     {
      "name": "dgov_2_10_budget_presentation_award_summary",
@@ -114,7 +114,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.3
+     "sec": 0.2
     },
     {
      "name": "dgov_3_09_census_acs_post_secondary_education",
@@ -126,7 +126,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.1
+     "sec": 0.0
     },
     {
      "name": "dgov_access_control",
@@ -138,7 +138,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 3.7
+     "sec": 2.4
     },
     {
      "name": "dgov_ah_provisional_diabetes_death_counts_for",
@@ -150,7 +150,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.2
+     "sec": 0.1
     },
     {
      "name": "dgov_allegheny_county_tobacco_vendors",
@@ -162,7 +162,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.8
+     "sec": 0.5
     },
     {
      "name": "dgov_emergency_operating_center_tools",
@@ -186,7 +186,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.2
+     "sec": 0.1
     },
     {
      "name": "dgov_grocery_stores_2013",
@@ -198,311 +198,11 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.7
+     "sec": 0.3
     },
     {
      "name": "dgov_health_conditions_among_children_under_a",
      "errors": 2900,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 4.0
-    },
-    {
-     "name": "dgov_illinois_obesity_by_county",
-     "errors": 17,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.0
-    },
-    {
-     "name": "dgov_jefferson_county_ky_post_offices",
-     "errors": 26,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.0
-    },
-    {
-     "name": "dgov_la_county_covid_cases",
-     "errors": 579,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 1.2
-    },
-    {
-     "name": "dgov_legislative_bridge_names",
-     "errors": 415,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.4
-    },
-    {
-     "name": "dgov_louisville_metro_ky_inspection_results_p",
-     "errors": 1126,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.6
-    },
-    {
-     "name": "dgov_louisville_metro_ky_permitted_hotels_and",
-     "errors": 191,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.2
-    },
-    {
-     "name": "dgov_median_household_income",
-     "errors": 138,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.4
-    },
-    {
-     "name": "dgov_medicare_part_d_opioid_prescribing_rates",
-     "errors": 547,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.9
-    },
-    {
-     "name": "dgov_mva_vehicle_sales_counts_by_month_for_ca",
-     "errors": 43,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.1
-    },
-    {
-     "name": "dgov_national_obesity_by_state_1",
-     "errors": 13,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.0
-    },
-    {
-     "name": "ed2_restaurants",
-     "errors": 309,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 23.6
-    },
-    {
-     "name": "flights",
-     "errors": 4920,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.6
-    },
-    {
-     "name": "fodors_zagats",
-     "errors": 206,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.0
-    },
-    {
-     "name": "gidcl_imdb",
-     "errors": 13320,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 4.2
-    },
-    {
-     "name": "hospital",
-     "errors": 509,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 1.1
-    },
-    {
-     "name": "movies_1",
-     "errors": 7006,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 6.4
-    },
-    {
-     "name": "rayyan",
-     "errors": 948,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.4
-    },
-    {
-     "name": "tt_00e2h310",
-     "errors": 12433,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 1.2
-    },
-    {
-     "name": "tt_2zwsmotj",
-     "errors": 10977,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 1.0
-    },
-    {
-     "name": "tt_3n6s2fcx",
-     "errors": 9510,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.9
-    },
-    {
-     "name": "tt_8yinkydr",
-     "errors": 14188,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 1.4
-    },
-    {
-     "name": "tt_cn5wvwhh",
-     "errors": 370,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 1.4
-    },
-    {
-     "name": "tt_co23z7go",
-     "errors": 33542,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 2.0
-    },
-    {
-     "name": "tt_dvnkv0xu",
-     "errors": 15676,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 3.2
-    },
-    {
-     "name": "tt_uma1dnf6",
-     "errors": 5080,
      "f1": 0.0,
      "precision": 1.0,
      "recall": 0.0,
@@ -513,241 +213,6 @@
      "sec": 1.7
     },
     {
-     "name": "zeroed_billionaire",
-     "errors": 5248,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 4.1
-    },
-    {
-     "name": "zeroed_tax100k",
-     "errors": 952,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 12.7
-    }
-   ]
-  },
-  "abstain-all": {
-   "macro": {
-    "f1": 0.0,
-    "precision": 1.0,
-    "recall": 0.0,
-    "damage": 0.0
-   },
-   "micro": {
-    "errors": 163610,
-    "fixed": 0,
-    "changed": 0,
-    "damage_cells": 0
-   },
-   "score_c": {
-    "c=1": {
-     "raw": 0,
-     "per_error": 0.0
-    },
-    "c=5": {
-     "raw": 0,
-     "per_error": 0.0
-    },
-    "c=10": {
-     "raw": 0,
-     "per_error": 0.0
-    }
-   },
-   "sec": 96.6,
-   "per_pair": [
-    {
-     "name": "beers",
-     "errors": 4362,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.9
-    },
-    {
-     "name": "cleanml_company",
-     "errors": 65,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 11.8
-    },
-    {
-     "name": "cleanml_movie",
-     "errors": 4779,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 3.5
-    },
-    {
-     "name": "dblp_acm",
-     "errors": 2128,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.5
-    },
-    {
-     "name": "dblp_scholar",
-     "errors": 3099,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.4
-    },
-    {
-     "name": "dgov_2_10_budget_presentation_award_summary",
-     "errors": 9,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.0
-    },
-    {
-     "name": "dgov_305b_assessed_lake_2020",
-     "errors": 442,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.2
-    },
-    {
-     "name": "dgov_3_09_census_acs_post_secondary_education",
-     "errors": 82,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.1
-    },
-    {
-     "name": "dgov_access_control",
-     "errors": 4180,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 3.9
-    },
-    {
-     "name": "dgov_ah_provisional_diabetes_death_counts_for",
-     "errors": 142,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.2
-    },
-    {
-     "name": "dgov_allegheny_county_tobacco_vendors",
-     "errors": 2392,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 1.0
-    },
-    {
-     "name": "dgov_emergency_operating_center_tools",
-     "errors": 4,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.0
-    },
-    {
-     "name": "dgov_field_listings",
-     "errors": 317,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.2
-    },
-    {
-     "name": "dgov_grocery_stores_2013",
-     "errors": 420,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 0.9
-    },
-    {
-     "name": "dgov_health_conditions_among_children_under_a",
-     "errors": 2900,
-     "f1": 0.0,
-     "precision": 1.0,
-     "recall": 0.0,
-     "damage": 0.0,
-     "fixed": 0,
-     "changed": 0,
-     "damage_cells": 0,
-     "sec": 3.7
-    },
-    {
      "name": "dgov_illinois_obesity_by_county",
      "errors": 17,
      "f1": 0.0,
@@ -781,7 +246,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.9
+     "sec": 0.5
     },
     {
      "name": "dgov_legislative_bridge_names",
@@ -805,7 +270,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.8
+     "sec": 0.3
     },
     {
      "name": "dgov_louisville_metro_ky_permitted_hotels_and",
@@ -829,7 +294,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.5
+     "sec": 0.1
     },
     {
      "name": "dgov_medicare_part_d_opioid_prescribing_rates",
@@ -841,7 +306,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.9
+     "sec": 0.4
     },
     {
      "name": "dgov_mva_vehicle_sales_counts_by_month_for_ca",
@@ -853,7 +318,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.1
+     "sec": 0.0
     },
     {
      "name": "dgov_national_obesity_by_state_1",
@@ -877,7 +342,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 24.0
+     "sec": 11.8
     },
     {
      "name": "flights",
@@ -913,7 +378,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 4.5
+     "sec": 3.8
     },
     {
      "name": "hospital",
@@ -925,7 +390,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 1.0
+     "sec": 0.8
     },
     {
      "name": "movies_1",
@@ -937,7 +402,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 5.9
+     "sec": 4.7
     },
     {
      "name": "rayyan",
@@ -961,7 +426,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 1.2
+     "sec": 1.1
     },
     {
      "name": "tt_2zwsmotj",
@@ -973,7 +438,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 1.1
+     "sec": 1.0
     },
     {
      "name": "tt_3n6s2fcx",
@@ -1033,7 +498,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 3.4
+     "sec": 1.9
     },
     {
      "name": "tt_uma1dnf6",
@@ -1045,7 +510,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 1.5
+     "sec": 1.3
     },
     {
      "name": "zeroed_billionaire",
@@ -1057,11 +522,11 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 3.8
+     "sec": 2.3
     },
     {
      "name": "zeroed_tax100k",
-     "errors": 952,
+     "errors": 949,
      "f1": 0.0,
      "precision": 1.0,
      "recall": 0.0,
@@ -1069,7 +534,542 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 13.1
+     "sec": 11.2
+    }
+   ]
+  },
+  "abstain-all": {
+   "macro": {
+    "f1": 0.0,
+    "precision": 1.0,
+    "recall": 0.0,
+    "damage": 0.0
+   },
+   "micro": {
+    "errors": 163607,
+    "fixed": 0,
+    "changed": 0,
+    "damage_cells": 0
+   },
+   "score_c": {
+    "c=1": {
+     "raw": 0,
+     "per_error": 0.0
+    },
+    "c=5": {
+     "raw": 0,
+     "per_error": 0.0
+    },
+    "c=10": {
+     "raw": 0,
+     "per_error": 0.0
+    }
+   },
+   "sec": 62.5,
+   "per_pair": [
+    {
+     "name": "beers",
+     "errors": 4362,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.9
+    },
+    {
+     "name": "cleanml_company",
+     "errors": 65,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 6.1
+    },
+    {
+     "name": "cleanml_movie",
+     "errors": 4779,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 2.4
+    },
+    {
+     "name": "dblp_acm",
+     "errors": 2128,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.3
+    },
+    {
+     "name": "dblp_scholar",
+     "errors": 3099,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.3
+    },
+    {
+     "name": "dgov_2_10_budget_presentation_award_summary",
+     "errors": 9,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.0
+    },
+    {
+     "name": "dgov_305b_assessed_lake_2020",
+     "errors": 442,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.2
+    },
+    {
+     "name": "dgov_3_09_census_acs_post_secondary_education",
+     "errors": 82,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.0
+    },
+    {
+     "name": "dgov_access_control",
+     "errors": 4180,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 2.3
+    },
+    {
+     "name": "dgov_ah_provisional_diabetes_death_counts_for",
+     "errors": 142,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.1
+    },
+    {
+     "name": "dgov_allegheny_county_tobacco_vendors",
+     "errors": 2392,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.6
+    },
+    {
+     "name": "dgov_emergency_operating_center_tools",
+     "errors": 4,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.0
+    },
+    {
+     "name": "dgov_field_listings",
+     "errors": 317,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.1
+    },
+    {
+     "name": "dgov_grocery_stores_2013",
+     "errors": 420,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.3
+    },
+    {
+     "name": "dgov_health_conditions_among_children_under_a",
+     "errors": 2900,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 1.7
+    },
+    {
+     "name": "dgov_illinois_obesity_by_county",
+     "errors": 17,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.0
+    },
+    {
+     "name": "dgov_jefferson_county_ky_post_offices",
+     "errors": 26,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.0
+    },
+    {
+     "name": "dgov_la_county_covid_cases",
+     "errors": 579,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.5
+    },
+    {
+     "name": "dgov_legislative_bridge_names",
+     "errors": 415,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.1
+    },
+    {
+     "name": "dgov_louisville_metro_ky_inspection_results_p",
+     "errors": 1126,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.4
+    },
+    {
+     "name": "dgov_louisville_metro_ky_permitted_hotels_and",
+     "errors": 191,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.1
+    },
+    {
+     "name": "dgov_median_household_income",
+     "errors": 138,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.1
+    },
+    {
+     "name": "dgov_medicare_part_d_opioid_prescribing_rates",
+     "errors": 547,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.4
+    },
+    {
+     "name": "dgov_mva_vehicle_sales_counts_by_month_for_ca",
+     "errors": 43,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.0
+    },
+    {
+     "name": "dgov_national_obesity_by_state_1",
+     "errors": 13,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.0
+    },
+    {
+     "name": "ed2_restaurants",
+     "errors": 309,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 11.5
+    },
+    {
+     "name": "flights",
+     "errors": 4920,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.5
+    },
+    {
+     "name": "fodors_zagats",
+     "errors": 206,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.0
+    },
+    {
+     "name": "gidcl_imdb",
+     "errors": 13320,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 3.8
+    },
+    {
+     "name": "hospital",
+     "errors": 509,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.8
+    },
+    {
+     "name": "movies_1",
+     "errors": 7006,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 4.7
+    },
+    {
+     "name": "rayyan",
+     "errors": 948,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.4
+    },
+    {
+     "name": "tt_00e2h310",
+     "errors": 12433,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 1.1
+    },
+    {
+     "name": "tt_2zwsmotj",
+     "errors": 10977,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 1.0
+    },
+    {
+     "name": "tt_3n6s2fcx",
+     "errors": 9510,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 0.9
+    },
+    {
+     "name": "tt_8yinkydr",
+     "errors": 14188,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 1.2
+    },
+    {
+     "name": "tt_cn5wvwhh",
+     "errors": 370,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 1.3
+    },
+    {
+     "name": "tt_co23z7go",
+     "errors": 33542,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 2.0
+    },
+    {
+     "name": "tt_dvnkv0xu",
+     "errors": 15676,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 1.9
+    },
+    {
+     "name": "tt_uma1dnf6",
+     "errors": 5080,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 1.3
+    },
+    {
+     "name": "zeroed_billionaire",
+     "errors": 5248,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 2.3
+    },
+    {
+     "name": "zeroed_tax100k",
+     "errors": 949,
+     "f1": 0.0,
+     "precision": 1.0,
+     "recall": 0.0,
+     "damage": 0.0,
+     "fixed": 0,
+     "changed": 0,
+     "damage_cells": 0,
+     "sec": 10.9
     }
    ]
   },
@@ -1081,7 +1081,7 @@
     "damage": 0.0485
    },
    "micro": {
-    "errors": 163610,
+    "errors": 163607,
     "fixed": 39,
     "changed": 88359,
     "damage_cells": 80042
@@ -1097,10 +1097,10 @@
     },
     "c=10": {
      "raw": -800381,
-     "per_error": -4.892
+     "per_error": -4.8921
     }
    },
-   "sec": 2257.9,
+   "sec": 1636.9,
    "per_pair": [
     {
      "name": "beers",
@@ -1112,7 +1112,7 @@
      "fixed": 0,
      "changed": 1323,
      "damage_cells": 1097,
-     "sec": 7.0
+     "sec": 6.3
     },
     {
      "name": "cleanml_company",
@@ -1124,7 +1124,7 @@
      "fixed": 1,
      "changed": 8999,
      "damage_cells": 8994,
-     "sec": 427.1
+     "sec": 286.5
     },
     {
      "name": "cleanml_movie",
@@ -1136,7 +1136,7 @@
      "fixed": 3,
      "changed": 3731,
      "damage_cells": 3483,
-     "sec": 39.9
+     "sec": 28.2
     },
     {
      "name": "dblp_acm",
@@ -1148,7 +1148,7 @@
      "fixed": 0,
      "changed": 444,
      "damage_cells": 344,
-     "sec": 3.5
+     "sec": 2.7
     },
     {
      "name": "dblp_scholar",
@@ -1160,7 +1160,7 @@
      "fixed": 0,
      "changed": 481,
      "damage_cells": 315,
-     "sec": 5.3
+     "sec": 3.3
     },
     {
      "name": "dgov_2_10_budget_presentation_award_summary",
@@ -1184,7 +1184,7 @@
      "fixed": 1,
      "changed": 196,
      "damage_cells": 174,
-     "sec": 0.4
+     "sec": 0.3
     },
     {
      "name": "dgov_3_09_census_acs_post_secondary_education",
@@ -1196,7 +1196,7 @@
      "fixed": 0,
      "changed": 45,
      "damage_cells": 42,
-     "sec": 0.1
+     "sec": 0.0
     },
     {
      "name": "dgov_access_control",
@@ -1208,7 +1208,7 @@
      "fixed": 0,
      "changed": 2934,
      "damage_cells": 2739,
-     "sec": 32.9
+     "sec": 28.9
     },
     {
      "name": "dgov_ah_provisional_diabetes_death_counts_for",
@@ -1220,7 +1220,7 @@
      "fixed": 0,
      "changed": 161,
      "damage_cells": 157,
-     "sec": 0.4
+     "sec": 0.2
     },
     {
      "name": "dgov_allegheny_county_tobacco_vendors",
@@ -1232,7 +1232,7 @@
      "fixed": 0,
      "changed": 674,
      "damage_cells": 552,
-     "sec": 3.6
+     "sec": 2.2
     },
     {
      "name": "dgov_emergency_operating_center_tools",
@@ -1256,7 +1256,7 @@
      "fixed": 1,
      "changed": 104,
      "damage_cells": 88,
-     "sec": 0.2
+     "sec": 0.1
     },
     {
      "name": "dgov_grocery_stores_2013",
@@ -1268,7 +1268,7 @@
      "fixed": 0,
      "changed": 428,
      "damage_cells": 409,
-     "sec": 1.8
+     "sec": 1.1
     },
     {
      "name": "dgov_health_conditions_among_children_under_a",
@@ -1280,7 +1280,7 @@
      "fixed": 0,
      "changed": 2049,
      "damage_cells": 1911,
-     "sec": 7.6
+     "sec": 3.1
     },
     {
      "name": "dgov_illinois_obesity_by_county",
@@ -1316,7 +1316,7 @@
      "fixed": 1,
      "changed": 552,
      "damage_cells": 509,
-     "sec": 3.8
+     "sec": 2.0
     },
     {
      "name": "dgov_legislative_bridge_names",
@@ -1328,7 +1328,7 @@
      "fixed": 0,
      "changed": 186,
      "damage_cells": 164,
-     "sec": 0.6
+     "sec": 0.3
     },
     {
      "name": "dgov_louisville_metro_ky_inspection_results_p",
@@ -1340,7 +1340,7 @@
      "fixed": 0,
      "changed": 440,
      "damage_cells": 380,
-     "sec": 1.7
+     "sec": 0.8
     },
     {
      "name": "dgov_louisville_metro_ky_permitted_hotels_and",
@@ -1352,7 +1352,7 @@
      "fixed": 0,
      "changed": 75,
      "damage_cells": 64,
-     "sec": 0.2
+     "sec": 0.1
     },
     {
      "name": "dgov_median_household_income",
@@ -1364,7 +1364,7 @@
      "fixed": 0,
      "changed": 155,
      "damage_cells": 148,
-     "sec": 0.6
+     "sec": 0.2
     },
     {
      "name": "dgov_medicare_part_d_opioid_prescribing_rates",
@@ -1376,7 +1376,7 @@
      "fixed": 0,
      "changed": 549,
      "damage_cells": 521,
-     "sec": 2.6
+     "sec": 1.5
     },
     {
      "name": "dgov_mva_vehicle_sales_counts_by_month_for_ca",
@@ -1412,7 +1412,7 @@
      "fixed": 0,
      "changed": 14937,
      "damage_cells": 14925,
-     "sec": 742.0
+     "sec": 449.7
     },
     {
      "name": "flights",
@@ -1424,7 +1424,7 @@
      "fixed": 1,
      "changed": 831,
      "damage_cells": 599,
-     "sec": 2.8
+     "sec": 2.7
     },
     {
      "name": "fodors_zagats",
@@ -1448,7 +1448,7 @@
      "fixed": 8,
      "changed": 6000,
      "damage_cells": 5317,
-     "sec": 72.7
+     "sec": 68.3
     },
     {
      "name": "hospital",
@@ -1460,7 +1460,7 @@
      "fixed": 1,
      "changed": 886,
      "damage_cells": 865,
-     "sec": 1.6
+     "sec": 1.2
     },
     {
      "name": "movies_1",
@@ -1472,7 +1472,7 @@
      "fixed": 1,
      "changed": 6281,
      "damage_cells": 5915,
-     "sec": 159.6
+     "sec": 125.6
     },
     {
      "name": "rayyan",
@@ -1484,7 +1484,7 @@
      "fixed": 0,
      "changed": 548,
      "damage_cells": 499,
-     "sec": 2.0
+     "sec": 1.9
     },
     {
      "name": "tt_00e2h310",
@@ -1496,7 +1496,7 @@
      "fixed": 1,
      "changed": 1842,
      "damage_cells": 1208,
-     "sec": 42.0
+     "sec": 38.9
     },
     {
      "name": "tt_2zwsmotj",
@@ -1508,7 +1508,7 @@
      "fixed": 2,
      "changed": 1628,
      "damage_cells": 1090,
-     "sec": 31.8
+     "sec": 29.8
     },
     {
      "name": "tt_3n6s2fcx",
@@ -1520,7 +1520,7 @@
      "fixed": 0,
      "changed": 1409,
      "damage_cells": 946,
-     "sec": 23.8
+     "sec": 22.1
     },
     {
      "name": "tt_8yinkydr",
@@ -1532,7 +1532,7 @@
      "fixed": 0,
      "changed": 2101,
      "damage_cells": 1368,
-     "sec": 53.9
+     "sec": 49.8
     },
     {
      "name": "tt_cn5wvwhh",
@@ -1544,7 +1544,7 @@
      "fixed": 0,
      "changed": 2075,
      "damage_cells": 2055,
-     "sec": 23.4
+     "sec": 22.3
     },
     {
      "name": "tt_co23z7go",
@@ -1556,7 +1556,7 @@
      "fixed": 7,
      "changed": 3095,
      "damage_cells": 1403,
-     "sec": 67.0
+     "sec": 64.0
     },
     {
      "name": "tt_dvnkv0xu",
@@ -1568,7 +1568,7 @@
      "fixed": 2,
      "changed": 3095,
      "damage_cells": 2280,
-     "sec": 80.9
+     "sec": 62.6
     },
     {
      "name": "tt_uma1dnf6",
@@ -1580,7 +1580,7 @@
      "fixed": 0,
      "changed": 2075,
      "damage_cells": 1783,
-     "sec": 32.9
+     "sec": 24.7
     },
     {
      "name": "zeroed_billionaire",
@@ -1592,19 +1592,19 @@
      "fixed": 1,
      "changed": 2866,
      "damage_cells": 2597,
-     "sec": 8.2
+     "sec": 6.4
     },
     {
      "name": "zeroed_tax100k",
-     "errors": 952,
-     "f1": 0.0010030090270812437,
+     "errors": 949,
+     "f1": 0.001003197692645307,
      "precision": 0.0005333333333333334,
-     "recall": 0.008403361344537815,
-     "damage": 0.04999197453251652,
+     "recall": 0.008429926238145416,
+     "damage": 0.04999147302633999,
      "fixed": 8,
      "changed": 15000,
      "damage_cells": 14950,
-     "sec": 373.9
+     "sec": 299.0
     }
    ]
   },
@@ -1612,11 +1612,11 @@
    "macro": {
     "f1": 1.0,
     "precision": 1.0,
-    "recall": 0.9999,
+    "recall": 1.0,
     "damage": 0.0
    },
    "micro": {
-    "errors": 163610,
+    "errors": 163607,
     "fixed": 163607,
     "changed": 163607,
     "damage_cells": 0
@@ -1635,7 +1635,7 @@
      "per_error": 1.0
     }
    },
-   "sec": 83.2,
+   "sec": 62.1,
    "per_pair": [
     {
      "name": "beers",
@@ -1647,7 +1647,7 @@
      "fixed": 4362,
      "changed": 4362,
      "damage_cells": 0,
-     "sec": 1.0
+     "sec": 0.9
     },
     {
      "name": "cleanml_company",
@@ -1659,7 +1659,7 @@
      "fixed": 65,
      "changed": 65,
      "damage_cells": 0,
-     "sec": 10.8
+     "sec": 6.1
     },
     {
      "name": "cleanml_movie",
@@ -1671,7 +1671,7 @@
      "fixed": 4779,
      "changed": 4779,
      "damage_cells": 0,
-     "sec": 3.1
+     "sec": 2.4
     },
     {
      "name": "dblp_acm",
@@ -1683,7 +1683,7 @@
      "fixed": 2128,
      "changed": 2128,
      "damage_cells": 0,
-     "sec": 0.4
+     "sec": 0.3
     },
     {
      "name": "dblp_scholar",
@@ -1695,7 +1695,7 @@
      "fixed": 3099,
      "changed": 3099,
      "damage_cells": 0,
-     "sec": 0.5
+     "sec": 0.3
     },
     {
      "name": "dgov_2_10_budget_presentation_award_summary",
@@ -1719,7 +1719,7 @@
      "fixed": 442,
      "changed": 442,
      "damage_cells": 0,
-     "sec": 0.3
+     "sec": 0.2
     },
     {
      "name": "dgov_3_09_census_acs_post_secondary_education",
@@ -1731,7 +1731,7 @@
      "fixed": 82,
      "changed": 82,
      "damage_cells": 0,
-     "sec": 0.1
+     "sec": 0.0
     },
     {
      "name": "dgov_access_control",
@@ -1743,7 +1743,7 @@
      "fixed": 4180,
      "changed": 4180,
      "damage_cells": 0,
-     "sec": 2.4
+     "sec": 2.3
     },
     {
      "name": "dgov_ah_provisional_diabetes_death_counts_for",
@@ -1755,7 +1755,7 @@
      "fixed": 142,
      "changed": 142,
      "damage_cells": 0,
-     "sec": 0.3
+     "sec": 0.1
     },
     {
      "name": "dgov_allegheny_county_tobacco_vendors",
@@ -1767,7 +1767,7 @@
      "fixed": 2392,
      "changed": 2392,
      "damage_cells": 0,
-     "sec": 0.8
+     "sec": 0.6
     },
     {
      "name": "dgov_emergency_operating_center_tools",
@@ -1791,7 +1791,7 @@
      "fixed": 317,
      "changed": 317,
      "damage_cells": 0,
-     "sec": 0.2
+     "sec": 0.1
     },
     {
      "name": "dgov_grocery_stores_2013",
@@ -1803,7 +1803,7 @@
      "fixed": 420,
      "changed": 420,
      "damage_cells": 0,
-     "sec": 0.7
+     "sec": 0.3
     },
     {
      "name": "dgov_health_conditions_among_children_under_a",
@@ -1815,7 +1815,7 @@
      "fixed": 2900,
      "changed": 2900,
      "damage_cells": 0,
-     "sec": 4.1
+     "sec": 1.7
     },
     {
      "name": "dgov_illinois_obesity_by_county",
@@ -1851,7 +1851,7 @@
      "fixed": 579,
      "changed": 579,
      "damage_cells": 0,
-     "sec": 0.9
+     "sec": 0.5
     },
     {
      "name": "dgov_legislative_bridge_names",
@@ -1863,7 +1863,7 @@
      "fixed": 415,
      "changed": 415,
      "damage_cells": 0,
-     "sec": 0.3
+     "sec": 0.2
     },
     {
      "name": "dgov_louisville_metro_ky_inspection_results_p",
@@ -1875,7 +1875,7 @@
      "fixed": 1126,
      "changed": 1126,
      "damage_cells": 0,
-     "sec": 0.6
+     "sec": 0.4
     },
     {
      "name": "dgov_louisville_metro_ky_permitted_hotels_and",
@@ -1899,7 +1899,7 @@
      "fixed": 138,
      "changed": 138,
      "damage_cells": 0,
-     "sec": 0.3
+     "sec": 0.1
     },
     {
      "name": "dgov_medicare_part_d_opioid_prescribing_rates",
@@ -1911,7 +1911,7 @@
      "fixed": 547,
      "changed": 547,
      "damage_cells": 0,
-     "sec": 0.8
+     "sec": 0.5
     },
     {
      "name": "dgov_mva_vehicle_sales_counts_by_month_for_ca",
@@ -1923,7 +1923,7 @@
      "fixed": 43,
      "changed": 43,
      "damage_cells": 0,
-     "sec": 0.1
+     "sec": 0.0
     },
     {
      "name": "dgov_national_obesity_by_state_1",
@@ -1947,7 +1947,7 @@
      "fixed": 309,
      "changed": 309,
      "damage_cells": 0,
-     "sec": 15.3
+     "sec": 11.1
     },
     {
      "name": "flights",
@@ -1983,7 +1983,7 @@
      "fixed": 13320,
      "changed": 13320,
      "damage_cells": 0,
-     "sec": 4.5
+     "sec": 3.9
     },
     {
      "name": "hospital",
@@ -1995,7 +1995,7 @@
      "fixed": 509,
      "changed": 509,
      "damage_cells": 0,
-     "sec": 1.0
+     "sec": 0.7
     },
     {
      "name": "movies_1",
@@ -2007,7 +2007,7 @@
      "fixed": 7006,
      "changed": 7006,
      "damage_cells": 0,
-     "sec": 6.4
+     "sec": 4.7
     },
     {
      "name": "rayyan",
@@ -2043,7 +2043,7 @@
      "fixed": 10977,
      "changed": 10977,
      "damage_cells": 0,
-     "sec": 1.1
+     "sec": 1.0
     },
     {
      "name": "tt_3n6s2fcx",
@@ -2055,7 +2055,7 @@
      "fixed": 9510,
      "changed": 9510,
      "damage_cells": 0,
-     "sec": 0.9
+     "sec": 0.8
     },
     {
      "name": "tt_8yinkydr",
@@ -2067,7 +2067,7 @@
      "fixed": 14188,
      "changed": 14188,
      "damage_cells": 0,
-     "sec": 1.3
+     "sec": 1.2
     },
     {
      "name": "tt_cn5wvwhh",
@@ -2091,7 +2091,7 @@
      "fixed": 33542,
      "changed": 33542,
      "damage_cells": 0,
-     "sec": 2.0
+     "sec": 1.9
     },
     {
      "name": "tt_dvnkv0xu",
@@ -2103,7 +2103,7 @@
      "fixed": 15676,
      "changed": 15676,
      "damage_cells": 0,
-     "sec": 2.5
+     "sec": 1.9
     },
     {
      "name": "tt_uma1dnf6",
@@ -2115,7 +2115,7 @@
      "fixed": 5080,
      "changed": 5080,
      "damage_cells": 0,
-     "sec": 1.6
+     "sec": 1.2
     },
     {
      "name": "zeroed_billionaire",
@@ -2127,19 +2127,19 @@
      "fixed": 5248,
      "changed": 5248,
      "damage_cells": 0,
-     "sec": 2.8
+     "sec": 2.3
     },
     {
      "name": "zeroed_tax100k",
-     "errors": 952,
-     "f1": 0.9984218832193582,
+     "errors": 949,
+     "f1": 1.0,
      "precision": 1.0,
-     "recall": 0.9968487394957983,
+     "recall": 1.0,
      "damage": 0.0,
      "fixed": 949,
      "changed": 949,
      "damage_cells": 0,
-     "sec": 12.6
+     "sec": 10.9
     }
    ]
   },
@@ -2151,7 +2151,7 @@
     "damage": 0.0229
    },
    "micro": {
-    "errors": 163610,
+    "errors": 163607,
     "fixed": 83543,
     "changed": 153311,
     "damage_cells": 61679
@@ -2170,7 +2170,7 @@
      "per_error": -3.2593
     }
    },
-   "sec": 1761.0,
+   "sec": 1342.5,
    "per_pair": [
     {
      "name": "beers",
@@ -2182,7 +2182,7 @@
      "fixed": 81,
      "changed": 1929,
      "damage_cells": 97,
-     "sec": 35.6
+     "sec": 23.8
     },
     {
      "name": "cleanml_company",
@@ -2194,7 +2194,7 @@
      "fixed": 46,
      "changed": 313,
      "damage_cells": 265,
-     "sec": 49.3
+     "sec": 31.3
     },
     {
      "name": "cleanml_movie",
@@ -2206,7 +2206,7 @@
      "fixed": 23,
      "changed": 1227,
      "damage_cells": 1199,
-     "sec": 17.8
+     "sec": 11.6
     },
     {
      "name": "dblp_acm",
@@ -2218,7 +2218,7 @@
      "fixed": 3,
      "changed": 11,
      "damage_cells": 7,
-     "sec": 6.5
+     "sec": 4.5
     },
     {
      "name": "dblp_scholar",
@@ -2230,7 +2230,7 @@
      "fixed": 19,
      "changed": 1573,
      "damage_cells": 1522,
-     "sec": 17.6
+     "sec": 9.8
     },
     {
      "name": "dgov_2_10_budget_presentation_award_summary",
@@ -2242,7 +2242,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 0.4
+     "sec": 0.3
     },
     {
      "name": "dgov_305b_assessed_lake_2020",
@@ -2254,7 +2254,7 @@
      "fixed": 193,
      "changed": 252,
      "damage_cells": 52,
-     "sec": 36.2
+     "sec": 21.8
     },
     {
      "name": "dgov_3_09_census_acs_post_secondary_education",
@@ -2266,7 +2266,7 @@
      "fixed": 32,
      "changed": 34,
      "damage_cells": 0,
-     "sec": 1.8
+     "sec": 1.0
     },
     {
      "name": "dgov_access_control",
@@ -2278,7 +2278,7 @@
      "fixed": 1633,
      "changed": 1750,
      "damage_cells": 0,
-     "sec": 51.4
+     "sec": 46.8
     },
     {
      "name": "dgov_ah_provisional_diabetes_death_counts_for",
@@ -2290,7 +2290,7 @@
      "fixed": 58,
      "changed": 61,
      "damage_cells": 0,
-     "sec": 1.1
+     "sec": 0.9
     },
     {
      "name": "dgov_allegheny_county_tobacco_vendors",
@@ -2302,7 +2302,7 @@
      "fixed": 510,
      "changed": 578,
      "damage_cells": 10,
-     "sec": 40.2
+     "sec": 26.7
     },
     {
      "name": "dgov_emergency_operating_center_tools",
@@ -2326,7 +2326,7 @@
      "fixed": 28,
      "changed": 211,
      "damage_cells": 111,
-     "sec": 33.4
+     "sec": 17.9
     },
     {
      "name": "dgov_grocery_stores_2013",
@@ -2338,7 +2338,7 @@
      "fixed": 73,
      "changed": 275,
      "damage_cells": 157,
-     "sec": 24.1
+     "sec": 11.3
     },
     {
      "name": "dgov_health_conditions_among_children_under_a",
@@ -2350,7 +2350,7 @@
      "fixed": 1532,
      "changed": 4286,
      "damage_cells": 2333,
-     "sec": 31.1
+     "sec": 15.0
     },
     {
      "name": "dgov_illinois_obesity_by_county",
@@ -2362,7 +2362,7 @@
      "fixed": 0,
      "changed": 0,
      "damage_cells": 0,
-     "sec": 12.2
+     "sec": 6.0
     },
     {
      "name": "dgov_jefferson_county_ky_post_offices",
@@ -2374,7 +2374,7 @@
      "fixed": 14,
      "changed": 17,
      "damage_cells": 3,
-     "sec": 3.1
+     "sec": 1.7
     },
     {
      "name": "dgov_la_county_covid_cases",
@@ -2386,7 +2386,7 @@
      "fixed": 119,
      "changed": 121,
      "damage_cells": 0,
-     "sec": 28.0
+     "sec": 13.5
     },
     {
      "name": "dgov_legislative_bridge_names",
@@ -2398,7 +2398,7 @@
      "fixed": 105,
      "changed": 171,
      "damage_cells": 33,
-     "sec": 24.3
+     "sec": 12.3
     },
     {
      "name": "dgov_louisville_metro_ky_inspection_results_p",
@@ -2410,7 +2410,7 @@
      "fixed": 209,
      "changed": 224,
      "damage_cells": 2,
-     "sec": 50.9
+     "sec": 25.7
     },
     {
      "name": "dgov_louisville_metro_ky_permitted_hotels_and",
@@ -2422,7 +2422,7 @@
      "fixed": 53,
      "changed": 59,
      "damage_cells": 1,
-     "sec": 13.3
+     "sec": 6.4
     },
     {
      "name": "dgov_median_household_income",
@@ -2434,7 +2434,7 @@
      "fixed": 22,
      "changed": 38,
      "damage_cells": 0,
-     "sec": 2.6
+     "sec": 1.3
     },
     {
      "name": "dgov_medicare_part_d_opioid_prescribing_rates",
@@ -2446,7 +2446,7 @@
      "fixed": 172,
      "changed": 222,
      "damage_cells": 28,
-     "sec": 37.3
+     "sec": 19.2
     },
     {
      "name": "dgov_mva_vehicle_sales_counts_by_month_for_ca",
@@ -2458,7 +2458,7 @@
      "fixed": 1,
      "changed": 5,
      "damage_cells": 0,
-     "sec": 0.5
+     "sec": 0.3
     },
     {
      "name": "dgov_national_obesity_by_state_1",
@@ -2470,7 +2470,7 @@
      "fixed": 7,
      "changed": 7,
      "damage_cells": 0,
-     "sec": 1.2
+     "sec": 0.5
     },
     {
      "name": "ed2_restaurants",
@@ -2482,7 +2482,7 @@
      "fixed": 8,
      "changed": 21536,
      "damage_cells": 21523,
-     "sec": 54.7
+     "sec": 42.3
     },
     {
      "name": "flights",
@@ -2494,7 +2494,7 @@
      "fixed": 584,
      "changed": 2204,
      "damage_cells": 983,
-     "sec": 8.1
+     "sec": 7.8
     },
     {
      "name": "fodors_zagats",
@@ -2506,7 +2506,7 @@
      "fixed": 0,
      "changed": 28,
      "damage_cells": 25,
-     "sec": 7.0
+     "sec": 6.6
     },
     {
      "name": "gidcl_imdb",
@@ -2518,7 +2518,7 @@
      "fixed": 5278,
      "changed": 10793,
      "damage_cells": 3165,
-     "sec": 17.1
+     "sec": 13.3
     },
     {
      "name": "hospital",
@@ -2530,7 +2530,7 @@
      "fixed": 276,
      "changed": 1631,
      "damage_cells": 1291,
-     "sec": 23.4
+     "sec": 18.2
     },
     {
      "name": "movies_1",
@@ -2542,7 +2542,7 @@
      "fixed": 5506,
      "changed": 8618,
      "damage_cells": 2682,
-     "sec": 55.1
+     "sec": 40.7
     },
     {
      "name": "rayyan",
@@ -2554,7 +2554,7 @@
      "fixed": 0,
      "changed": 1274,
      "damage_cells": 1184,
-     "sec": 11.1
+     "sec": 10.2
     },
     {
      "name": "tt_00e2h310",
@@ -2566,7 +2566,7 @@
      "fixed": 11423,
      "changed": 11451,
      "damage_cells": 0,
-     "sec": 45.1
+     "sec": 41.7
     },
     {
      "name": "tt_2zwsmotj",
@@ -2578,7 +2578,7 @@
      "fixed": 10082,
      "changed": 10108,
      "damage_cells": 0,
-     "sec": 9.9
+     "sec": 9.2
     },
     {
      "name": "tt_3n6s2fcx",
@@ -2590,7 +2590,7 @@
      "fixed": 8707,
      "changed": 8728,
      "damage_cells": 0,
-     "sec": 3.0
+     "sec": 2.8
     },
     {
      "name": "tt_8yinkydr",
@@ -2614,7 +2614,7 @@
      "fixed": 5,
      "changed": 109,
      "damage_cells": 104,
-     "sec": 14.6
+     "sec": 13.7
     },
     {
      "name": "tt_co23z7go",
@@ -2626,7 +2626,7 @@
      "fixed": 7481,
      "changed": 8049,
      "damage_cells": 12,
-     "sec": 297.5
+     "sec": 271.9
     },
     {
      "name": "tt_dvnkv0xu",
@@ -2638,7 +2638,7 @@
      "fixed": 14402,
      "changed": 14441,
      "damage_cells": 0,
-     "sec": 4.5
+     "sec": 3.3
     },
     {
      "name": "tt_uma1dnf6",
@@ -2650,7 +2650,7 @@
      "fixed": 1483,
      "changed": 1627,
      "damage_cells": 96,
-     "sec": 28.9
+     "sec": 20.9
     },
     {
      "name": "zeroed_billionaire",
@@ -2662,32 +2662,29 @@
      "fixed": 349,
      "changed": 1506,
      "damage_cells": 220,
-     "sec": 78.5
+     "sec": 59.4
     },
     {
      "name": "zeroed_tax100k",
-     "errors": 952,
-     "f1": 0.00046616424520239304,
+     "errors": 949,
+     "f1": 0.00046621857881036565,
      "precision": 0.00024203307785397338,
-     "recall": 0.0063025210084033615,
-     "damage": 0.08217409914127498,
+     "recall": 0.006322444678609062,
+     "damage": 0.08217327479259391,
      "fixed": 6,
      "changed": 24790,
      "damage_cells": 24574,
-     "sec": 579.9
+     "sec": 468.2
     }
    ]
   }
  },
  "acceptance": {
-  "oracle_f1_all_exactly_1": false,
+  "oracle_f1_all_exactly_1": true,
   "noop_damage_all_exactly_0": true,
   "violations": {
-   "oracle": [
-    "zeroed_tax100k"
-   ],
+   "oracle": [],
    "no-op": []
-  },
-  "investigation": "oracle violation on zeroed_tax100k (0.9984) traced to a metric bug, not the harness: _cell_equal treats any string parsing to float NaN ('Nan' the first name, f_name col) as unequal to itself (math.isclose(nan,nan)=False before the str fallback) -> 3 phantom errors where dirty==clean, unfixable by construction. Blast radius: exactly 3 of 1,786,510 cells across all 42 pairs. Verified fix (runtime patch): fall back to str(a)==str(b) when either side parses NaN -> 949 true errors, oracle F1=1.0 exact. Fix applied to eval/metrics.py in commit 34e5c63 (same session); this JSON is the pre-fix run \u2014 rerun shifts oracle to exactly 1.0 and shipped macros by <1e-4 (shared by all published numbers; orchestrator decision). See docs/DEGENERATE_BASELINES.md."
+  }
  }
 }
