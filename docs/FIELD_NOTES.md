@@ -11,8 +11,8 @@ her customer data to a frontier API either. The bet: a 4B model running locally 
 enough, **if you stop asking it to edit data and start asking it to plan**.
 
 So the model never touches a cell. It reads an aggregated profile (per-value frequency
-counts — a million rows profile like a hundred) and emits a JSON plan; deterministic
-pandas executes it. Every change is named, reversible, and logged. Silent edits are
+counts — so the model sees a bounded, fixed-size summary whether the table has a hundred
+rows or a million) and emits a JSON plan; deterministic pandas executes it. Every change is named, reversible, and logged. Silent edits are
 impossible by construction. That decomposition turned out to be the whole project.
 
 ## Things that broke, in order
