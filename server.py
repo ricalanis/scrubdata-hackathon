@@ -250,11 +250,13 @@ def _empty_result(summary: str) -> dict:
 
 
 @app.api(name="clean_data")
-def clean_data(file_path: str, use_model: bool = False) -> dict:
+def clean_data(file_path: str, use_model: bool = True) -> dict:
     """Run the full pipeline on an uploaded file and return a JSON-safe dict.
 
-    `use_model` opts into the 4B fine-tune (served on a Modal GPU, ~90s/clean);
-    default False = the fast deterministic planner (~0.6s, no GPU).
+    `use_model` (default True) runs the 4B fine-tune when one is configured — the
+    hackathon's whole point is the small model, so it's the default; the deterministic
+    planner is the silent fallback when the model is cold/down/unconfigured. Pass
+    use_model=False to force the fast deterministic-only path.
 
     `file_path` is a local path string or FileData (dict/object). Returns keys:
       before, after, columns_before, columns_after, alignment, change_log,
@@ -469,6 +471,25 @@ def ready() -> dict:
     """Is the deterministic path warm? The UI gates its run button on this so a judge's
     FIRST click can't land on a cold reference-index build (the 'instant' promise)."""
     return {"ready": _WARM.is_set()}
+
+
+@app.api(name="wake")
+def wake() -> dict:
+    """Fire-and-forget: spin up the scale-to-zero Modal GPU container in the background
+    so it's warm by the time the user uploads + clicks — hides the ~60s cold start since
+    the model is now the default planner. Returns immediately."""
+    import os
+    host = os.environ.get("SCRUBDATA_OLLAMA_HOST")
+    if not host:
+        return {"woke": False}
+    def _ping():
+        try:
+            import urllib.request
+            urllib.request.urlopen(host.rstrip("/") + "/api/version", timeout=90).read()
+        except Exception:  # noqa: BLE001
+            pass
+    _threading.Thread(target=_ping, daemon=True).start()
+    return {"woke": True}
 
 
 def _warmup() -> None:

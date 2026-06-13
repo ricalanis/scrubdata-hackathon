@@ -234,7 +234,7 @@
     </div>
     <div class="actions-row" style="margin-top:-18px;gap:18px">
       <label class="modeltoggle" id="modelToggleWrap" style="display:none">
-        <input type="checkbox" id="modelToggle"> <span>⚡ Use the 4B model <span class="hint">(real fine-tune on a GPU · ~90s)</span></span>
+        <input type="checkbox" id="modelToggle" checked> <span>⚡ Clean with the 4B model <span class="hint">(real fine-tune on a GPU · ~90s · uncheck for instant)</span></span>
       </label>
       <span class="samplelink" id="recipeLink" tabindex="0">↻ have a saved recipe? apply it to this file</span>
       <input type="file" id="recipeInput" accept=".json" hidden>
@@ -343,17 +343,25 @@
   const RT = window.__SCRUBDATA_RUNTIME__ || { hosted:false, private:true,
     planner:"deterministic planner", model_available:false, where:"this machine" };
   (function labelRuntime(){
-    // the 4B model is opt-in (it's ~90s/clean); show the toggle only if a model is wired
+    // the 4B model is the DEFAULT now (it's the whole point of the hackathon); show the
+    // toggle only if a model is wired — checked by default, uncheck for the instant path.
     if (RT.model_available) $("modelToggleWrap").style.display = "";
     if (RT.hosted){
-      $("ribbon").innerHTML = "🌐 <b>Hosted demo on Hugging Face.</b> Instant deterministic cleaning by default" +
-        (RT.model_available ? " — or tick <b>“Use the 4B model”</b> to run the real fine-tune on a GPU (~90s)." : ".") +
+      $("ribbon").innerHTML = "🌐 <b>Hosted demo on Hugging Face.</b> " +
+        (RT.model_available
+          ? "Cleans with the real <b>Qwen3-4B fine-tune</b> on a GPU (~90s) — uncheck the box for an instant deterministic pass."
+          : "Deterministic cleaning.") +
         " Your file is processed in the cloud (no third-party API, not stored); <b>clone &amp; run locally</b> to keep it on your machine.";
-      $("footerNote").textContent = "Hosted demo on Hugging Face. The 4B fine-tune runs on a Modal GPU (opt-in); " +
+      $("footerNote").textContent = "Hosted demo on Hugging Face. Cleans with the 4B fine-tune on a Modal GPU by default; " +
         "clone & run locally for on-device cleaning — then your data never leaves your machine.";
     }
     // local default copy is already in the HTML (privacy-true)
   })();
+  // pre-warm the scale-to-zero Modal GPU the moment the page loads, so it's hot by the
+  // time the user uploads + clicks — hides the ~60s cold start now that model is default.
+  if (RT.model_available){
+    (async ()=>{ try { const c = await Client.connect(window.location.origin); await c.predict("/wake"); } catch(e){} })();
+  }
   const useModelNow = () => !!(RT.model_available && $("modelToggle") && $("modelToggle").checked);
 
   const OP_LABEL = {

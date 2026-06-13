@@ -29,19 +29,20 @@ Runs a ≤4B model locally → also in the running for **Tiny Titan**, **Off-Bra
   Social post: <X/LinkedIn URL>
   These two links + this write-up are required by the build-small-hackathon /submit tool. -->
 
-> **Hosted demo vs. local — read this.** This Space is a **no-install demo**: on the free
-> HF Space (CPU, no GPU) it runs the *deterministic* planner and your file is processed on
-> Hugging Face's servers (sent to no third-party API, not stored). The **privacy + 4B-model
-> story is a property of running it yourself**: `SCRUBDATA_MODEL=scrubdata-ft uv run
-> server.py` reads and cleans your file on-device with the Qwen3-4B fine-tune — nothing
-> leaves your machine. The app labels its own mode honestly (the ribbon says which one
-> you're using). Same auditable plan→verify→execute pipeline either way.
+> **Hosted demo vs. local — read this.** This Space is a **no-install demo** that cleans with
+> the real **Qwen3-4B fine-tune** by default (served on a GPU, ~90s/clean) — the whole point
+> is the small model doing the work. Your file is processed on Hugging Face / the GPU endpoint
+> (sent to no third-party API, not stored); untick the box for an instant deterministic pass.
+> The **privacy story is a property of running it yourself**: `SCRUBDATA_MODEL=scrubdata-ft uv
+> run server.py` reads and cleans your file on-device with the same fine-tune — nothing leaves
+> your machine. The app labels its own mode honestly (the ribbon says which one you're using).
+> Same auditable plan→verify→execute pipeline either way.
 
-> **Modal** (`sponsor:modal`): the hosted Space's opt-in "Use the 4B model" path serves the
-> Qwen3-4B fine-tune from a **scale-to-zero Modal GPU endpoint** (`scripts/modal_serve.py`,
-> Ollama on an A10G; $0 when idle). Modal also drove the headless training + evaluation loop
-> behind the published model. Default cleaning stays instant/deterministic; the model is one
-> tick away.
+> **Modal** (`sponsor:modal`): the hosted Space cleans with the Qwen3-4B fine-tune served from a
+> **scale-to-zero Modal GPU endpoint** (`scripts/modal_serve.py`, Ollama on an A10G; $0 when idle,
+> pre-warmed on page load to hide the cold start). Modal also drove the headless training +
+> evaluation loop behind the published model. The deterministic planner is the silent fallback
+> if the GPU is cold or down, so the demo never hard-fails.
 
 > **Drop a messy export. Get clean data back — every change named, reversible, and
 > explained. Anything sensitive is protected locally. The judgment calls stay yours.**
