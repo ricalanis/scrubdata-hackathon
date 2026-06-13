@@ -1,0 +1,68 @@
+{
+ "task": "OpenBMB MiniCPM gate check (sponsor-prize probe) — drop a zero-shot MiniCPM planner into the IDENTICAL hospital verify(tau=0.5)+union gate the scaling arm uses, and compare to the shipped Qwen3-4B fine-tune bar (union 0.905@0.413). TIME-BOXED measurement; no Modal; no commits.",
+ "bar": {
+  "model": "scrubdata-ft-v6 (Qwen3-4B fine-tune)",
+  "gated_prec": 0.993, "gated_cov": 0.287,
+  "union_prec": 0.905, "union_cov": 0.413,
+  "note": "the shipped operating point on hospital's 509 real errors"
+ },
+ "candidate": {
+  "model": "hf.co/openbmb/MiniCPM3-4B-GGUF:Q4_K_M",
+  "params_b": 4,
+  "family": "openbmb/minicpm3",
+  "source": "Hugging Face GGUF (openbmb/MiniCPM3-4B-GGUF, ungated, Q4_K_M ~2.5GB), pulled via `ollama pull hf.co/openbmb/MiniCPM3-4B-GGUF:Q4_K_M`",
+  "tiny_titan_fit": "yes — a 4B MiniCPM is exactly the Tiny Titan / OpenBMB-sponsor synergy target"
+ },
+ "verdict": "REJECT (unrunnable in this environment — hardware-serving wall, NOT a capability collapse)",
+ "demo_safe": false,
+ "stay_on": "Qwen3-4B fine-tune (scrubdata-ft-v6) for the hackathon",
+ "what_was_tried": [
+  "Ollama cloud proxy: minicpm4:4b-cloud, minicpm3:4b-cloud, minicpm-v:cloud, openbmb/minicpm4:cloud, minicpm:cloud, minicpm3:cloud, minicpm4:cloud, openbmb-minicpm:cloud — ALL 'file does not exist' (MiniCPM is NOT a cloud-hosted model on this Ollama Cloud account)",
+  "Ollama registry direct: minicpm3, minicpm — manifest 404 (not in the public registry)",
+  "HF GGUF route: openbmb/MiniCPM3-4B-GGUF:Q4_K_M pulled and loaded SUCCESSFULLY on the local RTX 3060 Ti 8GB"
+ ],
+ "measurement": {
+  "harness": "eval/scaling_arm.py (make_cloud_planner -> make_batched_planner(batch_size=4) -> verify_plan(tau=0.5) -> union_plans(mock_plan)); runner eval/minicpm_check.py",
+  "smoke_test": "trivial prompt -> '{\"ok\": true}' clean JSON (model loads, emits JSON)",
+  "capability_probe_1col": {
+   "prompt_chars": 6686, "prompt_eval_tokens": 2062, "gen_tokens": 159,
+   "wall_s": 36.5, "gen_tok_per_s": 4.36,
+   "json_valid": true, "has_populated_columns": true,
+   "interpretation": "ZERO-SHOT MiniCPM3-4B DOES emit a schema-valid plan with a populated columns array — capability is present, NOT a gpt-oss/nemotron-style validity collapse"
+  },
+  "full_harness_run": {
+   "result": "TIMED OUT / unmeasurable on local 8GB GPU",
+   "detail": "the real harness prompt is ~28,337 chars (~9K tokens) per 4-column batch (whole-column value_counts profile). At ~4.4 gen tok/s and prefill-bound on 8GB, a SINGLE batch call exceeded 190s and 270s timeouts in repeated trials; the full batched run (5 batches over hospital's 20 cols) hit its 580s wall without completing. No A100/Modal available (forbidden) and no MiniCPM cloud proxy exists, so the gated/union P@C could not be measured here.",
+   "gated_prec": null, "gated_cov": null,
+   "union_prec": null, "union_cov": null,
+   "validity": null, "runtime_s": null,
+   "verifier_kept": null, "verifier_dropped": null
+  }
+ },
+ "assessment": {
+  "vs_bar": "NOT MEASURED — the union/gated P@C against 0.905@0.413 could not be produced in this environment (serving throughput, not model behavior).",
+  "validity_signal": "GOOD — single-call zero-shot output is schema-valid with populated column ops; this is the camp of devstral/gemma (valid), not the gpt-oss/nemotron collapse camp. A small valid-JSON 4B that a fine-tune could plausibly push toward the bar — but a fine-tune is NOT feasible in 3 days, and even inference is not feasible on this GPU.",
+  "blocker_class": "HARDWARE/SERVING, not capability. To measure properly you would need: (a) a smaller prompt profile, (b) a bigger local GPU, or (c) a MiniCPM cloud endpoint (none exists on this Ollama Cloud account). None are available within the time-box."
+ },
+ "rows": [
+  {
+   "model": "scrubdata-ft-v6 (Qwen3-4B fine-tune)",
+   "params_b": 4, "family": "qwen/qwen3 (fine-tuned)",
+   "gated_prec": 0.993, "gated_cov": 0.287,
+   "union_prec": 0.905, "union_cov": 0.413,
+   "validity": null, "runtime_s": null,
+   "verifier_kept": 132, "verifier_dropped": 38,
+   "provenance": "prior measurement (commit aa48108; the shipped bar)"
+  },
+  {
+   "model": "hf.co/openbmb/MiniCPM3-4B-GGUF:Q4_K_M",
+   "params_b": 4, "family": "openbmb/minicpm3 (zero-shot, local)",
+   "gated_prec": null, "gated_cov": null,
+   "union_prec": null, "union_cov": null,
+   "validity": null, "runtime_s": null,
+   "verifier_kept": null, "verifier_dropped": null,
+   "note": "UNMEASURABLE on local RTX 3060 Ti 8GB — full-size harness batch call (~9K-token prompt) timed out >270s at ~4.4 gen tok/s; no MiniCPM cloud proxy exists. 1-column capability probe: json_valid=true, populated columns, 36.5s. Verdict REJECT (unrunnable here), stay on Qwen3-4B.",
+   "provenance": "this run (zero-shot, local; serving wall)"
+  }
+ ]
+}
