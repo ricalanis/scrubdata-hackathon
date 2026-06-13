@@ -155,6 +155,23 @@
   .restart{display:inline-block;margin-top:18px;font-size:14px;color:var(--accent);
     font-weight:600;cursor:pointer;text-decoration:underline}
 
+  /* ---- the ETA timer: size-aware, fun, well-mannered (never lies/completes early) ---- */
+  .etabar{position:fixed;left:0;top:0;height:3px;width:100%;z-index:60;display:none;background:transparent}
+  .etabar.show{display:block}
+  .etabar .fill{height:100%;width:0;border-radius:0 3px 3px 0;
+    background:linear-gradient(90deg,var(--accent),#5aa98c);transition:width .28s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 0 10px rgba(47,111,94,.55)}
+  .etapill{position:fixed;top:13px;left:50%;transform:translateX(-50%) translateY(-6px);z-index:61;
+    display:none;opacity:0;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);
+    border-radius:999px;padding:8px 15px 8px 13px;box-shadow:var(--shadow);font-size:13.5px;
+    color:var(--ink);transition:opacity .2s,transform .2s;max-width:calc(100vw - 28px)}
+  .etapill.show{display:flex;opacity:1;transform:translateX(-50%) translateY(0)}
+  .etapill .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none;
+    animation:etapulse 1.1s ease-in-out infinite}
+  .etapill .stage{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .etapill .eta{color:var(--ink-soft);font-variant-numeric:tabular-nums;flex:none}
+  @keyframes etapulse{0%,100%{opacity:.3;transform:scale(.75)}50%{opacity:1;transform:scale(1.2)}}
+
   /* ---- mobile: the desktop 3-col before/after grids cramp on narrow screens ---- */
   @media (max-width: 600px){
     .wrap{padding:0 14px}
@@ -185,6 +202,9 @@
 <body>
 
 <div class="ribbon" id="ribbon">🔒 <b>Your data never leaves this machine.</b> The file is read and cleaned locally; your original is untouched — no upload, no API, no cloud.</div>
+
+<div class="etabar" id="etaBar"><div class="fill" id="etaFill"></div></div>
+<div class="etapill" id="etaPill"><span class="dot"></span><span class="stage" id="etaStage">Reading your file…</span><span class="eta" id="etaTime"></span></div>
 
 <div class="wrap">
   <header>
@@ -298,7 +318,14 @@
   const RT = window.__SCRUBDATA_RUNTIME__ || { hosted:false, private:true,
     planner:"deterministic planner", where:"this machine" };
   (function labelRuntime(){
-    if (RT.hosted){
+    const modelOn = /qwen|fine-tune/i.test(RT.planner || "");
+    if (RT.hosted && modelOn){
+      $("ribbon").innerHTML = "⚡ <b>Hosted demo — running the Qwen3-4B fine-tune on a GPU.</b> " +
+        "Your file is processed in the cloud (sent to no third-party API, not stored). " +
+        "<b>Clone &amp; run it locally</b> to keep your data on your machine and work offline.";
+      $("footerNote").textContent = "Hosted demo runs the Qwen3-4B fine-tune on a Modal GPU. " +
+        "Clone & run locally for on-device cleaning — then your data never leaves your machine.";
+    } else if (RT.hosted){
       $("ribbon").innerHTML = "🌐 <b>Hosted demo on Hugging Face.</b> Your file is processed on " +
         "HF's servers — sent to no third-party API and not stored. Want it fully on-device? " +
         "<b>Run it locally</b> (one command) and nothing leaves your machine.";
@@ -376,10 +403,59 @@
   });
 
   $("runBtn").addEventListener("click", run);
+  // ---- the ETA timer: a size-aware, well-mannered progress bar + status pill. It
+  // eases toward our time estimate, rotates playful stage labels, holds at ~92% if
+  // the run overruns (never completes before the real result), and snaps to 100% on
+  // finish. The estimate adapts to file size AND whether the model path is active.
+  let _etaRAF = 0, _etaStart = 0, _etaEst = 1, _etaMode = "det", _etaDone = false;
+  const _modelActive = () => /qwen|fine-tune/i.test(RT.planner || "");
+  function _estimateMs(bytes){
+    const kb = (bytes || 30000) / 1024;
+    return _modelActive() ? Math.min(75000, 9000 + kb * 45)   // model path (GPU; cold-start aware)
+                          : Math.max(500, 450 + kb * 12);     // deterministic path
+  }
+  function _stage(p){
+    if (_etaMode === "model"){
+      if (p < 0.12) return "Reading your file…";
+      if (p < 0.30) return "Profiling the columns…";
+      if (p < 0.52) return "Warming up the model…";
+      if (p < 0.80) return "Asking the model about the tricky ones…";
+      return "Writing the cleaning plan…";
+    }
+    if (p < 0.15) return "Reading your file…";
+    if (p < 0.45) return "Profiling the columns…";
+    if (p < 0.75) return "Spotting the messy bits…";
+    return "Writing the cleaning plan…";
+  }
+  function startTimer(bytes){
+    _etaMode = _modelActive() ? "model" : "det";
+    _etaEst = _estimateMs(bytes); _etaStart = performance.now(); _etaDone = false;
+    $("etaBar").classList.add("show"); $("etaPill").classList.add("show");
+    cancelAnimationFrame(_etaRAF);
+    const tick = ()=>{
+      const el = performance.now() - _etaStart;
+      let p = 1 - Math.pow(2, -el / (_etaEst * 0.42));        // ease-out toward 1
+      if (!_etaDone && p > 0.92) p = 0.92;                    // hold until the real result
+      $("etaFill").style.width = (p * 100).toFixed(1) + "%";
+      const over = el > _etaEst;
+      $("etaStage").textContent = over ? "Almost there…" : _stage(p);
+      const left = Math.ceil((_etaEst - el) / 1000);
+      $("etaTime").textContent = (!over && left > 0) ? "~" + left + "s" : "";
+      _etaRAF = requestAnimationFrame(tick);
+    };
+    tick();
+  }
+  function stopTimer(){
+    _etaDone = true; cancelAnimationFrame(_etaRAF);
+    $("etaFill").style.width = "100%";
+    setTimeout(()=>{ $("etaBar").classList.remove("show"); $("etaPill").classList.remove("show");
+      $("etaFill").style.width = "0"; }, 320);
+  }
+
   async function run(){
     if (!selectedFile) return;
     clearError();
-    $("runBtn").disabled = true; $("working").classList.add("show");
+    $("runBtn").disabled = true; startTimer(selectedFile.size);
     try {
       const client = await Client.connect(window.location.origin);
       const res = loadedRecipe
@@ -390,7 +466,7 @@
       lastResult = data;
       render(data);
     } catch (e){ console.error(e); showError(e.message || String(e)); }
-    finally { $("runBtn").disabled = false; $("working").classList.remove("show"); }
+    finally { $("runBtn").disabled = false; stopTimer(); }
   }
 
   // ---- interactive YOUR CALL: STAGE decisions, then apply them all in one re-clean.
@@ -449,6 +525,7 @@
       !(Array.isArray(fl.values) && fl.values.length === 0 &&
         (fl.issue === "uncertain_canonicalization" || fl.issue === "suspect_values")));
     const apply = $("ycApplyBtn"); apply.disabled = true; apply.textContent = "cleaning…"; clearError();
+    startTimer(selectedFile.size);
     try {
       const client = await Client.connect(window.location.origin);
       const res = await client.predict("/clean_with_plan",
@@ -458,7 +535,7 @@
       lastResult = data; render(data);   // render() resets pendingPicks + repaints
       const sec = $("callSection"); window.scrollTo({top: sec && sec.style.display!=="none" ? Math.max(0, sec.offsetTop-16) : 0, behavior:"smooth"});
     } catch (e){ console.error(e); showError(e.message || String(e)); }
-    finally { apply.disabled = false; apply.textContent = "✓ Clean now"; }
+    finally { apply.disabled = false; apply.textContent = "✓ Clean now"; stopTimer(); }
   }
 
   function esc(s){ const d=document.createElement("div"); d.textContent = s==null?"":String(s); return d.innerHTML; }

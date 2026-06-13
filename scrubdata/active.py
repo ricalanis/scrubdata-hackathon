@@ -37,7 +37,14 @@ def get_planner():
     # WS2 pair-profiles: candidate-constrained canonicalization (opt-in; ships
     # default-on only if it clears the WS1 gate on hospital)
     pair_profiles = os.environ.get("SCRUBDATA_PAIR_PROFILES") == "1"
-    raw = make_local_ollama_planner(model, pair_profiles=pair_profiles)
+    # the Ollama host: localhost for a self-hosted run; a remote Modal GPU endpoint
+    # (SCRUBDATA_OLLAMA_HOST) for the hosted Space so the public demo runs the real
+    # fine-tune. A shorter timeout on the hosted path so a cold/slow GPU falls back
+    # to the deterministic planner instead of hanging the request.
+    host = os.environ.get("SCRUBDATA_OLLAMA_HOST", "http://localhost:11434")
+    timeout = int(os.environ.get("SCRUBDATA_OLLAMA_TIMEOUT", "300"))
+    raw = make_local_ollama_planner(model, host=host, timeout=timeout,
+                                    pair_profiles=pair_profiles)
 
     def model_or_heuristic(df, *_):
         # per column-batch: try the model, fall back to the heuristic on any failure
