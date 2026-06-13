@@ -687,9 +687,15 @@ The verified-union rows are reported with their honest shape: off hospital the
 union turns ultra-conservative --- on rayyan it commits 12 changes at 0.001
 damage; on beers it holds precision 0.546 at recall 0.018. The gate's precision
 premise transfers as \emph{safety} (union damage stays at 0.001--0.080) but not
-as coverage; the movies\_1 plan capture is pending. This directly answers the
-co-adaptation concern: hospital is where the model's learned mappings live, and
-elsewhere the system abstains rather than guesses.
+as coverage. The movies\_1 union cell ($^{q}$: local Q8 capture, the disclosed
+quantized protocol) is the instructive worst case: on entity-rich name columns
+the quantized planner proposes plausible-but-wrong merges
+(\texttt{The Longest Day}$\,\to\,$\texttt{The Longest Yard}); the verifier kills
+most, and what leaks through is damage within the disclosed band with zero
+credited fixes --- the planner contributes nothing there, and the system's value
+is that it \emph{contains} a bad planner rather than amplifying it. This directly
+answers the co-adaptation concern: hospital is where the model's learned mappings
+live, and elsewhere the system abstains or contains rather than guesses.
 
 \begin{table}[t]
 \centering
@@ -709,7 +715,7 @@ hospital & 0.258 / .066 & 0.000 / .000 & 0.189 / .083 & 0.567 / .001 & 0.827 / .
 beers & 0.025 / .005 & 0.194 / .000 & 0.086 / .074 & 0.035 / .001 & 0.918 / .000 \\
 flights & 0.127 / .082 & 0.000 / .000 & 0.014 / .065 & 0.035 / .080 & 1.000 / .000 \\
 rayyan & 0.000 / .118 & 0.000 / .001 & 0.002 / .008 & 0.000 / .001 & 0.402 / .010 \\
-movies\_1 & 0.714 / .025 & 0.002 / .018 & 0.001 / .072 & --- & 0.909 / .001 \\
+movies\_1 & 0.714 / .025 & 0.002 / .018 & 0.001 / .072 & 0.000 / .025$^{q}$ & 0.909 / .001 \\
 \midrule
 macro F1 & \realFOursHead & 0.039 & 0.058 & --- & \realFBaran \\
 \bottomrule

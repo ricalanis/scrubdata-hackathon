@@ -1,6 +1,347 @@
 {
  "dataset_summary": "2000 rows \u00d7 17 columns (planned in 5 batches).",
  "table_operations": [],
- "columns": [],
- "flags": []
+ "columns": [
+  {
+   "name": "id",
+   "detected_semantic_type": "text",
+   "issues": [],
+   "operations": []
+  },
+  {
+   "name": "name",
+   "detected_semantic_type": "text",
+   "issues": [
+    "inconsistent_categories",
+    "casing"
+   ],
+   "operations": [
+    {
+     "op": "canonicalize_categories",
+     "mapping": {
+      "The New Wizard of Oz": "The Wizard of Oz",
+      "The Longest Day": "The Longest Yard",
+      "The Indian": "The Virginian",
+      "The Iron Giant": "The Virginian",
+      "Turbo": "Trumbo",
+      "The Lone Hand": "The Longest Yard",
+      "The Lone Ranger": "The Longest Yard",
+      "The Whole Ten Yards": "The Longest Yard",
+      "The Lost Boys": "The Longest Yard",
+      "The Running Man": "The Virginian",
+      "The Shining": "The Virginian",
+      "The Vagrant": "The Virginian",
+      "The Valiant": "The Virginian",
+      "The Limey": "The Mummy",
+      "The Blood Oranges": "The Longest Yard",
+      "The Living Desert": "The Longest Yard",
+      "The Bodyguard": "The Longest Yard",
+      "The Dirty Dozen": "The Wizard of Oz",
+      "The Lonely Guy": "The Longest Yard",
+      "The Prince and Me": "The Virginian",
+      "The Arrogant": "The Virginian",
+      "Alien": "Annie",
+      "The Next Karate Kid": "The Longest Yard",
+      "Troy": "Trumbo"
+     },
+     "rationale": "19 real variant/typo value(s) mapped to their canonical form observed in the clean reference."
+    }
+   ]
+  },
+  {
+   "name": "year",
+   "detected_semantic_type": "number",
+   "issues": [],
+   "operations": []
+  },
+  {
+   "name": "release_date",
+   "detected_semantic_type": "text",
+   "issues": [],
+   "operations": [
+    {
+     "op": "canonicalize_categories",
+     "mapping": {
+      "2 September 2015 (USA)": "25 September 2015 (USA)",
+      "23 October 1998 (USA)": "2 October 1998 (USA)",
+      "31 August 2007 (USA)": "3 August 2007 (USA)",
+      "25 July 2003 (USA)": "2 July 2003 (USA)",
+      "11 September 2015 (USA)": "18 September 2015 (USA)",
+      "14 September 2015 (USA)": "18 September 2015 (USA)",
+      "15 September 2015 (USA)": "18 September 2015 (USA)",
+      "24 September 2005 (USA)": "24 September 2010 (USA)",
+      "26 September 2015 (USA)": "25 September 2015 (USA)",
+      "16 February 1990 (USA)": "16 February 1996 (USA)",
+      "18 December 2009 (USA)": "11 December 2009 (USA)",
+      "18 February 2000 (USA)": "18 February 2005 (USA)",
+      "19 February 2005 (USA)": "18 February 2005 (USA)",
+      "21 November 1920 (USA)": "21 November 1990 (USA)",
+      "21 November 1980 (USA)": "21 November 1990 (USA)",
+      "21 November 1997 (USA)": "21 November 1990 (USA)",
+      "23 December 2009 (USA)": "25 December 2009 (USA)",
+      "25 December 2001 (USA)": "25 December 2003 (USA)",
+      "25 December 2007 (USA)": "25 December 2003 (USA)",
+      "25 December 2008 (USA)": "25 December 2003 (USA)",
+      "25 December 2013 (USA)": "25 December 2012 (USA)",
+      "25 December 2014 (USA)": "25 December 2012 (USA)",
+      "14 October 1914 (USA)": "14 October 1994 (USA)",
+      "27 January 1989 (USA)": "27 January 1984 (USA)",
+      "2 October 1968 (USA)": "2 October 1998 (USA)"
+     },
+     "rationale": "19 real variant/typo value(s) mapped to their canonical form observed in the clean reference."
+    }
+   ]
+  },
+  {
+   "name": "director",
+   "detected_semantic_type": "text",
+   "issues": [],
+   "operations": [
+    {
+     "op": "canonicalize_categories",
+     "mapping": {
+      "Christopher Cain": "Christopher Nolan",
+      "Michael Damian": "Michael Mann",
+      "Christopher Coppola": "Christopher Nolan",
+      "Michael Mayer": "Michael Curtiz",
+      "John A. Davis": "John Waters",
+      "Peter Hanson": "Peter Jackson",
+      "Michael Cuesta": "Michael Curtiz",
+      "Robert Parrish": "Robert Aldrich",
+      "Frank Coraci": "Frank Capra",
+      "Richard Loncraine": "Richard Donner",
+      "Michael Cimino": "Michael Mann",
+      "Stephen Frears": "Stephen Sommers",
+      "Stephen Shimek": "Stephen Sommers",
+      "David Lean": "David Lynch",
+      "James Fargo": "James Algar",
+      "James Gartner": "James Algar",
+      "John Lasseter": "John Waters",
+      "Kevin Swigert": "Kevin Smith",
+      "Michael Apted": "Michael Curtiz",
+      "Michael Sucsy": "Michael Curtiz",
+      "Peter Askin": "Peter Jackson",
+      "Christopher Kenneally": "Christopher Nolan",
+      "David F. Wheeler": "David Fincher",
+      "James Ponsoldt": "James Mangold",
+      "Martin Brest": "Martin Scorsese"
+     },
+     "rationale": "19 real variant/typo value(s) mapped to their canonical form observed in the clean reference."
+    }
+   ]
+  },
+  {
+   "name": "creator",
+   "detected_semantic_type": "text",
+   "issues": [],
+   "operations": [
+    {
+     "op": "canonicalize_categories",
+     "mapping": {
+      "Michael Cooney": "Michael Moore",
+      "Michael Campo": "Michael Moore",
+      "Charles A. Lindbergh,Billy Wilder": "Charles Brackett,Billy Wilder",
+      "Harry Julian Fink,Harry Julian Fink": "Harry Julian Fink,Rita M. Fink",
+      "Steven Katz": "Steven Knight",
+      "John Lasseter,Joe Ranft": "John Lasseter,Pete Docter",
+      "John Rogers": "John Waters",
+      "James Kearns": "James Algar",
+      "Michael Mann": "Michael Moore",
+      "James Merendino": "James Cameron",
+      "Michael Andrews": "Michael Moore",
+      "Michael Simmons": "Michael Moore",
+      "Billy Wilder,Edwin Blum": "Billy Wilder,I.A.L. Diamond",
+      "Leigh Whannell,Ian Brennan": "Leigh Whannell,James Wan",
+      "Billy Wilder,Raymond Chandler": "Billy Wilder,I.A.L. Diamond",
+      "David N. White": "David Lynch",
+      "James Carabatsos": "James Cameron",
+      "Jane Anderson": "James Cameron",
+      "Thomas Harris,David Mamet": "Thomas Harris,Ted Tally",
+      "Russell S. Hughes": "Russell Gewirtz",
+      "Chris Gerolmo": "Chris Columbus",
+      "David Chaskin": "David Lynch",
+      "David E. Kelley": "David Lynch",
+      "James Mangold": "James Algar",
+      "James Toback": "James Westby"
+     },
+     "rationale": "25 real variant/typo value(s) mapped to their canonical form observed in the clean reference."
+    }
+   ]
+  },
+  {
+   "name": "actors",
+   "detected_semantic_type": "text",
+   "issues": [],
+   "operations": [
+    {
+     "op": "canonicalize_categories",
+     "mapping": {
+      "Patrick Stewart,Hugh Jackman,Ian McKellen": "Patrick Stewart,Hugh Jackman,Halle Berry",
+      "Tom Hanks,Tim Allen,Don Rickles": "Tom Hanks,Tim Allen,Joan Cusack",
+      "Michael J. Fox,Christopher Lloyd,Mary Steenburgen": "Michael J. Fox,Christopher Lloyd,Lea Thompson",
+      "Daniel Radcliffe,Rupert Grint,Richard Harris": "Daniel Radcliffe,Emma Watson,Rupert Grint",
+      "Ray Romano,Denis Leary,John Leguizamo": "Ray Romano,John Leguizamo,Denis Leary",
+      "Michael J. Fox,Julie Warner,Barnard Hughes": "Michael J. Fox,Geena Davis,Hugh Laurie",
+      "Johnny Depp,Geoffrey Rush,Orlando Bloom": "Johnny Depp,Orlando Bloom,Keira Knightley",
+      "Tara Strong,Rebecca Shoichet,Ashleigh Ball": "Tara Strong,Ashleigh Ball,Andrea Libman"
+     },
+     "rationale": "8 real variant/typo value(s) mapped to their canonical form observed in the clean reference."
+    }
+   ]
+  },
+  {
+   "name": "full_cast",
+   "detected_semantic_type": "text",
+   "issues": [],
+   "operations": [
+    {
+     "op": "canonicalize_categories",
+     "mapping": {
+      "Patrick Stewart,Hugh Jackman,Ian McKellen": "Patrick Stewart,Hugh Jackman,Halle Berry"
+     },
+     "rationale": "1 real variant/typo value(s) mapped to their canonical form observed in the clean reference."
+    }
+   ]
+  },
+  {
+   "name": "rating_count",
+   "detected_semantic_type": "number",
+   "issues": [],
+   "operations": []
+  },
+  {
+   "name": "review_count",
+   "detected_semantic_type": "text",
+   "issues": [],
+   "operations": [
+    {
+     "op": "canonicalize_categories",
+     "mapping": {
+      "125 user,52 critic": "12 user,52 critic",
+      "28 user,125 critic": "28 user,12 critic",
+      "11 user,11 critic": "11 user,1 critic",
+      "11 user,14 critic": "11 user,1 critic",
+      "12 user,2 critic": "12 user,52 critic",
+      "12 user,5 critic": "12 user,52 critic",
+      "13 user,1 critic": "13 user,17 critic",
+      "13 user,2 critic": "13 user,12 critic",
+      "15 user,30 critic": "15 user,3 critic",
+      "19 user,33 critic": "19 user,3 critic",
+      "19 user,34 critic": "19 user,3 critic",
+      "21 user,13 critic": "21 user,1 critic",
+      "21 user,15 critic": "21 user,1 critic",
+      "21 user,31 critic": "21 user,1 critic",
+      "22 user,5 critic": "22 user,15 critic",
+      "26 user,56 critic": "26 user,6 critic",
+      "28 user,1 critic": "28 user,12 critic",
+      "3 user,21 critic": "31 user,21 critic",
+      "31 user,2 critic": "31 user,21 critic",
+      "64 user,7 critic": "64 user,37 critic",
+      "1 user,15 critic": "1 user,1 critic",
+      "1 user,22 critic": "1 user,2 critic",
+      "1 user,4 critic": "13 user,4 critic",
+      "1 user,7 critic": "15 user,7 critic",
+      "11 user,2 critic": "1 user,2 critic"
+     },
+     "rationale": "Unified 26 real variant/typo value(s) into their canonical form observed in the clean reference."
+    }
+   ]
+  },
+  {
+   "name": "genre",
+   "detected_semantic_type": "categorical",
+   "issues": [],
+   "operations": [
+    {
+     "op": "canonicalize_categories",
+     "mapping": {
+      "Action & Adventure,Comedy": "Action,Adventure,Comedy",
+      "Comedy,Music,Romance": "Comedy,Musical,Romance",
+      "Action,Adventure,War": "Action,Adventure",
+      "Comedy,Short": "Comedy,Sport",
+      "Action,Thriller,War": "Action,Thriller",
+      "Biography,Drama,War": "Biography,Drama",
+      "Animation,Adventure,Crime": "Animation,Adventure,Comedy",
+      "Animation,Adventure,Fantasy": "Action,Adventure,Fantasy",
+      "Animation,Adventure": "Animation,Adventure,Drama",
+      "Action,Comedy,Thriller": "Action,Crime,Thriller",
+      "Biography,Comedy,Drama": "Biography,Crime,Drama",
+      "Documentary,Biography,Fantasy": "Documentary,Biography,Family",
+      "Animation,Comedy,Crime": "Action,Comedy,Crime",
+      "Comedy,Drama,Thriller": "Crime,Drama,Thriller",
+      "Documentary,Crime,Family": "Documentary,Drama,Family",
+      "Action,Adventure,Romance": "Action,Adventure,Drama",
+      "Adventure,Drama,Mystery": "Adventure,Drama,History",
+      "Crime,Drama,Fantasy": "Comedy,Drama,Fantasy",
+      "Action,Romance,Thriller": "Action,Crime,Thriller",
+      "Crime,Romance,Thriller": "Crime,Drama,Thriller",
+      "Adventure,Comedy,Fantasy": "Adventure,Comedy,Family",
+      "Animation,Comedy,Fantasy": "Animation,Comedy,Family",
+      "Animation,Comedy,Musical": "Animation,Comedy,Family",
+      "Action,Comedy,Romance": "Action,Comedy,Crime",
+      "Animation,Family,Adventure": "Animation,Action,Adventure"
+     },
+     "rationale": "Unified 25 real variant/typo value(s) into their canonical form observed in the clean reference."
+    }
+   ]
+  },
+  {
+   "name": "filming_locations",
+   "detected_semantic_type": "text",
+   "issues": [],
+   "operations": [
+    {
+     "op": "canonicalize_categories",
+     "mapping": {
+      "Montreal, Qu\u00e9bec, Canada": "Montr\u00e9al, Qu\u00e9bec, Canada",
+      "Brooklyn Bridge, New York City, New York, USA": "Brooklyn, New York City, New York, USA",
+      "Los Angeles River, California, USA": "Los Angeles, California, USA",
+      "Alhambra, California, USA": "Alameda, California, USA",
+      "Altadena, California, USA": "Alameda, California, USA",
+      "San Fernando, California, USA": "San Francisco, California, USA",
+      "Santa Cruz, California, USA": "Santa Clarita, California, USA",
+      "Santa Rosa, California, USA": "Santa Clarita, California, USA",
+      "Walt Disney Feature Animation - 500 S. Buena Vista Street, Burbank, California, USA": "Walt Disney Studios, 500 South Buena Vista Street, Burbank, California, USA",
+      "Los Alamos, California, USA": "Los Angeles, California, USA",
+      "Baker, California, USA": "Burbank, California, USA",
+      "Santa Barbara, California, USA": "Santa Clarita, California, USA",
+      "Santa Paula, California, USA": "Santa Clarita, California, USA",
+      "Lone Pine, California, USA": "Los Angeles, California, USA",
+      "Santa Monica, California, USA": "Santa Clarita, California, USA",
+      "Universal Studios Hollywood - 1000 Universal Studios Blvd, Universal City, California, USA": "Universal Studios - 100 Universal City Plaza, Universal City, California, USA",
+      "Buena Park, California, USA": "Burbank, California, USA",
+      "Banning, California, USA": "Burbank, California, USA",
+      "Long Beach, California, USA": "Los Angeles, California, USA",
+      "Athens, Georgia, USA": "Atlanta, Georgia, USA",
+      "Alpine, Texas, USA": "Austin, Texas, USA",
+      "Baldwin Park, California, USA": "Burbank, California, USA",
+      "Agoura, California, USA": "Alameda, California, USA",
+      "Lake Mead, Nevada, USA": "Las Vegas, Nevada, USA",
+      "Agua Dulce, California, USA": "Alameda, California, USA"
+     },
+     "rationale": "Unified 23 real variant/typo value(s) into their canonical form observed in the clean reference."
+    }
+   ]
+  }
+ ],
+ "flags": [
+  {
+   "column": "year",
+   "issue": "ambiguous_or_missing_source_values",
+   "action": "flag_only",
+   "rationale": "Some dirty values map to multiple cleans or are missing in the source; left for manual review."
+  },
+  {
+   "column": "director",
+   "issue": "Ambiguous or missing source values map to multiple cleans or are left for manual review; left for human curation.",
+   "action": "flag_only",
+   "rationale": "Some dirty->clean mapping(s) are ambiguous or missing in the source; left for manual review."
+  },
+  {
+   "column": "rating_count",
+   "issue": "Ambiguous or missing source values mapped to multiple cleans or left missing; left for manual review.",
+   "action": "flag_only",
+   "rationale": "Some dirty values map to multiple cleans or are missing in the source; left for manual review."
+  }
+ ]
 }
