@@ -106,9 +106,16 @@
   .tie .src{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-weight:650;color:var(--call);
     background:#fff;border:1px solid var(--call-line);border-radius:8px;padding:3px 9px;font-size:13px}
   .tie .opts{display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-size:13.5px}
-  .tie .opt{background:#fff;border:1px solid var(--call-line);border-radius:8px;padding:3px 10px}
+  .tie .opt{font:inherit;font-size:13.5px;background:#fff;border:1px solid var(--call-line);
+    border-radius:8px;padding:4px 11px;cursor:pointer;color:var(--ink);transition:all .12s}
+  .tie .opt:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tie .opt:hover .sc{color:#dff0e9}
   .tie .opt .sc{color:#a9803f;font-size:11.5px;margin-left:5px}
+  .tie .keep{font:inherit;font-size:12.5px;background:none;border:0;color:var(--ink-soft);
+    cursor:pointer;text-decoration:underline;padding:4px 4px}
+  .tie .keep:hover{color:var(--ink)}
   .tie .vs{color:#a9803f;font-weight:600;font-size:12px}
+  .tie .resolved{font-size:13px;color:var(--done);font-weight:600}
   /* preview table */
   .tablebox{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
     box-shadow:var(--shadow);overflow:auto;max-height:380px}
@@ -137,6 +144,32 @@
     border-top:1px solid var(--line);margin-top:34px}
   .restart{display:inline-block;margin-top:18px;font-size:14px;color:var(--accent);
     font-weight:600;cursor:pointer;text-decoration:underline}
+
+  /* ---- mobile: the desktop 3-col before/after grids cramp on narrow screens ---- */
+  @media (max-width: 600px){
+    .wrap{padding:0 14px}
+    h1{font-size:24px}
+    header{padding:24px 0 4px}
+    .sub{font-size:15px}
+    .ribbon{font-size:12.5px;padding:8px 12px}
+    .drop{padding:30px 16px}
+    .actions-row{flex-wrap:wrap}
+    .actions-row .btn{width:100%}
+    /* stack before -> after vertically (arrow rotates down) */
+    .ba{grid-template-columns:1fr;gap:8px}
+    .ba .arrow{transform:rotate(90deg);justify-self:center;margin:-2px 0}
+    /* YOUR CALL tie: stack the value above its options */
+    .tie{grid-template-columns:1fr;gap:6px}
+    .tie .src{justify-self:start}
+    .tie .opt{padding:7px 12px}          /* bigger touch targets */
+    /* audit stats: 2-up instead of cramped auto-fit */
+    .audit{grid-template-columns:1fr 1fr;gap:8px}
+    .card{padding:14px 14px}
+    .download{padding:20px 16px}
+    .dl-row{flex-direction:column}
+    .dl-row .btn{width:100%}
+    section{margin:22px 0}
+  }
 </style>
 </head>
 <body>
@@ -328,6 +361,49 @@
     finally { $("runBtn").disabled = false; $("working").classList.remove("show"); }
   }
 
+  // ---- interactive YOUR CALL: resolve a split decision and re-apply the cleaning
+  $("callCards").addEventListener("click", e=>{
+    const btn = e.target.closest("[data-yc]");
+    if (!btn || btn.disabled) return;
+    const item = (window._ycItems || [])[+btn.dataset.yc];
+    if (item) resolveYourCall(item.col, item.raw, item.canon, btn);
+  });
+  async function resolveYourCall(column, raw, canon, btn){
+    if (!lastResult || !lastResult.plan_raw || !selectedFile) return;
+    const plan = JSON.parse(JSON.stringify(lastResult.plan_raw));
+    // drop this value from the column's review flag(s) so it stops being "open"
+    (plan.flags || []).forEach(fl=>{
+      if (fl.column === column && Array.isArray(fl.values)){
+        fl.values = fl.values.filter(x => x !== raw);
+        if (fl.candidates) delete fl.candidates[raw];
+      }
+    });
+    plan.flags = (plan.flags || []).filter(fl =>
+      !(Array.isArray(fl.values) && fl.values.length === 0 &&
+        (fl.issue === "uncertain_canonicalization" || fl.issue === "suspect_values")));
+    // apply the chosen merge (keep-as-is = canon null = just dismiss)
+    if (canon){
+      plan.columns = plan.columns || [];
+      let colObj = plan.columns.find(c => c.name === column);
+      if (!colObj){ colObj = {name: column, detected_semantic_type: "categorical", operations: []}; plan.columns.push(colObj); }
+      colObj.operations = colObj.operations || [];
+      let op = colObj.operations.find(o => o.op === "canonicalize_categories");
+      if (!op){ op = {op: "canonicalize_categories", mapping: {}, rationale: "Your decision (resolved from review)."}; colObj.operations.push(op); }
+      op.mapping = op.mapping || {}; op.mapping[raw] = canon;
+    }
+    btn.disabled = true; btn.textContent = canon ? "applying…" : "keeping…";
+    clearError();
+    try {
+      const client = await Client.connect(window.location.origin);
+      const res = await client.predict("/clean_with_plan",
+        { file_path: handle_file(selectedFile), plan_json: JSON.stringify(plan) });
+      const data = res.data[0];
+      if (!data || typeof data !== "object") throw new Error("Couldn't apply that decision.");
+      lastResult = data; render(data);
+      const sec = $("callSection"); if (sec) window.scrollTo({top: Math.max(0, sec.offsetTop - 16), behavior:"smooth"});
+    } catch (e){ console.error(e); showError(e.message || String(e)); }
+  }
+
   function esc(s){ const d=document.createElement("div"); d.textContent = s==null?"":String(s); return d.innerHTML; }
 
   function columnExamples(data, col, max=2){
@@ -452,26 +528,34 @@
       const total = flags.reduce((n,f)=>n+(f.values||[]).length, 0);
       callHero.innerHTML = `<b>I left ${total} value${total===1?"":"s"} alone on purpose.</b> ` +
         (ties ? `${ties} ${ties===1?"is a genuine toss-up":"are genuine toss-ups"} — close enough that guessing would be a coin flip. ` : "") +
-        `A wrong "fix" is worse than no fix, so these are yours to call.`;
+        `A wrong "fix" is worse than no fix — so <b>you decide: tap a match to apply it</b>, or keep the value as-is.`;
     }
+    const ycItems = [];   // resolution targets, indexed by data-yc (injection-safe)
     flags.forEach(f=>{
       const card = document.createElement("div");
       card.className = "card call";
       const vals = (f.values||[]).slice(0,12);
       const cands = f.candidates || {};
-      // render each uncertain value with the candidates it sits between
+      const col = f.column || "";
+      // render each uncertain value with clickable candidate buttons + keep-as-is
       const ties = vals.map(v=>{
         const cs = (cands[v]||[]).slice(0,2);
-        if (!cs.length) return `<div class="src">${esc(v)}</div><div class="opts"><span class="vs">no close match — left as-is</span></div>`;
-        const opts = cs.map((c,i)=>`${i?'<span class="vs">or</span>':''}<span class="opt">${esc(c.canon)}<span class="sc">${(c.score*100).toFixed(0)}%</span></span>`).join("");
+        let opts = cs.map((c,i)=>{
+          const idx = ycItems.push({col, raw:v, canon:c.canon}) - 1;
+          return `${i?'<span class="vs">or</span>':''}<button class="opt" data-yc="${idx}">${esc(c.canon)}<span class="sc">${(c.score*100).toFixed(0)}%</span></button>`;
+        }).join("");
+        if (!cs.length) opts = `<span class="vs">no close match</span>`;
+        const keepIdx = ycItems.push({col, raw:v, canon:null}) - 1;
+        opts += `<button class="keep" data-yc="${keepIdx}">keep “${esc(v)}”</button>`;
         return `<div class="src">${esc(v)}</div><div class="opts">${opts}</div>`;
       }).join("");
       card.innerHTML = `
-        <div class="card-top"><span class="card-title">${esc(f.column||"")}</span><span class="pill call">YOUR CALL</span></div>
+        <div class="card-top"><span class="card-title">${esc(col)}</span><span class="pill call">YOUR CALL</span></div>
         <div class="card-body">${esc(f.rationale||f.issue||"Left for review.")}</div>
         ${ties ? `<div class="tie">${ties}</div>` : ""}`;
       callCards.appendChild(card);
     });
+    window._ycItems = ycItems;
 
     // ---- preview table (after, changed cells highlighted, old value struck through)
     const wrap = $("tableWrap");
