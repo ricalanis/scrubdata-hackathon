@@ -129,6 +129,52 @@ def mask_value(v, pii_type: str = ""):
     return s[:1] + "*" * max(len(s) - 1, 2)
 
 
+# --- embedded PII in free text (detection only; product surfaces it as an alert) --
+#
+# The column typer needs a majority of cells to match before it acts. That misses the
+# high-sensitivity case of a card/SSN buried inside an otherwise free-text column (a
+# "notes" field). This finds those embedded, high-precision matches so the product can
+# WARN the user (review, not auto-redact — mangling prose would be worse). Detection
+# only: not wired into the cleaning pipeline, so cell outputs / benchmarks are untouched.
+
+_EMBED_CARD_RE = re.compile(r"(?<!\d)(?:\d[ -]?){13,19}(?<=\d)")
+_EMBED_SSN_RE = re.compile(r"(?<!\d)\d{3}-\d{2}-\d{4}(?!\d)")
+
+
+def find_embedded_pii(text) -> list[tuple[str, str]]:
+    """High-precision PII embedded inside a free-text cell -> [(pii_type, span)].
+    Cards are Luhn-confirmed (no false positives); SSN is the strict dddd-dd-dddd shape."""
+    if detect.is_missing(text):
+        return []
+    s = str(text)
+    out: list[tuple[str, str]] = []
+    for m in _EMBED_CARD_RE.finditer(s):
+        span = m.group(0)
+        digits = re.sub(r"[ -]", "", span)
+        if 13 <= len(digits) <= 19 and luhn_ok(digits):
+            out.append(("credit_card", span))
+    for m in _EMBED_SSN_RE.finditer(s):
+        out.append(("ssn", m.group(0)))
+    return out
+
+
+def scan_embedded_pii(name: str, values, sample: int = 400) -> dict | None:
+    """Column-level summary of embedded PII for the product alert. Returns
+    {column, pii_type, count, example} or None. Detection only."""
+    counts: dict[str, int] = {}
+    example = None
+    for v in list(values)[:sample]:
+        for ptype, span in find_embedded_pii(v):
+            counts[ptype] = counts.get(ptype, 0) + 1
+            if example is None:
+                example = mask_value(span, ptype)
+    if not counts:
+        return None
+    ptype = max(counts, key=counts.get)
+    return {"column": name, "pii_type": ptype, "count": sum(counts.values()),
+            "example": example}
+
+
 # --- tier-2: small NER column typer (optional, lazy; OpenMed-PII 44M) ----------
 #
 # Transfer-validated (scripts/pii_transfer_check.py): 100% detection on BARE cell

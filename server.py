@@ -329,7 +329,29 @@ def clean_data(file_path: str) -> dict:
             for c in plan.get("columns", [])],
         "flags": plan.get("flags", []),
         "monitor": _monitor(plan, change_log),
+        # embedded-PII awareness (product-only, detection not edit): cards/SSNs buried
+        # in free-text columns the column typer didn't flag. Surfaced for review.
+        "pii_alerts": _embedded_pii_alerts(raw, plan),
     }
+
+
+def _embedded_pii_alerts(raw, plan: dict) -> list[dict]:
+    """Scan raw text columns (that the planner didn't already type as PII) for
+    high-precision embedded cards/SSNs, so the UI can warn before the user shares."""
+    try:
+        from scrubdata import pii
+        typed = {c.get("name") for c in plan.get("columns", [])
+                 if any("pii" in (o.get("op") or "") for o in c.get("operations", []))}
+        alerts = []
+        for col in raw.columns:
+            if col in typed:
+                continue
+            a = pii.scan_embedded_pii(col, raw[col].tolist())
+            if a:
+                alerts.append(a)
+        return alerts
+    except Exception:  # noqa: BLE001
+        return []
 
 
 def _monitor(plan: dict, change_log) -> dict:

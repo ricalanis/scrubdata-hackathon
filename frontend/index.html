@@ -361,7 +361,22 @@
     // ---- PII cards
     const piiCards = $("piiCards"); piiCards.innerHTML = "";
     const piiCols = cols.filter(c => c.operations.some(o => (o.op||"").includes("pii")));
-    $("piiSection").style.display = piiCols.length ? "" : "none";
+    const piiAlerts = data.pii_alerts || [];
+    $("piiSection").style.display = (piiCols.length || piiAlerts.length) ? "" : "none";
+    // embedded-PII alerts: cards/SSNs buried in free-text columns (review, not auto-masked)
+    piiAlerts.forEach(a=>{
+      const ptype = String(a.pii_type||"sensitive data").replace(/_/g," ");
+      const card = document.createElement("div");
+      card.className = "card pii";
+      card.innerHTML = `
+        <div class="card-top"><span class="card-title">${esc(a.column)}</span>
+          <span class="badge-row"><span class="pii-badge">${esc(ptype)}</span></span>
+          <span class="pill pii">REVIEW</span></div>
+        <div class="card-body">Found <b>${a.count}</b> ${esc(ptype)}-shaped value${a.count===1?"":"s"}
+          buried inside this free-text column (e.g. <code>${esc(a.example||"")}</code>) — they slipped
+          past column-level detection. Left as-is so your notes aren't mangled; <b>review before sharing</b>.</div>`;
+      piiCards.appendChild(card);
+    });
     piiCols.forEach(c=>{
       const ops = c.operations.filter(o=>(o.op||"").includes("pii"));
       const masked = ops.find(o=>["mask_pii","hash_pii","pseudonymize_pii"].includes(o.op));

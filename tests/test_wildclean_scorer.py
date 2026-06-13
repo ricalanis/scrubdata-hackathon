@@ -327,3 +327,18 @@ def test_cell_equal_nan_string_is_self_equal():
     assert not _cell_equal("nan", "1.0")
     assert _cell_equal("1.0", "1")          # numeric tolerance still works
     assert _cell_equal(float("nan"), None)  # real missing still missing-equal
+
+
+def test_find_embedded_pii_precision():
+    """Lock the embedded-PII detector: high precision (Luhn cards + strict SSN), no
+    false positives on dates / short digit runs / phone fragments."""
+    from scrubdata import pii
+    assert pii.find_embedded_pii("re: ssn 123-45-6789 today") == [("ssn", "123-45-6789")]
+    assert pii.find_embedded_pii("paid 4111 1111 1111 1111 thanks")[0][0] == "credit_card"
+    assert pii.find_embedded_pii("shipped 2024-03-01") == []          # date != SSN
+    assert pii.find_embedded_pii("call ext 555 12345") == []          # short run
+    assert pii.find_embedded_pii("card 1234 5678 9012 3456") == []    # fails Luhn
+    assert pii.find_embedded_pii(None) == []
+    # column-level summary picks the dominant embedded type
+    a = pii.scan_embedded_pii("notes", ["ok", "ssn 123-45-6789", "ref 987-65-4320"])
+    assert a and a["pii_type"] == "ssn" and a["count"] == 2 and a["example"].endswith("6789")
