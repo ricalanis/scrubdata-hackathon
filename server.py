@@ -322,6 +322,28 @@ async def homepage() -> str:
         return _PLACEHOLDER_HTML
 
 
+def _warmup() -> None:
+    """Pre-build the reference index (one-time ~5s) and pre-run the bundled samples so
+    the demo's first click is warm (best()'s per-value cache is populated). Runs in a
+    daemon thread at import so server boot is never blocked (HF Spaces boot timeout)."""
+    try:
+        from scrubdata.reconcile import default_index
+        default_index()
+        for s in sorted(SAMPLES_DIR.glob("*.csv")) if SAMPLES_DIR.is_dir() else []:
+            try:
+                df = _read_any(str(s))
+                apply_plan(df, PLANNER(df))
+                profile_dataframe(df)
+            except Exception:  # noqa: BLE001 — warmup must never crash the server
+                pass
+    except Exception:  # noqa: BLE001
+        pass
+
+
+import threading as _threading
+_threading.Thread(target=_warmup, daemon=True).start()
+
+
 if __name__ == "__main__":
     import os
     app.launch(server_name="0.0.0.0",
