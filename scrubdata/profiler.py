@@ -90,7 +90,9 @@ def profile_column(series: pd.Series) -> dict:
     suspects = []
     if pii is None and semantic_type in ("text", "categorical", "country", "city"):
         from .pair_profile import suspects_for_column
-        suspects = suspects_for_column(values)
+        # reuse the frequency we already computed (counts) — suspects derive from it,
+        # so this avoids re-scanning all rows in Python (the scale-invariance fix).
+        suspects = suspects_for_column(values, freq=counts)
     return {
         "name": str(series.name),
         "pandas_dtype": str(series.dtype),

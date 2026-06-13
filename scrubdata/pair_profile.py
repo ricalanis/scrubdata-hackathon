@@ -31,7 +31,7 @@ def _norm(s: str) -> str:
 
 
 def candidate_pairs(values, idx=None, ctype=None, max_candidates: int = 3,
-                    max_pairs: int = 40, min_sim: float = 0.6) -> list[dict]:
+                    max_pairs: int = 40, min_sim: float = 0.6, freq=None) -> list[dict]:
     """Evidence-backed repair candidates for one column's suspicious values.
 
     A surface is suspicious when it is RARE (errors are rare — freq < 3). Candidates:
@@ -39,12 +39,16 @@ def candidate_pairs(values, idx=None, ctype=None, max_candidates: int = 3,
         similarity `min_sim`
       * reference: the nearest entity of the column's reference type (score >= 0.7)
     Returns [{raw, count, candidates: [{canon, sim, support, source}]}], capped.
+
+    `freq` (distinct surface -> count) may be passed precomputed: everything here
+    derives from it, so passing it avoids re-scanning all rows in Python (the
+    profiler already has it) — identical output, O(distinct) instead of O(rows).
     """
-    vals = [str(v).strip() for v in values if not detect.is_missing(v)]
-    freq = Counter(vals)
+    if freq is None:
+        freq = Counter(str(v).strip() for v in values if not detect.is_missing(v))
     if ctype is None:
         idx = idx or default_index()
-        ctype = infer_reference_type(vals, idx)
+        ctype = infer_reference_type(list(freq), idx)
     frequent = [(v, _norm(v), n) for v, n in freq.most_common(60) if n >= 2]
     out = []
     # bounded work: full-table columns can carry tens of thousands of unique rare
@@ -82,7 +86,7 @@ def candidate_pairs(values, idx=None, ctype=None, max_candidates: int = 3,
     return out[:max_pairs]
 
 
-def suspects_for_column(values, max_suspects: int = 25) -> list[dict]:
+def suspects_for_column(values, max_suspects: int = 25, freq=None) -> list[dict]:
     """Profile-visibility section: rare anomalous surfaces with evidence-backed
     repair candidates, for EVERY text column INCLUDING high-cardinality ones (where
     value_counts truncation otherwise hides dirty cells from the planner entirely).
@@ -97,13 +101,14 @@ def suspects_for_column(values, max_suspects: int = 25) -> list[dict]:
     Output shape (compact, bounded): [{raw, count, candidates: [str, ...]}]."""
     from . import detect
 
-    out = candidate_pairs(values, max_pairs=max_suspects)
+    out = candidate_pairs(values, max_pairs=max_suspects, freq=freq)
     listed = {p["raw"] for p in out}
     suspects = [{"raw": p["raw"], "count": p["count"],
                  "candidates": [c["canon"] for c in p["candidates"]]}
                 for p in out]
     if len(suspects) < max_suspects:
-        freq = Counter(str(v).strip() for v in values if not detect.is_missing(v))
+        if freq is None:
+            freq = Counter(str(v).strip() for v in values if not detect.is_missing(v))
         for raw, n in freq.items():
             if len(suspects) >= max_suspects:
                 break
