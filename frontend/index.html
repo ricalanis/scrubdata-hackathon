@@ -116,6 +116,16 @@
   .tie .keep:hover{color:var(--ink)}
   .tie .vs{color:#a9803f;font-weight:600;font-size:12px}
   .tie .resolved{font-size:13px;color:var(--done);font-weight:600}
+  .tie .opt.sel{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:650}
+  .tie .opt.sel .sc{color:#dff0e9}
+  .tie .keep.sel{color:var(--accent);font-weight:700}
+  /* fixed action bar: apply staged YOUR CALL decisions in one re-clean */
+  .ycbar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:none;gap:14px;
+    align-items:center;justify-content:center;flex-wrap:wrap;background:var(--call-bg);
+    border-top:1px solid var(--call-line);padding:12px 18px;box-shadow:0 -4px 16px rgba(40,30,20,.10)}
+  .ycbar.show{display:flex}
+  .ycbar .txt{font-size:14px;color:#7a4a12}
+  body.has-ycbar{padding-bottom:68px}
   /* preview table */
   .tablebox{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
     box-shadow:var(--shadow);overflow:auto;max-height:380px}
@@ -269,6 +279,13 @@
 
 <footer>Runs locally on a small model. Your data never leaves this machine.</footer>
 
+<div class="ycbar" id="ycApplyBar">
+  <span class="txt">You've made <b id="ycApplyCount">0</b> <span id="ycApplyNoun">decisions</span>
+  — apply them and re-clean.</span>
+  <button class="btn primary" id="ycApplyBtn">✓ Clean now</button>
+  <button class="btn" id="ycClearBtn">Clear</button>
+</div>
+
 <script type="module">
   import { Client, handle_file } from "https://cdn.jsdelivr.net/npm/@gradio/client";
   const $ = (id) => document.getElementById(id);
@@ -361,47 +378,72 @@
     finally { $("runBtn").disabled = false; $("working").classList.remove("show"); }
   }
 
-  // ---- interactive YOUR CALL: resolve a split decision and re-apply the cleaning
+  // ---- interactive YOUR CALL: STAGE decisions, then apply them all in one re-clean.
+  // pendingPicks key = column   raw -> {col, raw, canon}  (canon null = keep as-is)
+  let pendingPicks = {};
+  const _pk = (col, raw) => col + " " + raw;
+
   $("callCards").addEventListener("click", e=>{
     const btn = e.target.closest("[data-yc]");
-    if (!btn || btn.disabled) return;
+    if (!btn) return;
     const item = (window._ycItems || [])[+btn.dataset.yc];
-    if (item) resolveYourCall(item.col, item.raw, item.canon, btn);
+    if (!item) return;
+    const key = _pk(item.col, item.raw);
+    if (pendingPicks[key] && pendingPicks[key].canon === item.canon) delete pendingPicks[key]; // toggle off
+    else pendingPicks[key] = item;                                                            // select / switch
+    paintYcSelections();
   });
-  async function resolveYourCall(column, raw, canon, btn){
-    if (!lastResult || !lastResult.plan_raw || !selectedFile) return;
+
+  function paintYcSelections(){
+    document.querySelectorAll('#callCards [data-yc]').forEach(b=>{
+      const it = (window._ycItems || [])[+b.dataset.yc]; if (!it) return;
+      const p = pendingPicks[_pk(it.col, it.raw)];
+      b.classList.toggle('sel', !!p && p.canon === it.canon);
+    });
+    const n = Object.keys(pendingPicks).length;
+    $("ycApplyBar").classList.toggle("show", n > 0);
+    document.body.classList.toggle("has-ycbar", n > 0);
+    $("ycApplyCount").textContent = n;
+    $("ycApplyNoun").textContent = n === 1 ? "decision" : "decisions";
+  }
+
+  $("ycClearBtn").addEventListener("click", ()=>{ pendingPicks = {}; paintYcSelections(); });
+  $("ycApplyBtn").addEventListener("click", applyYourCalls);
+  async function applyYourCalls(){
+    const picks = Object.values(pendingPicks);
+    if (!picks.length || !lastResult || !lastResult.plan_raw || !selectedFile) return;
     const plan = JSON.parse(JSON.stringify(lastResult.plan_raw));
-    // drop this value from the column's review flag(s) so it stops being "open"
-    (plan.flags || []).forEach(fl=>{
-      if (fl.column === column && Array.isArray(fl.values)){
-        fl.values = fl.values.filter(x => x !== raw);
-        if (fl.candidates) delete fl.candidates[raw];
+    picks.forEach(({col, raw, canon})=>{
+      (plan.flags || []).forEach(fl=>{
+        if (fl.column === col && Array.isArray(fl.values)){
+          fl.values = fl.values.filter(x => x !== raw);
+          if (fl.candidates) delete fl.candidates[raw];
+        }
+      });
+      if (canon){
+        plan.columns = plan.columns || [];
+        let c = plan.columns.find(x => x.name === col);
+        if (!c){ c = {name: col, detected_semantic_type: "categorical", operations: []}; plan.columns.push(c); }
+        c.operations = c.operations || [];
+        let op = c.operations.find(o => o.op === "canonicalize_categories");
+        if (!op){ op = {op: "canonicalize_categories", mapping: {}, rationale: "Your decisions (resolved from review)."}; c.operations.push(op); }
+        op.mapping = op.mapping || {}; op.mapping[raw] = canon;
       }
     });
     plan.flags = (plan.flags || []).filter(fl =>
       !(Array.isArray(fl.values) && fl.values.length === 0 &&
         (fl.issue === "uncertain_canonicalization" || fl.issue === "suspect_values")));
-    // apply the chosen merge (keep-as-is = canon null = just dismiss)
-    if (canon){
-      plan.columns = plan.columns || [];
-      let colObj = plan.columns.find(c => c.name === column);
-      if (!colObj){ colObj = {name: column, detected_semantic_type: "categorical", operations: []}; plan.columns.push(colObj); }
-      colObj.operations = colObj.operations || [];
-      let op = colObj.operations.find(o => o.op === "canonicalize_categories");
-      if (!op){ op = {op: "canonicalize_categories", mapping: {}, rationale: "Your decision (resolved from review)."}; colObj.operations.push(op); }
-      op.mapping = op.mapping || {}; op.mapping[raw] = canon;
-    }
-    btn.disabled = true; btn.textContent = canon ? "applying…" : "keeping…";
-    clearError();
+    const apply = $("ycApplyBtn"); apply.disabled = true; apply.textContent = "cleaning…"; clearError();
     try {
       const client = await Client.connect(window.location.origin);
       const res = await client.predict("/clean_with_plan",
         { file_path: handle_file(selectedFile), plan_json: JSON.stringify(plan) });
       const data = res.data[0];
-      if (!data || typeof data !== "object") throw new Error("Couldn't apply that decision.");
-      lastResult = data; render(data);
-      const sec = $("callSection"); if (sec) window.scrollTo({top: Math.max(0, sec.offsetTop - 16), behavior:"smooth"});
+      if (!data || typeof data !== "object") throw new Error("Couldn't apply your decisions.");
+      lastResult = data; render(data);   // render() resets pendingPicks + repaints
+      const sec = $("callSection"); window.scrollTo({top: sec && sec.style.display!=="none" ? Math.max(0, sec.offsetTop-16) : 0, behavior:"smooth"});
     } catch (e){ console.error(e); showError(e.message || String(e)); }
+    finally { apply.disabled = false; apply.textContent = "✓ Clean now"; }
   }
 
   function esc(s){ const d=document.createElement("div"); d.textContent = s==null?"":String(s); return d.innerHTML; }
@@ -530,6 +572,7 @@
         (ties ? `${ties} ${ties===1?"is a genuine toss-up":"are genuine toss-ups"} — close enough that guessing would be a coin flip. ` : "") +
         `A wrong "fix" is worse than no fix — so <b>you decide: tap a match to apply it</b>, or keep the value as-is.`;
     }
+    pendingPicks = {};    // fresh analysis -> no staged decisions carried over
     const ycItems = [];   // resolution targets, indexed by data-yc (injection-safe)
     flags.forEach(f=>{
       const card = document.createElement("div");
@@ -556,6 +599,7 @@
       callCards.appendChild(card);
     });
     window._ycItems = ycItems;
+    paintYcSelections();   // hide the action bar on a fresh render
 
     // ---- preview table (after, changed cells highlighted, old value struck through)
     const wrap = $("tableWrap");
