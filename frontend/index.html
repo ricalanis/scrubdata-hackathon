@@ -184,7 +184,7 @@
 </head>
 <body>
 
-<div class="ribbon">🔒 <b>Your data never leaves this machine.</b> The file is read and cleaned locally; your original is untouched — no upload, no API, no cloud.</div>
+<div class="ribbon" id="ribbon">🔒 <b>Your data never leaves this machine.</b> The file is read and cleaned locally; your original is untouched — no upload, no API, no cloud.</div>
 
 <div class="wrap">
   <header>
@@ -277,7 +277,7 @@
   </div>
 </div>
 
-<footer>Runs locally on a small model. Your data never leaves this machine.</footer>
+<footer id="footerNote">Runs locally on a small model. Your data never leaves this machine.</footer>
 
 <div class="ycbar" id="ycApplyBar">
   <span class="txt">You've made <b id="ycApplyCount">0</b> <span id="ycApplyNoun">decisions</span>
@@ -292,6 +292,21 @@
   let selectedFile = null, lastResult = null, loadedRecipe = null;
   const SAMPLE_PATH = "/samples/maria_crm_export.csv";
   const RENDER_CAP = 120;
+
+  // ---- honest, deployment-aware copy. On a hosted HF Space the file is processed
+  // on HF's servers; only a self-hosted run is truly on-device. (server injects this)
+  const RT = window.__SCRUBDATA_RUNTIME__ || { hosted:false, private:true,
+    planner:"deterministic planner", where:"this machine" };
+  (function labelRuntime(){
+    if (RT.hosted){
+      $("ribbon").innerHTML = "🌐 <b>Hosted demo on Hugging Face.</b> Your file is processed on " +
+        "HF's servers — sent to no third-party API and not stored. Want it fully on-device? " +
+        "<b>Run it locally</b> (one command) and nothing leaves your machine.";
+      $("footerNote").textContent = "Hosted demo on Hugging Face's servers (deterministic planner). " +
+        "Run locally for on-device cleaning + the Qwen3-4B model — then your data never leaves your machine.";
+    }
+    // local default copy is already in the HTML (privacy-true)
+  })();
 
   const OP_LABEL = {
     canonicalize_categories: (o)=>`Unified ${o.mapping_size||"several"} inconsistent spelling${(o.mapping_size||2)>1?"s":""}`,
@@ -466,7 +481,8 @@
     $("fileName").textContent = selectedFile ? selectedFile.name : "your file";
     const secs = data.elapsed_ms != null ? (data.elapsed_ms/1000) : null;
     const timeStr = secs == null ? "" : (secs < 1 ? ` · in ${Math.round(data.elapsed_ms)}ms` : ` · in ${secs.toFixed(1)}s`);
-    $("fileMeta").textContent = `${data.total_rows_before.toLocaleString()} rows × ${data.columns_before.length} columns · cleaned locally${timeStr}`;
+    const whereStr = RT.hosted ? "cleaned on HF's servers" : "cleaned on-device";
+    $("fileMeta").textContent = `${data.total_rows_before.toLocaleString()} rows × ${data.columns_before.length} columns · ${whereStr} · ${RT.planner}${timeStr}`;
     const nChanges = (data.change_log||[]).length;
     $("fixPill").textContent = `${nChanges} change${nChanges===1?"":"s"} applied`;
 

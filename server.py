@@ -421,12 +421,31 @@ creates it. The <code>clean_data</code> API is live.</p>
 </body></html>"""
 
 
+def _runtime_info() -> dict:
+    """Honest, deployment-aware facts the UI uses to label itself. On a hosted HF
+    Space the file is processed on HF's servers (not on-device); only a self-hosted
+    run is truly local. The planner is the fine-tune only if SCRUBDATA_MODEL is set;
+    otherwise it's the deterministic heuristic (the default on the free Space)."""
+    import os
+    hosted = bool(os.environ.get("SPACE_ID"))
+    model = os.environ.get("SCRUBDATA_MODEL")
+    return {
+        "hosted": hosted,
+        "private": not hosted,
+        "planner": (f"Qwen3-4B fine-tune ({model})" if model else "deterministic planner"),
+        "where": ("Hugging Face's servers" if hosted else "this machine"),
+    }
+
+
 @app.get("/", response_class=HTMLResponse)
 async def homepage() -> str:
+    import json as _json
     try:
-        return FRONTEND_INDEX.read_text(encoding="utf-8")
+        html = FRONTEND_INDEX.read_text(encoding="utf-8")
     except (FileNotFoundError, OSError):
         return _PLACEHOLDER_HTML
+    inject = f"<script>window.__SCRUBDATA_RUNTIME__ = {_json.dumps(_runtime_info())};</script>"
+    return html.replace("</head>", inject + "\n</head>", 1)
 
 
 def _warmup() -> None:

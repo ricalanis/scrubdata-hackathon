@@ -28,6 +28,14 @@ Runs a ≤4B model locally → also in the running for **Tiny Titan**, **Off-Bra
   Social post: <X/LinkedIn URL>
   These two links + this write-up are required by the build-small-hackathon /submit tool. -->
 
+> **Hosted demo vs. local — read this.** This Space is a **no-install demo**: on the free
+> HF Space (CPU, no GPU) it runs the *deterministic* planner and your file is processed on
+> Hugging Face's servers (sent to no third-party API, not stored). The **privacy + 4B-model
+> story is a property of running it yourself**: `SCRUBDATA_MODEL=scrubdata-ft uv run
+> server.py` reads and cleans your file on-device with the Qwen3-4B fine-tune — nothing
+> leaves your machine. The app labels its own mode honestly (the ribbon says which one
+> you're using). Same auditable plan→verify→execute pipeline either way.
+
 > **Drop a messy export. Get clean data back — every change named, reversible, and
 > explained. Anything sensitive is protected locally. The judgment calls stay yours.**
 >
