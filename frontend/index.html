@@ -166,6 +166,10 @@
       <span class="samplelink" id="sampleBtn" tabindex="0">try a messy CRM export</span>
       <span class="samplelink" id="sampleBtn2" tabindex="0">or HR payroll (with PII)</span>
     </div>
+    <div class="actions-row" style="margin-top:-18px">
+      <span class="samplelink" id="recipeLink" tabindex="0">↻ have a saved recipe? apply it to this file</span>
+      <input type="file" id="recipeInput" accept=".json" hidden>
+    </div>
     <div class="working" id="working"><span class="spin"></span>Cleaning up — this runs locally, so it's quick.</div>
   </div>
 
@@ -219,9 +223,11 @@
         <div class="dl-row">
           <button class="btn primary" id="downloadBtn">↓ Download clean file</button>
           <button class="btn" id="logBtn">Export change log</button>
+          <button class="btn" id="recipeBtn">💾 Save cleaning recipe</button>
         </div>
         <div class="revert">Your original is untouched — every change above is a named,
-        reversible operation.</div>
+        reversible operation. <b>Save the recipe</b> and re-apply this exact cleaning to
+        next month's export in one click.</div>
       </div>
       <div style="text-align:center"><span class="restart" id="restartBtn">← Clean another file</span></div>
     </section>
@@ -233,7 +239,7 @@
 <script type="module">
   import { Client, handle_file } from "https://cdn.jsdelivr.net/npm/@gradio/client";
   const $ = (id) => document.getElementById(id);
-  let selectedFile = null, lastResult = null;
+  let selectedFile = null, lastResult = null, loadedRecipe = null;
   const SAMPLE_PATH = "/samples/maria_crm_export.csv";
   const RENDER_CAP = 120;
 
@@ -292,6 +298,18 @@
     $("uploader").style.display=""; $("headline").textContent="Clean spreadsheets, with the receipts.";
     window.scrollTo({top:0, behavior:"smooth"}); });
 
+  // ---- save / re-apply cleaning recipe (the "Monday ritual")
+  $("recipeLink").addEventListener("click", ()=>$("recipeInput").click());
+  $("recipeInput").addEventListener("change", async e=>{
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      loadedRecipe = await f.text(); JSON.parse(loadedRecipe);   // validate it's JSON
+      $("recipeLink").textContent = "↻ recipe loaded: " + f.name + " — Clean it up to apply";
+      $("runLabel").textContent = "Apply saved recipe";
+      if (selectedFile) $("runBtn").disabled = false;
+    } catch { showError("That doesn't look like a saved recipe (.json)."); loadedRecipe = null; }
+  });
+
   $("runBtn").addEventListener("click", run);
   async function run(){
     if (!selectedFile) return;
@@ -299,7 +317,9 @@
     $("runBtn").disabled = true; $("working").classList.add("show");
     try {
       const client = await Client.connect(window.location.origin);
-      const res = await client.predict("/clean_data", { file_path: handle_file(selectedFile) });
+      const res = loadedRecipe
+        ? await client.predict("/clean_with_plan", { file_path: handle_file(selectedFile), plan_json: loadedRecipe })
+        : await client.predict("/clean_data", { file_path: handle_file(selectedFile) });
       const data = res.data[0];
       if (!data || typeof data !== "object") throw new Error("Unexpected response from the cleaner.");
       lastResult = data;
@@ -501,6 +521,14 @@
       flags:lastResult.flags, monitor:lastResult.monitor}, null, 2);
     const url = URL.createObjectURL(new Blob([payload], {type:"application/json"}));
     const a = document.createElement("a"); a.href=url; a.download="scrubdata-changelog.json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  });
+  $("recipeBtn").addEventListener("click", ()=>{
+    const recipe = lastResult && lastResult.plan_raw;
+    if (!recipe) return;
+    const url = URL.createObjectURL(new Blob([JSON.stringify(recipe, null, 2)], {type:"application/json"}));
+    const a = document.createElement("a"); a.href=url; a.download="scrubdata-recipe.json";
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(url), 1000);
   });

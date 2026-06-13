@@ -277,11 +277,20 @@ def clean_data(file_path: str) -> dict:
             f"Something went wrong while cleaning ({type(e).__name__}) — your file is "
             "untouched. This is logged; please try another export.")
 
+    return _build_response(raw, cleaned, plan, change_log, elapsed_ms,
+                           before_profile, report_md)
+
+
+def _build_response(raw, cleaned, plan, change_log, elapsed_ms,
+                    before_profile=None, report_md="") -> dict:
+    """Assemble the JSON-safe response. Shared by clean_data (model/heuristic plan)
+    and clean_with_plan (replay a saved recipe), so both render identically."""
     try:  # best-effort agent-trace capture (Open trace bonus quest)
         from scrubdata.trace import log_run
-        log_run(before_profile, raw, plan, change_log,
-                model=plan.get("_generated_by", "mock_planner"))
-    except Exception:
+        if before_profile is not None:
+            log_run(before_profile, raw, plan, change_log,
+                    model=plan.get("_generated_by", "mock_planner"))
+    except Exception:  # noqa: BLE001
         pass
 
     buf = io.StringIO()
@@ -332,7 +341,47 @@ def clean_data(file_path: str) -> dict:
         # embedded-PII awareness (product-only, detection not edit): cards/SSNs buried
         # in free-text columns the column typer didn't flag. Surfaced for review.
         "pii_alerts": _embedded_pii_alerts(raw, plan),
+        # the executable plan itself — the "cleaning recipe" the user can save and
+        # re-apply to next month's same-shaped export via clean_with_plan.
+        "plan_raw": plan,
     }
+
+
+@app.api(name="clean_with_plan")
+def clean_with_plan(file_path: str, plan_json: str) -> dict:
+    """Replay a SAVED recipe (plan JSON from a prior run) on a NEW file — the 'Monday
+    ritual': same cleaning, next month's export, one click. No re-planning."""
+    import json as _json
+    file_path = _coerce_path(file_path)
+    if not file_path:
+        return _empty_result("Upload the new file to apply your saved recipe to.")
+    try:
+        plan = _json.loads(plan_json) if isinstance(plan_json, str) else plan_json
+        assert isinstance(plan, dict) and "columns" in plan
+    except Exception:  # noqa: BLE001
+        return _empty_result("That isn't a ScrubData recipe — expected the saved plan JSON.")
+    try:
+        raw = _read_any(file_path)
+    except Exception as e:  # noqa: BLE001
+        return _empty_result(f"Couldn't read the data file ({type(e).__name__}).")
+    if raw is None or raw.empty or len(raw.columns) == 0:
+        return _empty_result("That file looks empty.")
+    try:
+        _t0 = time.perf_counter()
+        cleaned, change_log = apply_plan(raw, plan)
+        elapsed_ms = int((time.perf_counter() - _t0) * 1000)
+        report_md = ""
+        try:
+            report_md = render_report(plan, change_log,
+                                      profile_dataframe(raw), profile_dataframe(cleaned))
+        except Exception:  # noqa: BLE001
+            pass
+        plan = {**plan, "_generated_by": "saved recipe (replay)"}
+        return _build_response(raw, cleaned, plan, change_log, elapsed_ms, None, report_md)
+    except Exception as e:  # noqa: BLE001
+        return _empty_result(
+            f"Couldn't apply the recipe to this file ({type(e).__name__}) — "
+            "is it the same kind of export?")
 
 
 def _embedded_pii_alerts(raw, plan: dict) -> list[dict]:
