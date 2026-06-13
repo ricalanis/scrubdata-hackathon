@@ -315,7 +315,26 @@
 <script type="module">
   import { Client, handle_file } from "https://cdn.jsdelivr.net/npm/@gradio/client";
   const $ = (id) => document.getElementById(id);
-  let selectedFile = null, lastResult = null, loadedRecipe = null;
+  let selectedFile = null, lastResult = null, loadedRecipe = null, serverReady = false;
+  // gate the run button on server warmth so a first click can't land on a cold
+  // reference-index build (the "instant" promise). refreshRun() is the single place
+  // that decides the button's enabled state + label.
+  function refreshRun(){
+    const btn = $("runBtn"); if (!btn) return;
+    btn.disabled = !(selectedFile && serverReady);
+    $("runLabel").textContent = !serverReady ? "Warming up…"
+      : (loadedRecipe ? "Apply saved recipe" : "Clean it up");
+  }
+  (async function pollReady(){
+    try {
+      const client = await Client.connect(window.location.origin);
+      for (let i = 0; i < 30; i++){
+        try { const r = await client.predict("/ready"); if (r && r.data && r.data[0] && r.data[0].ready){ serverReady = true; refreshRun(); return; } } catch {}
+        await new Promise(res => setTimeout(res, 1500));
+      }
+    } catch {}
+    serverReady = true; refreshRun();   // give up gating after ~45s; the timer is the backstop
+  })();
   const SAMPLE_PATH = "/samples/maria_crm_export.csv";
   const RENDER_CAP = 120;
 
@@ -369,7 +388,7 @@
     $("dropTitle").innerHTML = '<span class="picked"></span>';
     $("dropTitle").firstChild.textContent = f.name;
     $("dropSub").textContent = (f.size/1024).toFixed(1) + " KB · ready";
-    $("runBtn").disabled = false; clearError();
+    refreshRun(); clearError();
   }
   async function pickSample(path, name){
     clearError();
@@ -399,8 +418,7 @@
     try {
       loadedRecipe = await f.text(); JSON.parse(loadedRecipe);   // validate it's JSON
       $("recipeLink").textContent = "↻ recipe loaded: " + f.name + " — Clean it up to apply";
-      $("runLabel").textContent = "Apply saved recipe";
-      if (selectedFile) $("runBtn").disabled = false;
+      refreshRun();
     } catch { showError("That doesn't look like a saved recipe (.json)."); loadedRecipe = null; }
   });
 
@@ -430,9 +448,17 @@
     if (p < 0.75) return "Spotting the messy bits…";
     return "Writing the cleaning plan…";
   }
+  function _overrunLabel(el){
+    // honest copy once we pass the estimate (never a static stall)
+    if (_etaMode === "model")
+      return (Math.floor(el / 12000) % 2) ? "The model's weighing the tricky values…" : "Almost there…";
+    return "Warming up the server… (first run)";   // det overrun ≈ a cold first clean
+  }
   function startTimer(bytes, useModel){
     _etaMode = useModel ? "model" : "det";
     _etaEst = _estimateMs(bytes, useModel); _etaStart = performance.now(); _etaDone = false;
+    const rb = $("ribbon");                                   // keep the pill off the ribbon copy
+    if (rb) $("etaPill").style.top = (rb.offsetHeight + 8) + "px";
     $("etaBar").classList.add("show"); $("etaPill").classList.add("show");
     cancelAnimationFrame(_etaRAF);
     const tick = ()=>{
@@ -441,7 +467,7 @@
       if (!_etaDone && p > 0.92) p = 0.92;                    // hold until the real result
       $("etaFill").style.width = (p * 100).toFixed(1) + "%";
       const over = el > _etaEst;
-      $("etaStage").textContent = over ? "Almost there…" : _stage(p);
+      $("etaStage").textContent = over ? _overrunLabel(el) : _stage(p);
       const left = Math.ceil((_etaEst - el) / 1000);
       $("etaTime").textContent = (!over && left > 0) ? "~" + left + "s" : "";
       _etaRAF = requestAnimationFrame(tick);
@@ -470,7 +496,7 @@
       lastResult = data;
       render(data);
     } catch (e){ console.error(e); showError(e.message || String(e)); }
-    finally { $("runBtn").disabled = false; stopTimer(); }
+    finally { refreshRun(); stopTimer(); }
   }
 
   // ---- interactive YOUR CALL: STAGE decisions, then apply them all in one re-clean.

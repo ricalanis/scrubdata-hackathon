@@ -46,11 +46,17 @@ def get_planner():
     raw = make_local_ollama_planner(model, host=host, timeout=timeout,
                                     pair_profiles=pair_profiles)
 
+    # per-call signal of whether the model actually answered any batch, so the plan
+    # is labelled honestly when a cold/down Modal makes every batch fall back to the
+    # heuristic (the UI keys its "Qwen3-4B fine-tune" label off this).
+    state = {"model_batches": 0}
+
     def model_or_heuristic(df, *_):
         # per column-batch: try the model, fall back to the heuristic on any failure
         try:
             p = raw(df)
             if isinstance(p, dict) and "__error__" not in p and p.get("columns"):
+                state["model_batches"] += 1
                 return p
         except Exception:
             pass
@@ -68,9 +74,14 @@ def get_planner():
     tau = float(os.environ.get("SCRUBDATA_TAU", "0.5"))
 
     def verified_union(df, *_):
+        state["model_batches"] = 0                  # reset for this clean
         plan = verify_plan(df, grounded(df), tau=tau)
         plan = union_plans(plan, mock_plan(df))
-        plan["_generated_by"] = f"verified-union(model:{model}, tau={tau})"
+        # honest label: if every batch fell back (Modal cold/down) the model didn't
+        # actually contribute, so don't claim it did.
+        plan["_generated_by"] = (f"verified-union(model:{model}, tau={tau})"
+                                 if state["model_batches"] > 0
+                                 else "deterministic (model unavailable, fell back)")
         return plan
 
     return verified_union

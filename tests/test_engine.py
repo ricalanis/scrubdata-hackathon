@@ -245,11 +245,12 @@ def test_active_planner_is_verified_union(monkeypatch):
     monkeypatch.setenv("SCRUBDATA_MODEL", "test-model")
     from scrubdata.active import get_planner
     planner = get_planner()
-    # the model backend isn't reachable in tests -> per-batch heuristic fallback kicks
-    # in; the plan must still come out tagged as the verified union pipeline
+    # the model backend isn't reachable in tests -> every batch falls back to the
+    # heuristic; get_planner must return the verified-union wrapper (only it emits this
+    # honest label) and tag the plan as fallback rather than claiming the model ran.
     df = pd.DataFrame({"city": ["Boston", "Boston", "Bostn", "Chicago", "Chicago"]})
     plan = planner(df)
-    assert plan["_generated_by"] == "verified-union(model:test-model, tau=0.5)"
+    assert plan["_generated_by"] == "deterministic (model unavailable, fell back)"
     assert is_valid(plan)
 
 
