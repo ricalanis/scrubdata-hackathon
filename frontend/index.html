@@ -98,6 +98,17 @@
   .badge-row{display:flex;gap:7px;flex-wrap:wrap;margin:4px 0 0}
   .pii-badge{font-size:12px;font-weight:600;color:var(--pii);background:var(--pii-bg);
     border:1px solid var(--pii-line);border-radius:8px;padding:2px 9px}
+  /* YOUR CALL hero — the abstention wow-moment */
+  .callhero{background:var(--call-bg);border:1px solid var(--call-line);border-radius:var(--r);
+    padding:14px 18px;margin:0 0 12px;color:#7a4a12;font-size:14.5px}
+  .callhero b{font-weight:700}
+  .tie{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;margin-top:11px}
+  .tie .src{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-weight:650;color:var(--call);
+    background:#fff;border:1px solid var(--call-line);border-radius:8px;padding:3px 9px;font-size:13px}
+  .tie .opts{display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-size:13.5px}
+  .tie .opt{background:#fff;border:1px solid var(--call-line);border-radius:8px;padding:3px 10px}
+  .tie .opt .sc{color:#a9803f;font-size:11.5px;margin-left:5px}
+  .tie .vs{color:#a9803f;font-weight:600;font-size:12px}
   /* preview table */
   .tablebox{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
     box-shadow:var(--shadow);overflow:auto;max-height:380px}
@@ -152,7 +163,7 @@
     </div>
     <div class="actions-row">
       <button class="btn primary" id="runBtn" disabled><span id="runLabel">Clean it up</span></button>
-      <span class="samplelink" id="sampleBtn" tabindex="0">try messy contacts</span>
+      <span class="samplelink" id="sampleBtn" tabindex="0">try a messy CRM export</span>
       <span class="samplelink" id="sampleBtn2" tabindex="0">or HR payroll (with PII)</span>
     </div>
     <div class="working" id="working"><span class="spin"></span>Cleaning up — this runs locally, so it's quick.</div>
@@ -174,6 +185,12 @@
       <ul class="summary" id="summaryList"></ul>
     </section>
 
+    <section id="callSection" style="display:none">
+      <div class="eyebrow">The judgment calls — I stopped and asked instead of guessing</div>
+      <div class="callhero" id="callHero"></div>
+      <div id="callCards"></div>
+    </section>
+
     <section id="piiSection" style="display:none">
       <div class="eyebrow">Personal data, protected locally</div>
       <div id="piiCards"></div>
@@ -182,11 +199,6 @@
     <section>
       <div class="eyebrow">Handled — already applied (and reversible)</div>
       <div id="doneCards"></div>
-    </section>
-
-    <section id="callSection" style="display:none">
-      <div class="eyebrow">Needs your look — I didn't touch these</div>
-      <div id="callCards"></div>
     </section>
 
     <section>
@@ -222,7 +234,7 @@
   import { Client, handle_file } from "https://cdn.jsdelivr.net/npm/@gradio/client";
   const $ = (id) => document.getElementById(id);
   let selectedFile = null, lastResult = null;
-  const SAMPLE_PATH = "/samples/dirty_contacts.csv";
+  const SAMPLE_PATH = "/samples/maria_crm_export.csv";
   const RENDER_CAP = 120;
 
   const OP_LABEL = {
@@ -271,7 +283,7 @@
   }
   $("fileInput").addEventListener("change", e => e.target.files[0] && pickFile(e.target.files[0]));
   $("dropZone").addEventListener("click", () => $("fileInput").click());
-  $("sampleBtn").addEventListener("click", ()=>pickSample(SAMPLE_PATH, "dirty_contacts.csv"));
+  $("sampleBtn").addEventListener("click", ()=>pickSample(SAMPLE_PATH, "maria_crm_export.csv"));
   $("sampleBtn2").addEventListener("click", ()=>pickSample("/samples/hr_payroll.csv", "hr_payroll.csv"));
   ["dragenter","dragover"].forEach(ev => $("dropZone").addEventListener(ev, e=>{e.preventDefault();$("dropZone").classList.add("drag");}));
   ["dragleave","drop"].forEach(ev => $("dropZone").addEventListener(ev, e=>{e.preventDefault();$("dropZone").classList.remove("drag");}));
@@ -314,7 +326,9 @@
     $("headline").textContent = "Done. Here's what changed.";
     $("results").classList.add("show");
     $("fileName").textContent = selectedFile ? selectedFile.name : "your file";
-    $("fileMeta").textContent = `${data.total_rows_before.toLocaleString()} rows × ${data.columns_before.length} columns · cleaned locally`;
+    const secs = data.elapsed_ms != null ? (data.elapsed_ms/1000) : null;
+    const timeStr = secs == null ? "" : (secs < 1 ? ` · in ${Math.round(data.elapsed_ms)}ms` : ` · in ${secs.toFixed(1)}s`);
+    $("fileMeta").textContent = `${data.total_rows_before.toLocaleString()} rows × ${data.columns_before.length} columns · cleaned locally${timeStr}`;
     const nChanges = (data.change_log||[]).length;
     $("fixPill").textContent = `${nChanges} change${nChanges===1?"":"s"} applied`;
 
@@ -392,17 +406,35 @@
     if (!doneCards.children.length)
       doneCards.innerHTML = `<div class="card done"><div class="card-body">No column fixes were needed beyond the table-level tidy-up.</div></div>`;
 
-    // ---- YOUR CALL (review flags)
+    // ---- YOUR CALL (review flags) — the abstention hero
     const callCards = $("callCards"); callCards.innerHTML = "";
+    const callHero = $("callHero"); callHero.innerHTML = "";
     $("callSection").style.display = flags.length ? "" : "none";
+    if (flags.length){
+      // count the genuine ambiguities (values with two near-tied candidates)
+      let ties = 0;
+      flags.forEach(f => Object.values(f.candidates||{}).forEach(cs => { if ((cs||[]).length>=2) ties++; }));
+      const total = flags.reduce((n,f)=>n+(f.values||[]).length, 0);
+      callHero.innerHTML = `<b>I left ${total} value${total===1?"":"s"} alone on purpose.</b> ` +
+        (ties ? `${ties} ${ties===1?"is a genuine toss-up":"are genuine toss-ups"} — close enough that guessing would be a coin flip. ` : "") +
+        `A wrong "fix" is worse than no fix, so these are yours to call.`;
+    }
     flags.forEach(f=>{
       const card = document.createElement("div");
       card.className = "card call";
-      const vals = (f.values||[]).slice(0,8);
+      const vals = (f.values||[]).slice(0,12);
+      const cands = f.candidates || {};
+      // render each uncertain value with the candidates it sits between
+      const ties = vals.map(v=>{
+        const cs = (cands[v]||[]).slice(0,2);
+        if (!cs.length) return `<div class="src">${esc(v)}</div><div class="opts"><span class="vs">no close match — left as-is</span></div>`;
+        const opts = cs.map((c,i)=>`${i?'<span class="vs">or</span>':''}<span class="opt">${esc(c.canon)}<span class="sc">${(c.score*100).toFixed(0)}%</span></span>`).join("");
+        return `<div class="src">${esc(v)}</div><div class="opts">${opts}</div>`;
+      }).join("");
       card.innerHTML = `
         <div class="card-top"><span class="card-title">${esc(f.column||"")}</span><span class="pill call">YOUR CALL</span></div>
         <div class="card-body">${esc(f.rationale||f.issue||"Left for review.")}</div>
-        ${vals.length ? `<div class="badge-row" style="margin-top:9px">${vals.map(v=>`<span class="pii-badge" style="color:var(--call);background:var(--call-bg);border-color:var(--call-line)">${esc(v)}</span>`).join("")}</div>` : ""}`;
+        ${ties ? `<div class="tie">${ties}</div>` : ""}`;
       callCards.appendChild(card);
     });
 

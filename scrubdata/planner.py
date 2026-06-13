@@ -234,9 +234,20 @@ def _column_operations(col_profile: dict, series: pd.Series, flags_out: list | N
             # agrees — an inferred reference on a name-like column otherwise
             # produces misleading user-facing rationale ("city values" on names)
             kind = f"{ref_type} " if stype == ref_type else ""
+            # EXPLAIN each abstention: the top-2 reference candidates the value sits
+            # between (e.g. Slovia ~ Slovakia / Slovenia). Additive UI evidence — it
+            # does NOT change which values abstain (the decision is grounded_mapping's).
+            from .reconcile import default_index
+            _idx = default_index()
+            candidates = {
+                v: [{"canon": c, "score": s}
+                    for c, s in _idx.candidates(v, ref_type, k=2)]
+                for v in abstained[:20]
+            }
             flags_out.append({
                 "column": col_profile["name"], "issue": "uncertain_canonicalization",
                 "values": abstained[:20], "action": "left_for_review",
+                "candidates": candidates,
                 "rationale": f"{len(abstained)} {kind}value(s) look like typos but did "
                              f"not confidently match the reference — left unchanged for review.",
             })

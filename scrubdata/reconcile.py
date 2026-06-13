@@ -80,6 +80,26 @@ class ReferenceIndex:
         b = self.best(value, ctype)
         return (b[0], b[1]) if (b is not None and b[1] >= threshold) else None
 
+    def candidates(self, value, ctype: str, k: int = 2):
+        """Top-k nearest reference canonicals as [(canonical, score), ...], best first.
+        Used only to EXPLAIN an abstention to the user (e.g. 'Slovia' is near both
+        'Slovakia' and 'Slovenia') — it does not change which values abstain."""
+        nv = _norm(value)
+        if not nv or ctype not in self._buckets:
+            return []
+        hit = self._exact.get(ctype, {}).get(nv)
+        if hit is not None:
+            return [(hit, 1.0)]
+        scored: list[tuple[str, float]] = []
+        for canonical, nc in self._buckets[ctype].get(nv[0], []):
+            if abs(len(nc) - len(nv)) > 1 + len(nv) // 3:
+                continue
+            r = difflib.SequenceMatcher(None, nv, nc).ratio()
+            if r >= 0.6:
+                scored.append((canonical, round(r, 3)))
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return scored[:k]
+
 
 def infer_reference_type(values, idx: ReferenceIndex | None = None,
                          min_coverage: float = 0.55, sample: int = 80,
