@@ -5,7 +5,10 @@ oracle error positions from the dirty/gold diff + LABELING_BUDGET gold-labeled t
 (auto-sampled), no Wikipedia-pretrained value models. This is an UPPER BOUND under a
 strictly more informed protocol than ours (we are zero-label, no oracle detection) —
 disclosed in the paper. With oracle detection Baran only edits true-error cells, so its
-damage rate is 0 by construction.
+damage rate is NEAR-zero structurally — but not exactly 0: raha normalizes values at
+CSV load (html-unescape + whitespace collapse), so its repaired output differs from the
+raw-loaded dirty table at cells it never corrected (measured churn-neutral damage:
+hospital 0.004, rayyan 0.010 — see eval/cross_scoring.py).
 
 STANDALONE on purpose: stdlib + pandas + raha only — it runs inside a pinned ephemeral
 env (raha 1.26 is 2023 code), never importing scrubdata:

@@ -1,0 +1,809 @@
+{
+ "taxonomy": [
+  "typo",
+  "case",
+  "whitespace",
+  "encoding",
+  "numeric",
+  "date-format",
+  "token-swap",
+  "missing",
+  "other"
+ ],
+ "seeds": [
+  7,
+  17,
+  27
+ ],
+ "real": {
+  "n": 163607,
+  "n_sources": 42,
+  "hospital_n": 509,
+  "pooled_counts": {
+   "other": 81838,
+   "numeric": 9965,
+   "missing": 5200,
+   "whitespace": 1432,
+   "typo": 63072,
+   "case": 1448,
+   "token-swap": 59,
+   "encoding": 593
+  },
+  "pooled_dist": {
+   "typo": 0.3855,
+   "case": 0.0089,
+   "whitespace": 0.0088,
+   "encoding": 0.0036,
+   "numeric": 0.0609,
+   "date-format": 0.0,
+   "token-swap": 0.0004,
+   "missing": 0.0318,
+   "other": 0.5002
+  },
+  "per_source": {
+   "beers": {
+    "n": 4362,
+    "dist": {
+     "typo": 0.0,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.1589,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.2595,
+     "other": 0.5816
+    }
+   },
+   "cleanml_company": {
+    "n": 65,
+    "dist": {
+     "typo": 0.2,
+     "case": 0.0,
+     "whitespace": 0.8,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0
+    }
+   },
+   "cleanml_movie": {
+    "n": 4779,
+    "dist": {
+     "typo": 0.0015,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.9985
+    }
+   },
+   "dblp_acm": {
+    "n": 2128,
+    "dist": {
+     "typo": 0.0132,
+     "case": 0.5056,
+     "whitespace": 0.0047,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0268,
+     "missing": 0.0,
+     "other": 0.4497
+    }
+   },
+   "dblp_scholar": {
+    "n": 3099,
+    "dist": {
+     "typo": 0.435,
+     "case": 0.112,
+     "whitespace": 0.0161,
+     "encoding": 0.0168,
+     "numeric": 0.0136,
+     "date-format": 0.0,
+     "token-swap": 0.0006,
+     "missing": 0.0,
+     "other": 0.4059
+    }
+   },
+   "dgov_2_10_budget_presentation_award_summary": {
+    "n": 9,
+    "dist": {
+     "typo": 0.8889,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.1111
+    }
+   },
+   "dgov_305b_assessed_lake_2020": {
+    "n": 442,
+    "dist": {
+     "typo": 0.9367,
+     "case": 0.0,
+     "whitespace": 0.0543,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.009
+    }
+   },
+   "dgov_3_09_census_acs_post_secondary_education": {
+    "n": 82,
+    "dist": {
+     "typo": 0.939,
+     "case": 0.0,
+     "whitespace": 0.0488,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0122
+    }
+   },
+   "dgov_access_control": {
+    "n": 4180,
+    "dist": {
+     "typo": 0.855,
+     "case": 0.0,
+     "whitespace": 0.049,
+     "encoding": 0.0,
+     "numeric": 0.0684,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0275
+    }
+   },
+   "dgov_ah_provisional_diabetes_death_counts_for": {
+    "n": 142,
+    "dist": {
+     "typo": 0.9437,
+     "case": 0.0,
+     "whitespace": 0.0563,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0
+    }
+   },
+   "dgov_allegheny_county_tobacco_vendors": {
+    "n": 2392,
+    "dist": {
+     "typo": 0.8031,
+     "case": 0.0,
+     "whitespace": 0.0514,
+     "encoding": 0.0,
+     "numeric": 0.0109,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0661,
+     "other": 0.0686
+    }
+   },
+   "dgov_emergency_operating_center_tools": {
+    "n": 4,
+    "dist": {
+     "typo": 0.75,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.25,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0
+    }
+   },
+   "dgov_field_listings": {
+    "n": 317,
+    "dist": {
+     "typo": 0.8265,
+     "case": 0.0,
+     "whitespace": 0.0379,
+     "encoding": 0.0,
+     "numeric": 0.1199,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0158
+    }
+   },
+   "dgov_grocery_stores_2013": {
+    "n": 420,
+    "dist": {
+     "typo": 0.769,
+     "case": 0.0,
+     "whitespace": 0.0881,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0524,
+     "other": 0.0905
+    }
+   },
+   "dgov_health_conditions_among_children_under_a": {
+    "n": 2900,
+    "dist": {
+     "typo": 0.8879,
+     "case": 0.0,
+     "whitespace": 0.1003,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0117
+    }
+   },
+   "dgov_illinois_obesity_by_county": {
+    "n": 17,
+    "dist": {
+     "typo": 0.9412,
+     "case": 0.0,
+     "whitespace": 0.0588,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0
+    }
+   },
+   "dgov_jefferson_county_ky_post_offices": {
+    "n": 26,
+    "dist": {
+     "typo": 0.9615,
+     "case": 0.0,
+     "whitespace": 0.0385,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0
+    }
+   },
+   "dgov_la_county_covid_cases": {
+    "n": 579,
+    "dist": {
+     "typo": 0.9257,
+     "case": 0.0,
+     "whitespace": 0.0639,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0104
+    }
+   },
+   "dgov_legislative_bridge_names": {
+    "n": 415,
+    "dist": {
+     "typo": 0.8602,
+     "case": 0.0,
+     "whitespace": 0.0458,
+     "encoding": 0.0,
+     "numeric": 0.0651,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0289
+    }
+   },
+   "dgov_louisville_metro_ky_inspection_results_p": {
+    "n": 1126,
+    "dist": {
+     "typo": 0.8917,
+     "case": 0.0,
+     "whitespace": 0.0657,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0426
+    }
+   },
+   "dgov_louisville_metro_ky_permitted_hotels_and": {
+    "n": 191,
+    "dist": {
+     "typo": 0.8796,
+     "case": 0.0,
+     "whitespace": 0.0995,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0209
+    }
+   },
+   "dgov_median_household_income": {
+    "n": 138,
+    "dist": {
+     "typo": 0.7391,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0725,
+     "other": 0.1884
+    }
+   },
+   "dgov_medicare_part_d_opioid_prescribing_rates": {
+    "n": 547,
+    "dist": {
+     "typo": 0.9707,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0293
+    }
+   },
+   "dgov_mva_vehicle_sales_counts_by_month_for_ca": {
+    "n": 43,
+    "dist": {
+     "typo": 1.0,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0
+    }
+   },
+   "dgov_national_obesity_by_state_1": {
+    "n": 13,
+    "dist": {
+     "typo": 0.9231,
+     "case": 0.0,
+     "whitespace": 0.0769,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0
+    }
+   },
+   "ed2_restaurants": {
+    "n": 309,
+    "dist": {
+     "typo": 0.1165,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0647,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.2621,
+     "other": 0.5566
+    }
+   },
+   "flights": {
+    "n": 4920,
+    "dist": {
+     "typo": 0.3516,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.4699,
+     "other": 0.1785
+    }
+   },
+   "fodors_zagats": {
+    "n": 206,
+    "dist": {
+     "typo": 0.5437,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.4563
+    }
+   },
+   "gidcl_imdb": {
+    "n": 13320,
+    "dist": {
+     "typo": 0.5585,
+     "case": 0.0003,
+     "whitespace": 0.0,
+     "encoding": 0.0345,
+     "numeric": 0.2081,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.1986
+    }
+   },
+   "hospital": {
+    "n": 509,
+    "dist": {
+     "typo": 0.831,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.002,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.167
+    }
+   },
+   "movies_1": {
+    "n": 7006,
+    "dist": {
+     "typo": 0.0013,
+     "case": 0.0007,
+     "whitespace": 0.0001,
+     "encoding": 0.0,
+     "numeric": 0.7858,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0153,
+     "other": 0.1968
+    }
+   },
+   "rayyan": {
+    "n": 948,
+    "dist": {
+     "typo": 0.2838,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0802,
+     "numeric": 0.0021,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0791,
+     "other": 0.5549
+    }
+   },
+   "tt_00e2h310": {
+    "n": 12433,
+    "dist": {
+     "typo": 0.2177,
+     "case": 0.0002,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.782
+    }
+   },
+   "tt_2zwsmotj": {
+    "n": 10977,
+    "dist": {
+     "typo": 0.2177,
+     "case": 0.0003,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.782
+    }
+   },
+   "tt_3n6s2fcx": {
+    "n": 9510,
+    "dist": {
+     "typo": 0.2192,
+     "case": 0.0002,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.7805
+    }
+   },
+   "tt_8yinkydr": {
+    "n": 14188,
+    "dist": {
+     "typo": 0.2218,
+     "case": 0.0003,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.7779
+    }
+   },
+   "tt_cn5wvwhh": {
+    "n": 370,
+    "dist": {
+     "typo": 0.0027,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.9973
+    }
+   },
+   "tt_co23z7go": {
+    "n": 33542,
+    "dist": {
+     "typo": 0.5742,
+     "case": 0.0,
+     "whitespace": 0.009,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.4167
+    }
+   },
+   "tt_dvnkv0xu": {
+    "n": 15676,
+    "dist": {
+     "typo": 0.2208,
+     "case": 0.0003,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.779
+    }
+   },
+   "tt_uma1dnf6": {
+    "n": 5080,
+    "dist": {
+     "typo": 0.9102,
+     "case": 0.0,
+     "whitespace": 0.0171,
+     "encoding": 0.0,
+     "numeric": 0.0,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0,
+     "other": 0.0726
+    }
+   },
+   "zeroed_billionaire": {
+    "n": 5248,
+    "dist": {
+     "typo": 0.2226,
+     "case": 0.0,
+     "whitespace": 0.0139,
+     "encoding": 0.001,
+     "numeric": 0.0673,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.2445,
+     "other": 0.4508
+    }
+   },
+   "zeroed_tax100k": {
+    "n": 949,
+    "dist": {
+     "typo": 0.7682,
+     "case": 0.0,
+     "whitespace": 0.0,
+     "encoding": 0.0,
+     "numeric": 0.2107,
+     "date-format": 0.0,
+     "token-swap": 0.0,
+     "missing": 0.0211,
+     "other": 0.0
+    }
+   }
+  }
+ },
+ "injected": {
+  "n": 43011,
+  "per_seed_n": {
+   "7": 14075,
+   "17": 14675,
+   "27": 14261
+  },
+  "pooled_counts": {
+   "typo": 19512,
+   "case": 9190,
+   "whitespace": 14309
+  },
+  "pooled_dist": {
+   "typo": 0.4537,
+   "case": 0.2137,
+   "whitespace": 0.3327,
+   "encoding": 0.0,
+   "numeric": 0.0,
+   "date-format": 0.0,
+   "token-swap": 0.0,
+   "missing": 0.0,
+   "other": 0.0
+  },
+  "per_injector_dist": {
+   "case": {
+    "typo": 0.0,
+    "case": 1.0,
+    "whitespace": 0.0,
+    "encoding": 0.0,
+    "numeric": 0.0,
+    "date-format": 0.0,
+    "token-swap": 0.0,
+    "missing": 0.0,
+    "other": 0.0
+   },
+   "ocr": {
+    "typo": 0.9995,
+    "case": 0.0,
+    "whitespace": 0.0005,
+    "encoding": 0.0,
+    "numeric": 0.0,
+    "date-format": 0.0,
+    "token-swap": 0.0,
+    "missing": 0.0,
+    "other": 0.0
+   },
+   "typo": {
+    "typo": 0.9845,
+    "case": 0.0,
+    "whitespace": 0.0155,
+    "encoding": 0.0,
+    "numeric": 0.0,
+    "date-format": 0.0,
+    "token-swap": 0.0,
+    "missing": 0.0,
+    "other": 0.0
+   },
+   "whitespace": {
+    "typo": 0.0,
+    "case": 0.0,
+    "whitespace": 1.0,
+    "encoding": 0.0,
+    "numeric": 0.0,
+    "date-format": 0.0,
+    "token-swap": 0.0,
+    "missing": 0.0,
+    "other": 0.0
+   }
+  },
+  "injector_taxonomy_agreement": 0.9968
+ },
+ "jsd": {
+  "pooled": 0.5262,
+  "hospital_vs_injected": 0.3982,
+  "per_real_source_vs_injected": {
+   "beers": 1.0,
+   "cleanml_company": 0.2149,
+   "cleanml_movie": 0.9929,
+   "dblp_acm": 0.6233,
+   "dblp_scholar": 0.3575,
+   "dgov_2_10_budget_presentation_award_summary": 0.3806,
+   "dgov_305b_assessed_lake_2020": 0.2534,
+   "dgov_3_09_census_acs_post_secondary_education": 0.2608,
+   "dgov_access_control": 0.2852,
+   "dgov_ah_provisional_diabetes_death_counts_for": 0.2486,
+   "dgov_allegheny_county_tobacco_vendors": 0.2981,
+   "dgov_emergency_operating_center_tools": 0.4248,
+   "dgov_field_listings": 0.3115,
+   "dgov_grocery_stores_2013": 0.2626,
+   "dgov_health_conditions_among_children_under_a": 0.2117,
+   "dgov_illinois_obesity_by_county": 0.2459,
+   "dgov_jefferson_county_ky_post_offices": 0.2705,
+   "dgov_la_county_covid_cases": 0.2435,
+   "dgov_legislative_bridge_names": 0.2885,
+   "dgov_louisville_metro_ky_inspection_results_p": 0.251,
+   "dgov_louisville_metro_ky_permitted_hotels_and": 0.2152,
+   "dgov_median_household_income": 0.4285,
+   "dgov_medicare_part_d_opioid_prescribing_rates": 0.3571,
+   "dgov_mva_vehicle_sales_counts_by_month_for_ca": 0.3491,
+   "dgov_national_obesity_by_state_1": 0.2278,
+   "ed2_restaurants": 0.7917,
+   "flights": 0.602,
+   "fodors_zagats": 0.5043,
+   "gidcl_imdb": 0.4962,
+   "hospital": 0.3982,
+   "movies_1": 0.9893,
+   "rayyan": 0.6455,
+   "tt_00e2h310": 0.6935,
+   "tt_2zwsmotj": 0.6933,
+   "tt_3n6s2fcx": 0.6924,
+   "tt_8yinkydr": 0.69,
+   "tt_cn5wvwhh": 0.9881,
+   "tt_co23z7go": 0.4611,
+   "tt_dvnkv0xu": 0.691,
+   "tt_uma1dnf6": 0.3249,
+   "zeroed_billionaire": 0.6489,
+   "zeroed_tax100k": 0.4186
+  },
+  "min": 0.2117,
+  "median": 0.3982,
+  "max": 1.0
+ },
+ "ranking": {
+  "systems": [
+   {
+    "system": "grounded (ours)",
+    "real_f1": 0.2248342298406393,
+    "inj_f1": 0.22437180007268678,
+    "anchor": false
+   },
+   {
+    "system": "OpenRefine fingerprint",
+    "real_f1": 0.03919215053000111,
+    "inj_f1": 0.2817577151327488,
+    "anchor": false
+   },
+   {
+    "system": "OpenRefine kNN",
+    "real_f1": 0.058356518613316845,
+    "inj_f1": 0.1485689316939941,
+    "anchor": false
+   },
+   {
+    "system": "no-op",
+    "real_f1": 0.0,
+    "inj_f1": 0.0,
+    "anchor": false
+   },
+   {
+    "system": "abstain-all",
+    "real_f1": 0.0,
+    "inj_f1": 0.0,
+    "anchor": true
+   },
+   {
+    "system": "random-edit",
+    "real_f1": 0.0003674648901041271,
+    "inj_f1": 0.0026599791727947865,
+    "anchor": true
+   },
+   {
+    "system": "oracle",
+    "real_f1": 1.0,
+    "inj_f1": 1.0,
+    "anchor": true
+   }
+  ],
+  "kendall_tau_b_money_table": 0.3333,
+  "kendall_tau_b_with_anchors": 0.8
+ },
+ "sec": {
+  "real_classify": 39.2,
+  "injected_classify": 48.6,
+  "total": 925.8
+ }
+}

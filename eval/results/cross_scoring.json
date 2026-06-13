@@ -1,0 +1,856 @@
+{
+ "protocol": {
+  "original": "Raha/Baran convention: value_normalizer (html-unescape + whitespace collapse) then raw string equality; P = exact-gold repairs / changed cells, R = exact-gold repairs / (dirty->clean diff); no churn-neutrality, no damage",
+  "churn_neutral": "eval.run_real_multi.score \u2014 the scoring contract",
+  "baran_rows": "oracle error positions + n gold labels, 3 seeds, seed-mean; reconstructed from repaired CSVs (no-op corrections vanish: |changed| lower-bounds Baran's output_size)",
+  "movies_1": "first 2000 rows (_raha_pair), as everywhere in the suite"
+ },
+ "systems": {
+  "grounded": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "original": {
+      "f1": 0.13683688646504708,
+      "precision": 0.07829787234042553,
+      "recall": 0.5422396856581533,
+      "_errors": 509,
+      "_changed": 3525,
+      "_tp": 276
+     },
+     "churn_neutral": {
+      "f1": 0.25794392523364484,
+      "precision": 0.16922133660331085,
+      "recall": 0.5422396856581533,
+      "damage": 0.06623569852752552,
+      "_errors": 509,
+      "_changed": 1631,
+      "_fixed": 276
+     }
+    },
+    {
+     "dataset": "beers",
+     "original": {
+      "f1": 0.010414997596539017,
+      "precision": 0.007330551483026954,
+      "recall": 0.017980636237897647,
+      "_errors": 3615,
+      "_changed": 8867,
+      "_tp": 65
+     },
+     "churn_neutral": {
+      "f1": 0.024956805528892304,
+      "precision": 0.04077791718946048,
+      "recall": 0.017980636237897647,
+      "damage": 0.004568942072341583,
+      "_errors": 3615,
+      "_changed": 1594,
+      "_fixed": 65
+     }
+    },
+    {
+     "dataset": "flights",
+     "original": {
+      "f1": 0.09555972482801753,
+      "precision": 0.10213903743315508,
+      "recall": 0.08977673325499412,
+      "_errors": 4255,
+      "_changed": 3740,
+      "_tp": 382
+     },
+     "churn_neutral": {
+      "f1": 0.12701579384871156,
+      "precision": 0.21704545454545454,
+      "recall": 0.08977673325499412,
+      "damage": 0.08229861467419189,
+      "_errors": 4255,
+      "_changed": 1760,
+      "_fixed": 382
+     }
+    },
+    {
+     "dataset": "rayyan",
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 948,
+      "_changed": 4124,
+      "_tp": 0
+     },
+     "churn_neutral": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.1177875049741345,
+      "_errors": 948,
+      "_changed": 1274,
+      "_fixed": 0
+     }
+    },
+    {
+     "dataset": "movies_1",
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 2224,
+      "_changed": 4798,
+      "_tp": 0
+     },
+     "churn_neutral": {
+      "f1": 0.714254624591948,
+      "precision": 0.6447937131630649,
+      "recall": 0.8004878048780488,
+      "damage": 0.024788732394366197,
+      "_errors": 2050,
+      "_changed": 2545,
+      "_fixed": 1641
+     }
+    }
+   ],
+   "macro_f1_original": 0.048562321777920726,
+   "macro_f1_churn_neutral": 0.22483422984063933
+  },
+  "openrefine_fingerprint": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 509,
+      "_changed": 0,
+      "_tp": 0
+     },
+     "churn_neutral": {
+      "f1": 0.0,
+      "precision": 1.0,
+      "recall": 0.0,
+      "damage": 0.0,
+      "_errors": 509,
+      "_changed": 0,
+      "_fixed": 0
+     }
+    },
+    {
+     "dataset": "beers",
+     "original": {
+      "f1": 0.18844596034960565,
+      "precision": 0.4107806691449814,
+      "recall": 0.122268326417704,
+      "_errors": 3615,
+      "_changed": 1076,
+      "_tp": 442
+     },
+     "churn_neutral": {
+      "f1": 0.1936897458369851,
+      "precision": 0.4657534246575342,
+      "recall": 0.122268326417704,
+      "damage": 0.0,
+      "_errors": 3615,
+      "_changed": 949,
+      "_fixed": 442
+     }
+    },
+    {
+     "dataset": "flights",
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 4255,
+      "_changed": 8,
+      "_tp": 0
+     },
+     "churn_neutral": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.0,
+      "_errors": 4255,
+      "_changed": 6,
+      "_fixed": 0
+     }
+    },
+    {
+     "dataset": "rayyan",
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 948,
+      "_changed": 63,
+      "_tp": 0
+     },
+     "churn_neutral": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.0005968961400716276,
+      "_errors": 948,
+      "_changed": 17,
+      "_fixed": 0
+     }
+    },
+    {
+     "dataset": "movies_1",
+     "original": {
+      "f1": 0.0021306818181818185,
+      "precision": 0.005067567567567568,
+      "recall": 0.0013489208633093526,
+      "_errors": 2224,
+      "_changed": 592,
+      "_tp": 3
+     },
+     "churn_neutral": {
+      "f1": 0.002271006813020439,
+      "precision": 0.005067567567567568,
+      "recall": 0.0014634146341463415,
+      "damage": 0.01812206572769953,
+      "_errors": 2050,
+      "_changed": 592,
+      "_fixed": 3
+     }
+    }
+   ],
+   "macro_f1_original": 0.03811532843355749,
+   "macro_f1_churn_neutral": 0.03919215053000111
+  },
+  "openrefine_knn": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "original": {
+      "f1": 0.18923465096719932,
+      "precision": 0.12038523274478331,
+      "recall": 0.44204322200392926,
+      "_errors": 509,
+      "_changed": 1869,
+      "_tp": 225
+     },
+     "churn_neutral": {
+      "f1": 0.18923465096719932,
+      "precision": 0.12038523274478331,
+      "recall": 0.44204322200392926,
+      "damage": 0.0829100610538197,
+      "_errors": 509,
+      "_changed": 1869,
+      "_fixed": 225
+     }
+    },
+    {
+     "dataset": "beers",
+     "original": {
+      "f1": 0.0843618184658647,
+      "precision": 0.09691313711414214,
+      "recall": 0.07468879668049792,
+      "_errors": 3615,
+      "_changed": 2786,
+      "_tp": 270
+     },
+     "churn_neutral": {
+      "f1": 0.08606949314631814,
+      "precision": 0.10154193305754043,
+      "recall": 0.07468879668049792,
+      "damage": 0.07391895567038347,
+      "_errors": 3615,
+      "_changed": 2659,
+      "_fixed": 270
+     }
+    },
+    {
+     "dataset": "flights",
+     "original": {
+      "f1": 0.013764880952380954,
+      "precision": 0.03300624442462088,
+      "recall": 0.008695652173913044,
+      "_errors": 4255,
+      "_changed": 1121,
+      "_tp": 37
+     },
+     "churn_neutral": {
+      "f1": 0.013770003721622627,
+      "precision": 0.03306523681858802,
+      "recall": 0.008695652173913044,
+      "damage": 0.06536685479733197,
+      "_errors": 4255,
+      "_changed": 1119,
+      "_fixed": 37
+     }
+    },
+    {
+     "dataset": "rayyan",
+     "original": {
+      "f1": 0.001748251748251748,
+      "precision": 0.00510204081632653,
+      "recall": 0.0010548523206751054,
+      "_errors": 948,
+      "_changed": 196,
+      "_tp": 1
+     },
+     "churn_neutral": {
+      "f1": 0.0018001800180017999,
+      "precision": 0.006134969325153374,
+      "recall": 0.0010548523206751054,
+      "damage": 0.007958615200955034,
+      "_errors": 948,
+      "_changed": 163,
+      "_fixed": 1
+     }
+    },
+    {
+     "dataset": "movies_1",
+     "original": {
+      "f1": 0.0008737439930100482,
+      "precision": 0.0008496176720475786,
+      "recall": 0.0008992805755395684,
+      "_errors": 2224,
+      "_changed": 2354,
+      "_tp": 2
+     },
+     "churn_neutral": {
+      "f1": 0.0009082652134423252,
+      "precision": 0.0008496176720475786,
+      "recall": 0.000975609756097561,
+      "damage": 0.07176838810641628,
+      "_errors": 2050,
+      "_changed": 2354,
+      "_fixed": 2
+     }
+    }
+   ],
+   "macro_f1_original": 0.05799666922534136,
+   "macro_f1_churn_neutral": 0.058356518613316845
+  },
+  "verified_union_v6_tau0.5": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "original": {
+      "f1": 0.5668016194331984,
+      "precision": 0.9051724137931034,
+      "recall": 0.412573673870334,
+      "_errors": 509,
+      "_changed": 232,
+      "_tp": 210
+     },
+     "churn_neutral": {
+      "f1": 0.5668016194331984,
+      "precision": 0.9051724137931034,
+      "recall": 0.412573673870334,
+      "damage": 0.0010261146170027192,
+      "_errors": 509,
+      "_changed": 232,
+      "_fixed": 210
+     }
+    },
+    {
+     "dataset": "beers",
+     "original": {
+      "f1": 0.03367875647668394,
+      "precision": 0.2653061224489796,
+      "recall": 0.017980636237897647,
+      "_errors": 3615,
+      "_changed": 245,
+      "_tp": 65
+     },
+     "churn_neutral": {
+      "f1": 0.034815211569362604,
+      "precision": 0.5462184873949579,
+      "recall": 0.017980636237897647,
+      "damage": 0.0009790590155017678,
+      "_errors": 3615,
+      "_changed": 119,
+      "_fixed": 65
+     }
+    },
+    {
+     "dataset": "flights",
+     "original": {
+      "f1": 0.03499047289104452,
+      "precision": 0.06653491436100131,
+      "recall": 0.02373678025851939,
+      "_errors": 4255,
+      "_changed": 1518,
+      "_tp": 101
+     },
+     "churn_neutral": {
+      "f1": 0.03500259920291111,
+      "precision": 0.06662269129287599,
+      "recall": 0.02373678025851939,
+      "damage": 0.08045151359671626,
+      "_errors": 4255,
+      "_changed": 1516,
+      "_fixed": 101
+     }
+    },
+    {
+     "dataset": "rayyan",
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 948,
+      "_changed": 19,
+      "_tp": 0
+     },
+     "churn_neutral": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.001193792280143255,
+      "_errors": 948,
+      "_changed": 12,
+      "_fixed": 0
+     }
+    },
+    {
+     "dataset": "movies_1",
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 2224,
+      "_changed": 808,
+      "_tp": 0
+     },
+     "churn_neutral": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.02485133020344288,
+      "_errors": 2050,
+      "_changed": 808,
+      "_fixed": 0
+     }
+    }
+   ],
+   "macro_f1_original": 0.12709416976018537,
+   "macro_f1_churn_neutral": 0.1273238860410944
+  },
+  "baran_oracle0": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 509.0,
+      "_changed": 0.0,
+      "_tp": 0.0
+     },
+     "churn_neutral": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.004001847006310605,
+      "_errors": 509.0,
+      "_changed": 78.0,
+      "_fixed": 0.0
+     }
+    },
+    {
+     "dataset": "beers",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 3615.0,
+      "_changed": 0.0,
+      "_tp": 0.0
+     },
+     "churn_neutral": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 5.439216752787599e-05,
+      "_errors": 3615.0,
+      "_changed": 1.0,
+      "_fixed": 0.0
+     }
+    },
+    {
+     "dataset": "flights",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 4255.0,
+      "_changed": 0.0,
+      "_tp": 0.0
+     },
+     "churn_neutral": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.0,
+      "_errors": 4255.0,
+      "_changed": 31.0,
+      "_fixed": 0.0
+     }
+    },
+    {
+     "dataset": "rayyan",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 948.0,
+      "_changed": 0.0,
+      "_tp": 0.0
+     },
+     "churn_neutral": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "damage": 0.009649820931157979,
+      "_errors": 948.0,
+      "_changed": 101.0,
+      "_fixed": 0.0
+     }
+    },
+    {
+     "dataset": "movies_1",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "_errors": 2224.0,
+      "_changed": 0.0,
+      "_tp": 0.0
+     },
+     "churn_neutral": {
+      "f1": 0.0,
+      "precision": 1.0,
+      "recall": 0.0,
+      "damage": 0.0,
+      "_errors": 2050.0,
+      "_changed": 0.0,
+      "_fixed": 0.0
+     }
+    }
+   ],
+   "macro_f1_original": 0.0,
+   "macro_f1_churn_neutral": 0.0
+  },
+  "baran_oracle5": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.6551007568434103,
+      "precision": 0.8789393797446383,
+      "recall": 0.5225933202357563,
+      "_errors": 509.0,
+      "_changed": 302.3333333333333,
+      "_tp": 266.0
+     },
+     "churn_neutral": {
+      "f1": 0.5976770747168747,
+      "precision": 0.6985601097769835,
+      "recall": 0.5225933202357563,
+      "damage": 0.004001847006310605,
+      "_errors": 509.0,
+      "_changed": 380.3333333333333,
+      "_fixed": 266.0
+     }
+    },
+    {
+     "dataset": "beers",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.7528420602908671,
+      "precision": 0.7693038449137194,
+      "recall": 0.7372982941447672,
+      "_errors": 3615.0,
+      "_changed": 3471.0,
+      "_tp": 2665.3333333333335
+     },
+     "churn_neutral": {
+      "f1": 0.7527357363043982,
+      "precision": 0.7690817230910615,
+      "recall": 0.7372982941447672,
+      "damage": 5.439216752787599e-05,
+      "_errors": 3615.0,
+      "_changed": 3472.0,
+      "_fixed": 2665.3333333333335
+     }
+    },
+    {
+     "dataset": "flights",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.9716621879411721,
+      "precision": 0.9907413332218985,
+      "recall": 0.9533098315707011,
+      "_errors": 4255.0,
+      "_changed": 4094.3333333333335,
+      "_tp": 4056.3333333333335
+     },
+     "churn_neutral": {
+      "f1": 0.9715071390508543,
+      "precision": 0.990419230744583,
+      "recall": 0.9533098315707011,
+      "damage": 0.0,
+      "_errors": 4255.0,
+      "_changed": 4095.6666666666665,
+      "_fixed": 4056.3333333333335
+     }
+    },
+    {
+     "dataset": "rayyan",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.13519068028219686,
+      "precision": 0.20218769308487497,
+      "recall": 0.10654008438818564,
+      "_errors": 948.0,
+      "_changed": 497.0,
+      "_tp": 101.0
+     },
+     "churn_neutral": {
+      "f1": 0.126498861945361,
+      "precision": 0.16496175881858396,
+      "recall": 0.10654008438818564,
+      "damage": 0.009649820931157979,
+      "_errors": 948.0,
+      "_changed": 598.0,
+      "_fixed": 101.0
+     }
+    },
+    {
+     "dataset": "movies_1",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.06651272736623408,
+      "precision": 0.38518756403094745,
+      "recall": 0.036420863309352514,
+      "_errors": 2224.0,
+      "_changed": 207.66666666666666,
+      "_tp": 81.0
+     },
+     "churn_neutral": {
+      "f1": 0.07163022789809685,
+      "precision": 0.38518756403094745,
+      "recall": 0.03951219512195122,
+      "damage": 0.0004694835680751174,
+      "_errors": 2050.0,
+      "_changed": 207.66666666666666,
+      "_fixed": 81.0
+     }
+    }
+   ],
+   "macro_f1_original": 0.5162616825447761,
+   "macro_f1_churn_neutral": 0.504009807983117
+  },
+  "baran_oracle20": {
+   "per_dataset": [
+    {
+     "dataset": "hospital",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.891377318613051,
+      "precision": 0.9080916290693971,
+      "recall": 0.8755730189914867,
+      "_errors": 509.0,
+      "_changed": 491.0,
+      "_tp": 445.6666666666667
+     },
+     "churn_neutral": {
+      "f1": 0.8268680969233834,
+      "precision": 0.7834926241010877,
+      "recall": 0.8755730189914867,
+      "damage": 0.004001847006310605,
+      "_errors": 509.0,
+      "_changed": 569.0,
+      "_fixed": 445.6666666666667
+     }
+    },
+    {
+     "dataset": "beers",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.9182707659114943,
+      "precision": 0.9265731396812268,
+      "recall": 0.9101890272014753,
+      "_errors": 3615.0,
+      "_changed": 3552.0,
+      "_tp": 3290.3333333333335
+     },
+     "churn_neutral": {
+      "f1": 0.9181426425323927,
+      "precision": 0.9263122436892998,
+      "recall": 0.9101890272014753,
+      "damage": 5.439216752787599e-05,
+      "_errors": 3615.0,
+      "_changed": 3553.0,
+      "_fixed": 3290.3333333333335
+     }
+    },
+    {
+     "dataset": "flights",
+     "n_seeds": 3,
+     "original": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "_errors": 4255.0,
+      "_changed": 4255.0,
+      "_tp": 4255.0
+     },
+     "churn_neutral": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "damage": 0.0,
+      "_errors": 4255.0,
+      "_changed": 4255.0,
+      "_fixed": 4255.0
+     }
+    },
+    {
+     "dataset": "rayyan",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.4301217203128622,
+      "precision": 0.5555661159663857,
+      "recall": 0.3537271448663854,
+      "_errors": 948.0,
+      "_changed": 641.0,
+      "_tp": 335.3333333333333
+     },
+     "churn_neutral": {
+      "f1": 0.4023919283154553,
+      "precision": 0.4732993292645808,
+      "recall": 0.35232067510548526,
+      "damage": 0.009649820931157979,
+      "_errors": 948.0,
+      "_changed": 741.6666666666666,
+      "_fixed": 334.0
+     }
+    },
+    {
+     "dataset": "movies_1",
+     "n_seeds": 3,
+     "original": {
+      "f1": 0.8708333112632177,
+      "precision": 0.9376290775283244,
+      "recall": 0.8129496402877697,
+      "_errors": 2224.0,
+      "_changed": 1928.3333333333333,
+      "_tp": 1808.0
+     },
+     "churn_neutral": {
+      "f1": 0.9089214230345909,
+      "precision": 0.9376290775283244,
+      "recall": 0.8819512195121951,
+      "damage": 0.0005007824726134585,
+      "_errors": 2050.0,
+      "_changed": 1928.3333333333333,
+      "_fixed": 1808.0
+     }
+    }
+   ],
+   "macro_f1_original": 0.822120623220125,
+   "macro_f1_churn_neutral": 0.8112648181611645
+  }
+ },
+ "acceptance": {
+  "vs": "raha_per_dataset.json",
+  "n_cells": 100,
+  "pass": true
+ },
+ "kendall_tau_b": {
+  "primary": {
+   "systems": [
+    "grounded",
+    "verified_union_v6_tau0.5",
+    "openrefine_fingerprint",
+    "openrefine_knn",
+    "baran_oracle20"
+   ],
+   "per_dataset": {
+    "hospital": 0.8,
+    "beers": 1.0,
+    "flights": 1.0,
+    "rayyan": 1.0,
+    "movies_1": 0.5270462766947299
+   },
+   "macro": 0.6
+  },
+  "extended": {
+   "systems": [
+    "grounded",
+    "verified_union_v6_tau0.5",
+    "openrefine_fingerprint",
+    "openrefine_knn",
+    "baran_oracle20",
+    "baran_oracle0",
+    "baran_oracle5"
+   ],
+   "per_dataset": {
+    "hospital": 0.9,
+    "beers": 1.0,
+    "flights": 1.0,
+    "rayyan": 1.0,
+    "movies_1": 0.6324555320336759
+   },
+   "macro": 0.8095238095238095
+  }
+ },
+ "calibration": {
+  "source": "Mahdavi & Abedjan, PVLDB 13(12) p1948, Table 3 row 'Baran' (no TL): complete error set given (oracle detection), budget 20, mean of 10 runs; PDF read 2026-06-12",
+  "notes": "their runs: full datasets, 10 label seeds, Wikipedia value models available in package but Table-3 row is without TL; ours: 3 label seeds, no pretraining, movies_1 not in their paper; our churn-neutral macro for this row is the paper's 0.811",
+  "rows": [
+   {
+    "dataset": "hospital",
+    "published_f1": 0.87,
+    "published_precision": 0.88,
+    "published_recall": 0.86,
+    "repro_f1": 0.891377318613051,
+    "repro_precision": 0.9080916290693971,
+    "repro_recall": 0.8755730189914867,
+    "delta_f1": 0.021377318613051033
+   },
+   {
+    "dataset": "flights",
+    "published_f1": 1.0,
+    "published_precision": 1.0,
+    "published_recall": 1.0,
+    "repro_f1": 1.0,
+    "repro_precision": 1.0,
+    "repro_recall": 1.0,
+    "delta_f1": 0.0
+   },
+   {
+    "dataset": "beers",
+    "published_f1": 0.9,
+    "published_precision": 0.91,
+    "published_recall": 0.89,
+    "repro_f1": 0.9182707659114943,
+    "repro_precision": 0.9265731396812268,
+    "repro_recall": 0.9101890272014753,
+    "delta_f1": 0.018270765911494236
+   },
+   {
+    "dataset": "rayyan",
+    "published_f1": 0.52,
+    "published_precision": 0.76,
+    "published_recall": 0.4,
+    "repro_f1": 0.4301217203128622,
+    "repro_precision": 0.5555661159663857,
+    "repro_recall": 0.3537271448663854,
+    "delta_f1": -0.0898782796871378
+   }
+  ]
+ }
+}

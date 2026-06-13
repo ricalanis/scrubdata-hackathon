@@ -1,4 +1,5 @@
 \documentclass[11pt]{article}
+\usepackage[utf8]{inputenc} % no-op on TeXLive >= 2018 (arXiv pdflatex); explicit for safety
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
@@ -334,7 +335,12 @@ evidence that gameability must be tested, not assumed.
 
 \textbf{Real vs.\ injected.} Injected typos are in-distribution for frequency
 clustering by construction (the canonical is present and dominant in the column), so we
-report the real-error and injected slices separately.
+report the real-error and injected slices separately. A TableEG-style audit
+quantifies the gap (\texttt{eval/inject\_validity.py}): the injector covers three
+of nine error classes (Jensen--Shannon divergence 0.526 bits from the pooled real
+distribution over 163{,}607 real errors), and injected-only evaluation would
+invert the fingerprint-clustering ranking --- exactly the overstatement the
+separate-slice reporting prevents.
 
 \textbf{Scorer validation.} Following GroUSE-style evaluator
 testing~\cite{grouse}, the scorer itself is validated against 30 adversarial
@@ -343,7 +349,16 @@ oracle plan exactly 1.0, vandalizing $k$ of $m$ clean cells must score damage
 $k/m$ at precision 0, pure churn (case/whitespace rewrites that do not restore
 gold) must count as nothing although a naive scorer would count it, fixes must
 require actually acting, and silent edits must trip the audit. All 30 pass
-against the shipped scorer unmodified.
+against the shipped scorer unmodified. We additionally cross-score every system
+under the \emph{original} Raha/Baran cell-repair protocol side by side with ours
+(\texttt{eval/cross\_scoring.py}): rankings agree at Kendall $\tau_b{=}1.0$ on
+three of five datasets, and the disagreements cut both ways --- raw string
+equality denies credit for numerically-correct serialization restorations (our
+movies\_1 repairs), while churn-neutrality charges Baran for load-time
+normalizer rewrites its own protocol hides (hospital precision
+$0.908\!\to\!0.783$). Neither metric family flatters us uniformly, and our Baran
+reproduction calibrates against its published Table~3 within $+0.02$ on three of
+the four shared datasets.
 
 \textbf{Contamination.} The Raha-suite benchmarks have been public on GitHub since
 2019 and sit inside every modern base model's training window; we treat them as
