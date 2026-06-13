@@ -14,6 +14,7 @@ from __future__ import annotations
 import difflib
 import io
 import re
+import time
 from pathlib import Path
 
 import gradio as gr
@@ -232,9 +233,11 @@ def clean_data(file_path: str) -> dict:
         }
 
     raw = _read_any(file_path)
+    _t0 = time.perf_counter()
     before_profile = profile_dataframe(raw)
     plan = PLANNER(raw)
     cleaned, change_log = apply_plan(raw, plan)
+    elapsed_ms = int((time.perf_counter() - _t0) * 1000)
     after_profile = profile_dataframe(cleaned)
     report_md = render_report(plan, change_log, before_profile, after_profile)
 
@@ -271,6 +274,9 @@ def clean_data(file_path: str) -> dict:
         # True dataset totals (the before/after arrays are capped previews).
         "total_rows_before": int(len(raw)),
         "total_rows_after": int(len(cleaned)),
+        # scale-invariance demo beat: profile+plan+execute wall-clock. The prompt
+        # scales with DISTINCT values not rows, so this stays low on big tables.
+        "elapsed_ms": elapsed_ms,
         "preview_cap": ROW_CAP,
         "report_md": report_md,
         "csv_text": csv_text,
