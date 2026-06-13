@@ -44,6 +44,9 @@
   .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
   .btn.primary:disabled{opacity:.45;cursor:not-allowed}
   .samplelink{font-size:13.5px;color:var(--accent);cursor:pointer;text-decoration:underline}
+  .modeltoggle{display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink);cursor:pointer;user-select:none}
+  .modeltoggle input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
+  .modeltoggle .hint{color:var(--ink-soft);font-size:12.5px}
   .err{display:none;background:#fdf0ee;border:1px solid #f0d4cd;color:#8a3a2b;border-radius:11px;
     padding:11px 15px;margin:0 0 18px;font-size:14px}
   .err.show{display:block}
@@ -229,7 +232,10 @@
       <span class="samplelink" id="sampleBtn" tabindex="0">try a messy CRM export</span>
       <span class="samplelink" id="sampleBtn2" tabindex="0">or HR payroll (with PII)</span>
     </div>
-    <div class="actions-row" style="margin-top:-18px">
+    <div class="actions-row" style="margin-top:-18px;gap:18px">
+      <label class="modeltoggle" id="modelToggleWrap" style="display:none">
+        <input type="checkbox" id="modelToggle"> <span>⚡ Use the 4B model <span class="hint">(real fine-tune on a GPU · ~90s)</span></span>
+      </label>
       <span class="samplelink" id="recipeLink" tabindex="0">↻ have a saved recipe? apply it to this file</span>
       <input type="file" id="recipeInput" accept=".json" hidden>
     </div>
@@ -316,24 +322,20 @@
   // ---- honest, deployment-aware copy. On a hosted HF Space the file is processed
   // on HF's servers; only a self-hosted run is truly on-device. (server injects this)
   const RT = window.__SCRUBDATA_RUNTIME__ || { hosted:false, private:true,
-    planner:"deterministic planner", where:"this machine" };
+    planner:"deterministic planner", model_available:false, where:"this machine" };
   (function labelRuntime(){
-    const modelOn = /qwen|fine-tune/i.test(RT.planner || "");
-    if (RT.hosted && modelOn){
-      $("ribbon").innerHTML = "⚡ <b>Hosted demo — running the Qwen3-4B fine-tune on a GPU.</b> " +
-        "Your file is processed in the cloud (sent to no third-party API, not stored). " +
-        "<b>Clone &amp; run it locally</b> to keep your data on your machine and work offline.";
-      $("footerNote").textContent = "Hosted demo runs the Qwen3-4B fine-tune on a Modal GPU. " +
-        "Clone & run locally for on-device cleaning — then your data never leaves your machine.";
-    } else if (RT.hosted){
-      $("ribbon").innerHTML = "🌐 <b>Hosted demo on Hugging Face.</b> Your file is processed on " +
-        "HF's servers — sent to no third-party API and not stored. Want it fully on-device? " +
-        "<b>Run it locally</b> (one command) and nothing leaves your machine.";
-      $("footerNote").textContent = "Hosted demo on Hugging Face's servers (deterministic planner). " +
-        "Run locally for on-device cleaning + the Qwen3-4B model — then your data never leaves your machine.";
+    // the 4B model is opt-in (it's ~90s/clean); show the toggle only if a model is wired
+    if (RT.model_available) $("modelToggleWrap").style.display = "";
+    if (RT.hosted){
+      $("ribbon").innerHTML = "🌐 <b>Hosted demo on Hugging Face.</b> Instant deterministic cleaning by default" +
+        (RT.model_available ? " — or tick <b>“Use the 4B model”</b> to run the real fine-tune on a GPU (~90s)." : ".") +
+        " Your file is processed in the cloud (no third-party API, not stored); <b>clone &amp; run locally</b> to keep it on your machine.";
+      $("footerNote").textContent = "Hosted demo on Hugging Face. The 4B fine-tune runs on a Modal GPU (opt-in); " +
+        "clone & run locally for on-device cleaning — then your data never leaves your machine.";
     }
     // local default copy is already in the HTML (privacy-true)
   })();
+  const useModelNow = () => !!(RT.model_available && $("modelToggle") && $("modelToggle").checked);
 
   const OP_LABEL = {
     canonicalize_categories: (o)=>`Unified ${o.mapping_size||"several"} inconsistent spelling${(o.mapping_size||2)>1?"s":""}`,
@@ -408,11 +410,12 @@
   // the run overruns (never completes before the real result), and snaps to 100% on
   // finish. The estimate adapts to file size AND whether the model path is active.
   let _etaRAF = 0, _etaStart = 0, _etaEst = 1, _etaMode = "det", _etaDone = false;
-  const _modelActive = () => /qwen|fine-tune/i.test(RT.planner || "");
-  function _estimateMs(bytes){
+  function _estimateMs(bytes, useModel){
     const kb = (bytes || 30000) / 1024;
-    return _modelActive() ? Math.min(75000, 9000 + kb * 45)   // model path (GPU; cold-start aware)
-                          : Math.max(500, 450 + kb * 12);     // deterministic path
+    // model path measured ~95s warm / ~158s cold on the shared GPU (heavy prefill);
+    // estimate ~100s and let the bar hold gracefully past it on a cold start.
+    return useModel ? Math.min(150000, 90000 + kb * 80)
+                    : Math.max(500, 450 + kb * 12);     // deterministic path (~0.6s)
   }
   function _stage(p){
     if (_etaMode === "model"){
@@ -427,9 +430,9 @@
     if (p < 0.75) return "Spotting the messy bits…";
     return "Writing the cleaning plan…";
   }
-  function startTimer(bytes){
-    _etaMode = _modelActive() ? "model" : "det";
-    _etaEst = _estimateMs(bytes); _etaStart = performance.now(); _etaDone = false;
+  function startTimer(bytes, useModel){
+    _etaMode = useModel ? "model" : "det";
+    _etaEst = _estimateMs(bytes, useModel); _etaStart = performance.now(); _etaDone = false;
     $("etaBar").classList.add("show"); $("etaPill").classList.add("show");
     cancelAnimationFrame(_etaRAF);
     const tick = ()=>{
@@ -455,12 +458,13 @@
   async function run(){
     if (!selectedFile) return;
     clearError();
-    $("runBtn").disabled = true; startTimer(selectedFile.size);
+    const um = useModelNow() && !loadedRecipe;   // model only on a fresh clean, not recipe replay
+    $("runBtn").disabled = true; startTimer(selectedFile.size, um);
     try {
       const client = await Client.connect(window.location.origin);
       const res = loadedRecipe
         ? await client.predict("/clean_with_plan", { file_path: handle_file(selectedFile), plan_json: loadedRecipe })
-        : await client.predict("/clean_data", { file_path: handle_file(selectedFile) });
+        : await client.predict("/clean_data", { file_path: handle_file(selectedFile), use_model: um });
       const data = res.data[0];
       if (!data || typeof data !== "object") throw new Error("Unexpected response from the cleaner.");
       lastResult = data;
@@ -525,7 +529,7 @@
       !(Array.isArray(fl.values) && fl.values.length === 0 &&
         (fl.issue === "uncertain_canonicalization" || fl.issue === "suspect_values")));
     const apply = $("ycApplyBtn"); apply.disabled = true; apply.textContent = "cleaning…"; clearError();
-    startTimer(selectedFile.size);
+    startTimer(selectedFile.size, false);   // replay applies a saved plan — no model call
     try {
       const client = await Client.connect(window.location.origin);
       const res = await client.predict("/clean_with_plan",
@@ -559,7 +563,9 @@
     const secs = data.elapsed_ms != null ? (data.elapsed_ms/1000) : null;
     const timeStr = secs == null ? "" : (secs < 1 ? ` · in ${Math.round(data.elapsed_ms)}ms` : ` · in ${secs.toFixed(1)}s`);
     const whereStr = RT.hosted ? "cleaned on HF's servers" : "cleaned on-device";
-    $("fileMeta").textContent = `${data.total_rows_before.toLocaleString()} rows × ${data.columns_before.length} columns · ${whereStr} · ${RT.planner}${timeStr}`;
+    const gen = (data.plan_raw && data.plan_raw._generated_by) || "";
+    const plannerLabel = /model:/i.test(gen) ? "Qwen3-4B fine-tune" : "deterministic planner";
+    $("fileMeta").textContent = `${data.total_rows_before.toLocaleString()} rows × ${data.columns_before.length} columns · ${whereStr} · ${plannerLabel}${timeStr}`;
     const nChanges = (data.change_log||[]).length;
     $("fixPill").textContent = `${nChanges} change${nChanges===1?"":"s"} applied`;
 

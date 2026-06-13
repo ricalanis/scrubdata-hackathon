@@ -25,7 +25,14 @@ from fastapi.staticfiles import StaticFiles
 from scrubdata import apply_plan, mock_plan, profile_dataframe, render_report
 from scrubdata.active import get_planner
 
-PLANNER = get_planner()   # fine-tuned model if SCRUBDATA_MODEL is set, else heuristic
+# Two planners, picked per-request: the deterministic heuristic is the FAST default
+# (~0.6s, no GPU); the model planner (the 4B fine-tune, served on a Modal GPU when
+# SCRUBDATA_OLLAMA_HOST is set) is opt-in because the heavy profile prompt makes it
+# ~90s/clean. get_planner() returns the model-backed pipeline when a model is
+# configured, else mock_plan — so MODEL_PLANNER is None unless a model is wired.
+import os as _os
+MODEL_PLANNER = get_planner() if _os.environ.get("SCRUBDATA_MODEL") else None
+PLANNER = mock_plan   # default fast path; clean_data opts into MODEL_PLANNER per request
 
 HERE = Path(__file__).parent
 FRONTEND_INDEX = HERE / "frontend" / "index.html"
@@ -243,8 +250,11 @@ def _empty_result(summary: str) -> dict:
 
 
 @app.api(name="clean_data")
-def clean_data(file_path: str) -> dict:
+def clean_data(file_path: str, use_model: bool = False) -> dict:
     """Run the full pipeline on an uploaded file and return a JSON-safe dict.
+
+    `use_model` opts into the 4B fine-tune (served on a Modal GPU, ~90s/clean);
+    default False = the fast deterministic planner (~0.6s, no GPU).
 
     `file_path` is a local path string or FileData (dict/object). Returns keys:
       before, after, columns_before, columns_after, alignment, change_log,
@@ -267,7 +277,8 @@ def clean_data(file_path: str) -> dict:
     try:
         _t0 = time.perf_counter()
         before_profile = profile_dataframe(raw)
-        plan = PLANNER(raw)
+        planner = MODEL_PLANNER if (use_model and MODEL_PLANNER is not None) else PLANNER
+        plan = planner(raw)
         cleaned, change_log = apply_plan(raw, plan)
         elapsed_ms = int((time.perf_counter() - _t0) * 1000)
         after_profile = profile_dataframe(cleaned)
@@ -428,11 +439,12 @@ def _runtime_info() -> dict:
     otherwise it's the deterministic heuristic (the default on the free Space)."""
     import os
     hosted = bool(os.environ.get("SPACE_ID"))
-    model = os.environ.get("SCRUBDATA_MODEL")
     return {
         "hosted": hosted,
         "private": not hosted,
-        "planner": (f"Qwen3-4B fine-tune ({model})" if model else "deterministic planner"),
+        # the DEFAULT planner is the fast deterministic one; the 4B model is opt-in
+        "planner": "deterministic planner",
+        "model_available": MODEL_PLANNER is not None,
         "where": ("Hugging Face's servers" if hosted else "this machine"),
     }
 

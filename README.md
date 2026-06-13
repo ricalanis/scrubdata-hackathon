@@ -10,6 +10,7 @@ pinned: true
 license: mit
 tags:
   - track:backyard
+  - sponsor:modal
   - achievement:offgrid
   - achievement:welltuned
   - achievement:offbrand
@@ -35,6 +36,12 @@ Runs a ≤4B model locally → also in the running for **Tiny Titan**, **Off-Bra
 > server.py` reads and cleans your file on-device with the Qwen3-4B fine-tune — nothing
 > leaves your machine. The app labels its own mode honestly (the ribbon says which one
 > you're using). Same auditable plan→verify→execute pipeline either way.
+
+> **Modal** (`sponsor:modal`): the hosted Space's opt-in "Use the 4B model" path serves the
+> Qwen3-4B fine-tune from a **scale-to-zero Modal GPU endpoint** (`scripts/modal_serve.py`,
+> Ollama on an A10G; $0 when idle). Modal also drove the headless training + evaluation loop
+> behind the published model. Default cleaning stays instant/deterministic; the model is one
+> tick away.
 
 > **Drop a messy export. Get clean data back — every change named, reversible, and
 > explained. Anything sensitive is protected locally. The judgment calls stay yours.**
