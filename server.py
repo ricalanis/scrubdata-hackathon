@@ -59,12 +59,38 @@ def _coerce_path(file_path) -> str | None:
     return path or None
 
 
+def _sanitize_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Real-world exports arrive with duplicate headers, blank headers, or no header
+    row at all (numeric column labels). The engine addresses columns by unique string
+    name, so repair them at ingestion: stringify, fill blanks as column_N, and
+    de-duplicate with .1/.2 suffixes. Demo-safety — a messy header must never crash."""
+    seen: dict[str, int] = {}
+    new_cols = []
+    for i, c in enumerate(df.columns):
+        name = str(c).strip()
+        if not name or name.lower() == "nan" or str(c).startswith("Unnamed"):
+            name = f"column_{i + 1}"
+        if name in seen:
+            seen[name] += 1
+            name = f"{name}.{seen[name]}"
+        else:
+            seen[name] = 0
+        new_cols.append(name)
+    df.columns = new_cols
+    return df
+
+
 def _read_any(path: str) -> pd.DataFrame:
     """Read CSV or Excel as raw strings — cleaning decides the real types."""
     p = Path(path)
     if p.suffix.lower() in {".xlsx", ".xls"}:
-        return pd.read_excel(p, dtype=str)
-    return pd.read_csv(p, dtype=str, keep_default_na=False)
+        df = pd.read_excel(p, dtype=str)
+    else:
+        try:
+            df = pd.read_csv(p, dtype=str, keep_default_na=False)
+        except UnicodeDecodeError:        # non-UTF-8 export (Excel often emits cp1252)
+            df = pd.read_csv(p, dtype=str, keep_default_na=False, encoding="latin-1")
+    return _sanitize_columns(df)
 
 
 def _records(df: pd.DataFrame, cap: int = ROW_CAP) -> list[dict]:
@@ -206,6 +232,16 @@ def _align_block(bsig, asig, i1, i2, j1, j2, thresh: float = 0.74) -> list[dict]
     return ops
 
 
+def _empty_result(summary: str) -> dict:
+    """The no-op / graceful-error response shape (frontend tolerates missing keys)."""
+    return {
+        "before": [], "after": [], "columns_before": [], "columns_after": [],
+        "alignment": [], "change_log": [], "total_rows_before": 0,
+        "total_rows_after": 0, "preview_cap": ROW_CAP, "report_md": "",
+        "csv_text": "", "summary": summary,
+    }
+
+
 @app.api(name="clean_data")
 def clean_data(file_path: str) -> dict:
     """Run the full pipeline on an uploaded file and return a JSON-safe dict.
@@ -217,29 +253,29 @@ def clean_data(file_path: str) -> dict:
     """
     file_path = _coerce_path(file_path)
     if not file_path:
-        return {
-            "before": [],
-            "after": [],
-            "columns_before": [],
-            "columns_after": [],
-            "alignment": [],
-            "change_log": [],
-            "total_rows_before": 0,
-            "total_rows_after": 0,
-            "preview_cap": ROW_CAP,
-            "report_md": "",
-            "csv_text": "",
-            "summary": "No file provided. Upload a CSV or Excel file to begin.",
-        }
+        return _empty_result("No file provided. Upload a CSV or Excel file to begin.")
 
-    raw = _read_any(file_path)
-    _t0 = time.perf_counter()
-    before_profile = profile_dataframe(raw)
-    plan = PLANNER(raw)
-    cleaned, change_log = apply_plan(raw, plan)
-    elapsed_ms = int((time.perf_counter() - _t0) * 1000)
-    after_profile = profile_dataframe(cleaned)
-    report_md = render_report(plan, change_log, before_profile, after_profile)
+    try:
+        raw = _read_any(file_path)
+    except Exception as e:  # noqa: BLE001 — never crash the demo on a malformed file
+        return _empty_result(
+            f"Couldn't read this file ({type(e).__name__}). "
+            "Try exporting it as a CSV or .xlsx and dropping it again.")
+    if raw is None or raw.empty or len(raw.columns) == 0:
+        return _empty_result("That file looks empty — no rows or columns to clean.")
+
+    try:
+        _t0 = time.perf_counter()
+        before_profile = profile_dataframe(raw)
+        plan = PLANNER(raw)
+        cleaned, change_log = apply_plan(raw, plan)
+        elapsed_ms = int((time.perf_counter() - _t0) * 1000)
+        after_profile = profile_dataframe(cleaned)
+        report_md = render_report(plan, change_log, before_profile, after_profile)
+    except Exception as e:  # noqa: BLE001 — degrade gracefully, surface the original untouched
+        return _empty_result(
+            f"Something went wrong while cleaning ({type(e).__name__}) — your file is "
+            "untouched. This is logged; please try another export.")
 
     try:  # best-effort agent-trace capture (Open trace bonus quest)
         from scrubdata.trace import log_run
