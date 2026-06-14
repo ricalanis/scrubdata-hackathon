@@ -248,7 +248,7 @@
     </div>
     <div class="actions-row" style="margin-top:-18px;gap:18px">
       <label class="modeltoggle" id="modelToggleWrap" style="display:none">
-        <input type="checkbox" id="modelToggle" checked> <span>⚡ Clean with the 4B model <span class="hint">(real fine-tune on an A100 · ~1 min · uncheck for instant)</span></span>
+        <input type="checkbox" id="modelToggle" checked> <span>⚡ Clean with the 4B model <span class="hint" id="modelHint">(real fine-tune · ~1 min · uncheck for instant)</span></span>
       </label>
       <span class="samplelink" id="recipeLink" tabindex="0">↻ have a saved recipe? apply it to this file</span>
       <input type="file" id="recipeInput" accept=".json" hidden>
@@ -390,6 +390,10 @@
     // the 4B model is the DEFAULT now (it's the whole point of the hackathon); show the
     // toggle only if a model is wired — checked by default, uncheck for the instant path.
     if (RT.model_available) $("modelToggleWrap").style.display = "";
+    if (RT.model_available && $("modelHint"))
+      $("modelHint").textContent = RT.hosted
+        ? "(real fine-tune on an A100 GPU · ~1 min · uncheck for instant)"
+        : "(real fine-tune, on-device · ~1 min · uncheck for instant)";
     if (RT.hosted){
       $("ribbon").innerHTML = "🌐 <b>Hosted demo on Hugging Face.</b> " +
         (RT.model_available
@@ -741,26 +745,44 @@
     const callCards = $("callCards"); callCards.innerHTML = "";
     const callHero = $("callHero"); callHero.innerHTML = "";
     $("callSection").style.display = flags.length ? "" : "none";
-    if (flags.length){
-      // count the genuine ambiguities (values with two near-tied candidates)
-      let ties = 0;
-      flags.forEach(f => Object.values(f.candidates||{}).forEach(cs => { if ((cs||[]).length>=2) ties++; }));
-      const total = flags.reduce((n,f)=>n+(f.values||[]).length, 0);
+
+    // merge flags by column, and per value keep the RICHEST candidate list — the
+    // backend can emit two flags for one column (one carrying the candidate ties,
+    // one bare); without this merge the bare "no close match" card buries the real
+    // tie (e.g. Slovia → Slovakia 86% vs Slovenia 86%).
+    const byCol = new Map();
+    flags.forEach(f=>{
+      const col = f.column || "";
+      if (!byCol.has(col)) byCol.set(col, {col, rationale:"", vals:new Map()});
+      const e = byCol.get(col);
+      const cands = f.candidates || {};
+      const hasCands = Object.keys(cands).length > 0;
+      if ((f.rationale||f.issue) && (!e.rationale || hasCands)) e.rationale = f.rationale || f.issue;
+      (f.values||[]).forEach(v=>{
+        const cs = cands[v] || [];
+        const prev = e.vals.get(v);
+        if (prev === undefined || cs.length > prev.length) e.vals.set(v, cs);
+      });
+    });
+    const merged = [...byCol.values()];
+
+    if (merged.length){
+      let tieCount = 0, total = 0;
+      merged.forEach(m => m.vals.forEach(cs => { total++; if ((cs||[]).length>=2) tieCount++; }));
       callHero.innerHTML = `<b>I left ${total} value${total===1?"":"s"} alone on purpose.</b> ` +
-        (ties ? `${ties} ${ties===1?"is a genuine toss-up":"are genuine toss-ups"} — close enough that guessing would be a coin flip. ` : "") +
+        (tieCount ? `${tieCount} ${tieCount===1?"is a genuine toss-up":"are genuine toss-ups"} — close enough that guessing would be a coin flip. ` : "") +
         `A wrong "fix" is worse than no fix — so <b>you decide: tap a match to apply it</b>, or keep the value as-is.`;
     }
     pendingPicks = {};    // fresh analysis -> no staged decisions carried over
     const ycItems = [];   // resolution targets, indexed by data-yc (injection-safe)
-    flags.forEach(f=>{
+    merged.forEach(m=>{
       const card = document.createElement("div");
       card.className = "card call";
-      const vals = (f.values||[]).slice(0,12);
-      const cands = f.candidates || {};
-      const col = f.column || "";
+      const col = m.col;
+      const vals = [...m.vals.entries()].slice(0,12);
       // render each uncertain value with clickable candidate buttons + keep-as-is
-      const ties = vals.map(v=>{
-        const cs = (cands[v]||[]).slice(0,2);
+      const rowsHtml = vals.map(([v, csAll])=>{
+        const cs = (csAll||[]).slice(0,2);
         let opts = cs.map((c,i)=>{
           const idx = ycItems.push({col, raw:v, canon:c.canon}) - 1;
           return `${i?'<span class="vs">or</span>':''}<button class="opt" data-yc="${idx}">${esc(c.canon)}<span class="sc">${(c.score*100).toFixed(0)}%</span></button>`;
@@ -772,8 +794,8 @@
       }).join("");
       card.innerHTML = `
         <div class="card-top"><span class="card-title">${esc(col)}</span><span class="pill call">YOUR CALL</span></div>
-        <div class="card-body">${esc(f.rationale||f.issue||"Left for review.")}</div>
-        ${ties ? `<div class="tie">${ties}</div>` : ""}`;
+        <div class="card-body">${esc(m.rationale||"Left for review.")}</div>
+        ${rowsHtml ? `<div class="tie">${rowsHtml}</div>` : ""}`;
       callCards.appendChild(card);
     });
     window._ycItems = ycItems;
