@@ -178,7 +178,7 @@ Everything behind the demo is public:
 - [x] **Sharing is Caring** (`sharing`) — agent traces on the Hub: `build-small-hackathon/scrubdata-traces`
 - [x] **Field Notes** (`fieldnotes`) — build report: `docs/FIELD_NOTES.md`
 - [x] Write-up in this README (idea + tech)
-- [ ] **Demo video** link in README (record on the Maria sample — see `docs/SUBMISSION.md`)
+- [ ] **Demo video** link in README (record on the bundled `samples/maria_crm_export.csv`, or the live Space)
 - [ ] **Social post** link in README
 - [ ] Confirm deadline time/timezone on the hackathon page (June 15 2026)
 
