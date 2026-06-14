@@ -30,7 +30,7 @@ Runs a ≤4B model locally → also in the running for **Tiny Titan**, **Off-Bra
   These two links + this write-up are required by the build-small-hackathon /submit tool. -->
 
 > **Hosted demo vs. local — read this.** This Space is a **no-install demo** that cleans with
-> the real **Qwen3-4B fine-tune** by default (served on a GPU, ~90s/clean) — the whole point
+> the real **Qwen3-4B fine-tune** by default (served on an A100 GPU, ~45s/clean) — the whole point
 > is the small model doing the work. Your file is processed on Hugging Face / the GPU endpoint
 > (sent to no third-party API, not stored); untick the box for an instant deterministic pass.
 > The **privacy story is a property of running it yourself**: `SCRUBDATA_MODEL=scrubdata-ft uv
@@ -39,7 +39,7 @@ Runs a ≤4B model locally → also in the running for **Tiny Titan**, **Off-Bra
 > Same auditable plan→verify→execute pipeline either way.
 
 > **Modal** (`sponsor:modal`): the hosted Space cleans with the Qwen3-4B fine-tune served from a
-> **scale-to-zero Modal GPU endpoint** (`scripts/modal_serve.py`, Ollama on an A10G; $0 when idle,
+> **scale-to-zero Modal GPU endpoint** (`scripts/modal_serve.py`, Ollama on an A100; $0 when idle,
 > pre-warmed on page load to hide the cold start). Modal also drove the headless training +
 > evaluation loop behind the published model. The deterministic planner is the silent fallback
 > if the GPU is cold or down, so the demo never hard-fails.

@@ -234,7 +234,7 @@
     </div>
     <div class="actions-row" style="margin-top:-18px;gap:18px">
       <label class="modeltoggle" id="modelToggleWrap" style="display:none">
-        <input type="checkbox" id="modelToggle" checked> <span>⚡ Clean with the 4B model <span class="hint">(real fine-tune on a GPU · ~90s · uncheck for instant)</span></span>
+        <input type="checkbox" id="modelToggle" checked> <span>⚡ Clean with the 4B model <span class="hint">(real fine-tune on an A100 · ~45s · uncheck for instant)</span></span>
       </label>
       <span class="samplelink" id="recipeLink" tabindex="0">↻ have a saved recipe? apply it to this file</span>
       <input type="file" id="recipeInput" accept=".json" hidden>
@@ -349,7 +349,7 @@
     if (RT.hosted){
       $("ribbon").innerHTML = "🌐 <b>Hosted demo on Hugging Face.</b> " +
         (RT.model_available
-          ? "Cleans with the real <b>Qwen3-4B fine-tune</b> on a GPU (~90s) — uncheck the box for an instant deterministic pass."
+          ? "Cleans with the real <b>Qwen3-4B fine-tune</b> on an A100 GPU (~45s) — uncheck the box for an instant deterministic pass."
           : "Deterministic cleaning.") +
         " Your file is processed in the cloud (no third-party API, not stored); <b>clone &amp; run locally</b> to keep it on your machine.";
       $("footerNote").textContent = "Hosted demo on Hugging Face. Cleans with the 4B fine-tune on a Modal GPU by default; " +
@@ -438,9 +438,9 @@
   let _etaRAF = 0, _etaStart = 0, _etaEst = 1, _etaMode = "det", _etaDone = false;
   function _estimateMs(bytes, useModel){
     const kb = (bytes || 30000) / 1024;
-    // model path measured ~95s warm / ~158s cold on the shared GPU (heavy prefill);
-    // estimate ~100s and let the bar hold gracefully past it on a cold start.
-    return useModel ? Math.min(150000, 90000 + kb * 80)
+    // model path measured ~41s warm / ~70s cold on the A100 (format=json constrained);
+    // estimate ~45s and let the bar hold gracefully past it on a cold start.
+    return useModel ? Math.min(110000, 42000 + kb * 40)
                     : Math.max(500, 450 + kb * 12);     // deterministic path (~0.6s)
   }
   function _stage(p){

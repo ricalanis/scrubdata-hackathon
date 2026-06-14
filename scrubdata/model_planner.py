@@ -59,7 +59,16 @@ def make_local_ollama_planner(model: str, host: str = "http://localhost:11434",
     `pair_profiles` (WS2, off by default): prompt lists evidence-backed repair
     candidates and the output is constrained to them (constrain_plan).
     """
+    import os
     import urllib.request
+
+    # On some CUDA GPUs (verified: the A100 serving path) the non-thinking GGUF
+    # degenerates into a <tool_call> loop even with flash-attention off; constraining
+    # the API call to format=json grammar-kills the loop and yields clean JSON ~2x
+    # faster. Our served Modelfile is non-thinking (no <think> prefix), so format=json
+    # is safe. Env-gated so a thinking-template local run (where it'd reject the
+    # <think> prefix) keeps the _extract_json path. Set SCRUBDATA_OLLAMA_FORMAT_JSON=1.
+    force_json = os.environ.get("SCRUBDATA_OLLAMA_FORMAT_JSON") == "1"
 
     def planner(dirty_df, *_):
         profile = profile_dataframe(dirty_df)
@@ -68,8 +77,9 @@ def make_local_ollama_planner(model: str, host: str = "http://localhost:11434",
             from .pair_profile import pairs_for_df
             pairs = pairs_for_df(dirty_df)
         user = build_user_prompt(profile, dirty_df, candidate_pairs=pairs)
-        # No format=json: Qwen3-Instruct emits an empty <think></think> prefix that a
-        # strict JSON constraint rejects. _extract_json pulls the plan out of the text.
+        # Default (no format=json): Qwen3-Instruct emits an empty <think></think> prefix
+        # that a strict JSON constraint rejects; _extract_json pulls the plan out. The
+        # force_json path (above) is for serving GPUs that degenerate without it.
         payload = {
             "model": model, "stream": False,
             "messages": [{"role": "system", "content": SYSTEM_PROMPT},
@@ -78,6 +88,8 @@ def make_local_ollama_planner(model: str, host: str = "http://localhost:11434",
             # to ~4k which 400s on wide tables.
             "options": {"temperature": 0, "num_predict": 2000, "num_ctx": 16384},
         }
+        if force_json:
+            payload["format"] = "json"
         req = urllib.request.Request(
             host + "/api/chat", data=json.dumps(payload).encode(),
             headers={"Content-Type": "application/json"})

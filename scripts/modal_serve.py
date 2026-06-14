@@ -74,7 +74,9 @@ app = modal.App("scrubdata-serve", image=image)
 
 
 @app.function(
-    gpu="A10G",            # good prefill/cost balance; falls back manually to L4 if needed
+    gpu="A100",            # 40GB A100: ~2x prefill of A10G on our heavy 9k-token prompt
+                           # (~95s -> ~50s/clean); model is ~4.7GB Q8 so 40GB is ample.
+                           # scale-to-zero keeps idle cost $0; ~$0.05/clean active.
     scaledown_window=300,  # scale-to-zero ~5 min after last request -> $0 idle
     timeout=600,
 )
