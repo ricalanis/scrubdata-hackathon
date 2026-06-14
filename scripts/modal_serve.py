@@ -17,6 +17,8 @@ Deploy:
     # -> public URL of the web_server (Ollama port 11434)
 """
 
+import os
+
 import modal
 
 HF_REPO = "ricalanis/scrubdata-qwen3-4b-v6-q8"
@@ -77,6 +79,10 @@ app = modal.App("scrubdata-serve", image=image)
     gpu="A100",            # 40GB A100: ~2x prefill of A10G on our heavy 9k-token prompt
                            # (~95s -> ~50s/clean); model is ~4.7GB Q8 so 40GB is ample.
                            # scale-to-zero keeps idle cost $0; ~$0.05/clean active.
+    # warm-container floor: default 0 (scale-to-zero). Set SCRUBDATA_MIN_CONTAINERS=1
+    # before `modal deploy` to bake a warm floor, OR flip at runtime without redeploying
+    # via scripts/modal_warm.py on|off (update_autoscaler). 1 warm A100 ~= $2.10/hr.
+    min_containers=int(os.environ.get("SCRUBDATA_MIN_CONTAINERS", "0")),
     scaledown_window=300,  # scale-to-zero ~5 min after last request -> $0 idle
     timeout=600,
 )
