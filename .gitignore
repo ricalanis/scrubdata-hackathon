@@ -31,3 +31,4 @@ data/
 # internal: working memory + agent/skill defs — never publish
 project-memory/
 .claude/
+_private/
