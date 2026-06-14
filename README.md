@@ -30,7 +30,8 @@ Runs a ≤4B model locally → also in the running for **Tiny Titan**, **Off-Bra
   These two links + this write-up are required by the build-small-hackathon /submit tool. -->
 
 > **Hosted demo vs. local — read this.** This Space is a **no-install demo** that cleans with
-> the real **Qwen3-4B fine-tune** by default (served on an A100 GPU, ~45s/clean) — the whole point
+> the real **Qwen3-4B fine-tune** by default (served on an A100 GPU, ~1 min/clean warm; first
+> run after idle ~2 min on cold start) — the whole point
 > is the small model doing the work. Your file is processed on Hugging Face / the GPU endpoint
 > (sent to no third-party API, not stored); untick the box for an instant deterministic pass.
 > The **privacy story is a property of running it yourself**: `SCRUBDATA_MODEL=scrubdata-ft uv
