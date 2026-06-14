@@ -44,6 +44,14 @@
   .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
   .btn.primary:disabled{opacity:.45;cursor:not-allowed}
   .samplelink{font-size:13.5px;color:var(--accent);cursor:pointer;text-decoration:underline}
+  .quests{max-width:840px;margin:36px auto 8px;padding:0 22px}
+  .quests h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-soft);margin:0 0 11px;font-weight:700;text-align:center}
+  .qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:10px}
+  .quest{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 13px}
+  .quest .pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;
+    color:#234e42;background:var(--accent-soft);border-radius:999px;padding:3px 10px;margin-bottom:8px}
+  .quest p{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.45}
   .reslinks{max-width:760px;margin:30px auto 4px;padding:0 22px;text-align:center}
   .reslinks h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;
     color:var(--ink-soft);margin:0 0 9px;font-weight:700}
@@ -309,6 +317,27 @@
   </div>
 </div>
 
+<section class="quests" aria-label="Hackathon goals covered">
+  <h4>How this demo covers the challenge</h4>
+  <div class="qgrid">
+    <div class="quest"><span class="pill">🏔️ Tiny Titan</span>
+      <p>One 4-billion-param model plans every clean — nothing bigger, anywhere.</p></div>
+    <div class="quest"><span class="pill">🔌 Off the Grid</span>
+      <p>No third-party AI APIs — a local-runnable GGUF does the work (on-device when self-hosted).</p></div>
+    <div class="quest"><span class="pill">🎛️ Well-Tuned</span>
+      <p>Custom QLoRA fine-tune, trained on execution-verified data and published on the Hub.</p></div>
+    <div class="quest"><span class="pill">🎨 Off-Brand</span>
+      <p>Hand-built <code>gr.Server</code> interface — zero default Gradio chrome.</p></div>
+    <div class="quest"><span class="pill">🦙 Llama Champion</span>
+      <p>Served through llama.cpp as a Q8_0 GGUF.</p></div>
+    <div class="quest"><span class="pill">🤝 Sharing is Caring</span>
+      <p>Every run's agent traces are published as an open dataset on the Hub.</p></div>
+    <div class="quest"><span class="pill">📓 Field Notes</span>
+      <p>A full build report — the failures documented next to the wins.</p></div>
+    <div class="quest"><span class="pill">🏡 Backyard AI track</span>
+      <p>A hands-off cleaner for the non-coder with a messy Monday export.</p></div>
+  </div>
+</section>
 <nav class="reslinks" aria-label="Research and resources">
   <h4>Research &amp; resources</h4>
   <a href="https://huggingface.co/ricalanis/scrubdata-qwen3-4b" target="_blank" rel="noopener">🧠 Fine-tuned model</a>
