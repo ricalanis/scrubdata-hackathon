@@ -52,6 +52,7 @@ Runs a ≤4B model — a local-runnable GGUF, no third-party AI APIs → also in
 > For the office/ops person trying to do their job while their data is a mess.
 
 **Live Space:** https://huggingface.co/spaces/build-small-hackathon/scrubdata
+**Code (open source):** https://github.com/ricalanis/scrubdata-hackathon
 
 ## How it works
 
@@ -154,6 +155,7 @@ redeploy — leave it `off` (scale-to-zero, $0 idle), flip `on` for a live judgi
 ## Research & resources
 Everything behind the demo is public:
 - 🚀 **Live Space** — https://huggingface.co/spaces/build-small-hackathon/scrubdata
+- 💻 **Code (open source)** — https://github.com/ricalanis/scrubdata-hackathon
 - 🧠 **Fine-tuned model** — https://huggingface.co/ricalanis/scrubdata-qwen3-4b
   (Q8_0 GGUF: https://huggingface.co/ricalanis/scrubdata-qwen3-4b-v6-q8)
 - 📊 **WildClean dataset** (real-world dirty tables + injected-error benches) —
