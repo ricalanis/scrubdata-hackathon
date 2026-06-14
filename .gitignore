@@ -32,3 +32,6 @@ data/
 project-memory/
 .claude/
 _private/
+
+# demo video assets (local only)
+_video/
