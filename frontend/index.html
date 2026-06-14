@@ -44,6 +44,12 @@
   .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
   .btn.primary:disabled{opacity:.45;cursor:not-allowed}
   .samplelink{font-size:13.5px;color:var(--accent);cursor:pointer;text-decoration:underline}
+  .reslinks{max-width:760px;margin:30px auto 4px;padding:0 22px;text-align:center}
+  .reslinks h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-soft);margin:0 0 9px;font-weight:700}
+  .reslinks a{display:inline-block;margin:4px 9px;font-size:13.5px;color:var(--accent);
+    text-decoration:none;border-bottom:1px solid var(--accent-soft)}
+  .reslinks a:hover{border-bottom-color:var(--accent)}
   .modeltoggle{display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink);cursor:pointer;user-select:none}
   .modeltoggle input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
   .modeltoggle .hint{color:var(--ink-soft);font-size:12.5px}
@@ -303,6 +309,14 @@
   </div>
 </div>
 
+<nav class="reslinks" aria-label="Research and resources">
+  <h4>Research &amp; resources</h4>
+  <a href="https://huggingface.co/ricalanis/scrubdata-qwen3-4b" target="_blank" rel="noopener">🧠 Fine-tuned model</a>
+  <a href="https://huggingface.co/datasets/ricalanis/wildclean" target="_blank" rel="noopener">📊 WildClean dataset</a>
+  <a href="https://huggingface.co/datasets/build-small-hackathon/scrubdata-traces" target="_blank" rel="noopener">🔍 Agent traces</a>
+  <a href="https://huggingface.co/spaces/build-small-hackathon/scrubdata/blob/main/docs/FIELD_NOTES.md" target="_blank" rel="noopener">📓 Field notes</a>
+  <a href="https://huggingface.co/spaces/build-small-hackathon/scrubdata/blob/main/docs/paper/main.pdf" target="_blank" rel="noopener">📄 Preprint</a>
+</nav>
 <footer id="footerNote">Runs locally on a small model. Your data never leaves this machine.</footer>
 
 <div class="ycbar" id="ycApplyBar">

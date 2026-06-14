@@ -21,8 +21,9 @@ tags:
 # ScrubData — hands-off data cleaning, with the receipts
 
 Entry for the **Build Small Hackathon** (Gradio · Hugging Face), 🏡 Backyard AI track.
-Runs a ≤4B model locally → also in the running for **Tiny Titan**, **Off-Brand**,
-**Best Demo**, **Best Agent**, and **Bonus Quest Champion** (all six quests claimed above).
+Runs a ≤4B model — a local-runnable GGUF, no third-party AI APIs → also in the running for
+**Tiny Titan**, **Off-Brand**, **Best Demo**, **Best Agent**, and **Bonus Quest Champion**
+(all six quests claimed above).
 
 <!-- SUBMISSION LINKS (fill before submitting on June 15):
   Demo video: <YouTube/Space/public URL>
@@ -84,6 +85,24 @@ A small local model is the **planner**, never a row-by-row editor:
 synthetic + real-derived data (every training plan provably recovers the clean table),
 runnable via llama.cpp GGUF.
 
+## The app (what judges see)
+A custom `gr.Server` frontend (no default Gradio chrome — the **Off-Brand** quest), built
+around the trust story:
+- **YOUR CALL cards** — when the model is genuinely torn (e.g. *Slovia → Slovakia 86% vs
+  Slovenia 86%*) it abstains and hands you the tie with both candidates; pick the right one
+  and **stage several decisions**, then "✓ Clean now" replays them as one plan.
+- **Named, reversible receipts** — every edit shows as a row in the audit grid with its op +
+  rationale and a before/after diff; nothing is silent.
+- **PII review cards** — embedded cards/SSNs (Luhn/strict-regex) flagged and masked
+  format-preservingly, on-device.
+- **Save / replay recipe** — export the cleaning plan as JSON and re-apply it to next week's
+  export in one click (the "Monday ritual").
+- **Honest, self-aware copy** — the app injects its own runtime state and the ribbon says
+  exactly which planner ran and where your data was processed.
+- **A fun, size-aware ETA timer** + cold-start readiness gate + page-load GPU pre-warm, so
+  the model path feels responsive and never lies about progress.
+- Drag-and-drop, two bundled sample exports, mobile-responsive layout.
+
 ## Measured (not vibes)
 
 - **Canonicalization micro-F1 0.90 (best single run; 0.80 ± 0.01 over 3 training seeds)** for the 4B
@@ -105,12 +124,18 @@ uv run server.py                                   # gr.Server + custom UI (grou
 # fine-tuned model as planner (needs Ollama + the GGUF, see notebooks/Modelfile):
 ollama pull hf.co/ricalanis/scrubdata-qwen3-4b-v6-q8:Q8_0
 ollama create scrubdata-ft -f notebooks/Modelfile
-SCRUBDATA_MODEL=scrubdata-ft uv run server.py      # model planner, heuristic fallback
+SCRUBDATA_MODEL=scrubdata-ft uv run server.py      # model planner, heuristic fallback (on-device)
 
 SCRUBDATA_PII_NER=1 uv run server.py               # +44M NER for name/address columns
 uv run python -m scrubdata.cli messy.csv -o clean.csv --plan plan.json
-uv run pytest tests/                               # engine + scorer tests (68)
+uv run pytest tests/                               # engine + scorer tests (69)
 ```
+
+The hosted Space serves the same fine-tune from a scale-to-zero **Modal A100**
+(`scripts/modal_serve.py`) and the planner adds `format=json` on that path
+(`SCRUBDATA_OLLAMA_FORMAT_JSON=1`) to grammar-constrain the GGUF on the A100's kernels.
+`scripts/modal_warm.py on|off` pins/un-pins a warm container (no cold start) without a
+redeploy — leave it `off` (scale-to-zero, $0 idle), flip `on` for a live judging window.
 
 ## Repo map
 - `scrubdata/` — `profiler` · `planner` · `reconcile` (reference grounding + abstain) ·
@@ -126,11 +151,25 @@ uv run pytest tests/                               # engine + scorer tests (68)
   Turns Local LLM Planners into Trustworthy Table Cleaners*.
 - `scripts/` — Modal train/eval (headless GPU loop), trace publishing.
 
+## Research & resources
+Everything behind the demo is public:
+- 🚀 **Live Space** — https://huggingface.co/spaces/build-small-hackathon/scrubdata
+- 🧠 **Fine-tuned model** — https://huggingface.co/ricalanis/scrubdata-qwen3-4b
+  (Q8_0 GGUF: https://huggingface.co/ricalanis/scrubdata-qwen3-4b-v6-q8)
+- 📊 **WildClean dataset** (real-world dirty tables + injected-error benches) —
+  https://huggingface.co/datasets/ricalanis/wildclean
+- 🔍 **Agent traces** (OpenTelemetry-GenAI spans from real runs) —
+  https://huggingface.co/datasets/build-small-hackathon/scrubdata-traces
+- 📄 **Preprint** — *Verified Cleaning Plans: Plan-Level Selective Prediction Turns Local
+  LLM Planners into Trustworthy Table Cleaners* (`docs/paper/main.pdf`)
+- 📓 **Field notes** (the build story, failures included) — `docs/FIELD_NOTES.md`
+- 🛠️ **Tool reference** (the whole system, end to end) — `docs/TOOL_REFERENCE.md`
+
 ## Submission checklist (verified against the build-small-hackathon `/submit` tool)
 - [x] Public Gradio Space in the `build-small-hackathon` org
 - [x] Every model ≤ 32B (here ≤ 4B → **Tiny Titan**-eligible): `Qwen3-4B-Instruct-2507`
 - [x] README `tags:` set — `track:backyard` + all six `achievement:*` quests (above)
-- [x] **Off the Grid** (`offgrid`) — no cloud APIs; default path is local-only (verified: zero external egress)
+- [x] **Off the Grid** (`offgrid`) — no third-party AI APIs; the planner is a local-runnable GGUF (Qwen3-4B). Self-hosted = fully on-device (zero external egress); the hosted demo serves the *same* model from a self-managed Modal GPU, not a SaaS API
 - [x] **Well-Tuned** (`welltuned`) — fine-tune published: `ricalanis/scrubdata-qwen3-4b` (+ `-v6-q8` GGUF)
 - [x] **Off-Brand** (`offbrand`) — custom `gr.Server` HTML/CSS frontend, not default Gradio
 - [x] **Llama Champion** (`llama`) — runs through llama.cpp (Q8_0 GGUF)
