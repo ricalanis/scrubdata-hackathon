@@ -74,14 +74,16 @@ def _sanitize_columns(df: pd.DataFrame) -> pd.DataFrame:
     seen: dict[str, int] = {}
     new_cols = []
     for i, c in enumerate(df.columns):
-        name = str(c).strip()
-        if not name or name.lower() == "nan" or str(c).startswith("Unnamed"):
-            name = f"column_{i + 1}"
-        if name in seen:
-            seen[name] += 1
-            name = f"{name}.{seen[name]}"
-        else:
-            seen[name] = 0
+        base = str(c).strip()
+        if not base or base.lower() == "nan" or str(c).startswith("Unnamed"):
+            base = f"column_{i + 1}"
+        name = base
+        suffix = seen.get(base, 0)
+        while name in seen:
+            suffix += 1
+            name = f"{base}.{suffix}"
+        seen[base] = suffix
+        seen[name] = 0
         new_cols.append(name)
     df.columns = new_cols
     return df
