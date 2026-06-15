@@ -206,6 +206,11 @@
   .etapill .eta{color:var(--ink-soft);font-variant-numeric:tabular-nums;flex:none}
   @keyframes etapulse{0%,100%{opacity:.3;transform:scale(.75)}50%{opacity:1;transform:scale(1.2)}}
 
+  @media (prefers-reduced-motion: reduce){
+    .etabar .fill{transition:none}
+    .spin{animation:none}
+  }
+
   /* ---- mobile: the desktop 3-col before/after grids cramp on narrow screens ---- */
   @media (max-width: 600px){
     .wrap{padding:0 14px}
@@ -262,24 +267,24 @@
         <span class="b"><s>415.555.0192</s></span><span class="ar">→</span><span class="a">(415)&nbsp;555-0192</span>
       </div>
       <div class="demofoot">It <b>corrects and standardizes</b> messy text and removes duplicate rows —
-      it doesn't delete your data. New to this? <span class="samplelink" id="demoSampleBtn" tabindex="0">watch it run on a sample file →</span></div>
+      it doesn't delete your data. New to this? <span class="samplelink" id="demoSampleBtn" tabindex="0" role="button" aria-label="Watch it run on a sample file">watch it run on a sample file →</span></div>
     </div>
-    <div class="drop" id="dropZone" tabindex="0">
+    <div class="drop" id="dropZone" tabindex="0" role="button" aria-label="Choose a CSV or Excel file to clean" aria-describedby="dropSub">
       <h3 id="dropTitle">Drop your export here</h3>
       <p id="dropSub">CSV or Excel. I'll scan it for the usual mess — duplicates, blanks,
       mismatched formats, stray spellings — and anything that looks like personal data.</p>
       <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.tsv" hidden>
     </div>
     <div class="actions-row">
-      <button class="btn primary" id="runBtn" disabled><span id="runLabel">Clean it up</span></button>
-      <span class="samplelink" id="sampleBtn" tabindex="0">try it on a messy sales export</span>
-      <span class="samplelink" id="sampleBtn2" tabindex="0">or an HR file with sensitive data</span>
+      <button class="btn primary" id="runBtn" disabled aria-label="Clean the selected file"><span id="runLabel">Clean it up</span></button>
+      <span class="samplelink" id="sampleBtn" tabindex="0" role="button" aria-label="Try it on a messy sales export">try it on a messy sales export</span>
+      <span class="samplelink" id="sampleBtn2" tabindex="0" role="button" aria-label="Try it on an HR file with sensitive data">or an HR file with sensitive data</span>
     </div>
     <div class="actions-row" style="margin-top:-18px;gap:18px">
-      <label class="modeltoggle" id="modelToggleWrap" style="display:none">
-        <input type="checkbox" id="modelToggle" checked> <span>⚡ Clean with the 4B model <span class="hint" id="modelHint">(real fine-tune · ~1 min · uncheck for instant)</span></span>
+      <label class="modeltoggle" id="modelToggleWrap" style="display:none" aria-label="Clean with the 4B model">
+        <input type="checkbox" id="modelToggle" checked aria-label="Clean with the 4B model"> <span>⚡ Clean with the 4B model <span class="hint" id="modelHint">(real fine-tune · ~1 min · uncheck for instant)</span></span>
       </label>
-      <span class="samplelink" id="recipeLink" tabindex="0">↻ have a saved recipe? apply it to this file</span>
+      <span class="samplelink" id="recipeLink" tabindex="0" role="button" aria-label="Apply a saved recipe to this file">↻ have a saved recipe? apply it to this file</span>
       <input type="file" id="recipeInput" accept=".json" hidden>
     </div>
     <div class="working" id="working"><span class="spin"></span>Cleaning up — this runs locally, so it's quick.</div>
@@ -488,8 +493,22 @@
   }
   $("fileInput").addEventListener("change", e => e.target.files[0] && pickFile(e.target.files[0]));
   $("dropZone").addEventListener("click", () => $("fileInput").click());
+  $("dropZone").addEventListener("keydown", e=>{
+    if (e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      $("fileInput").click();
+    }
+  });
   $("sampleBtn").addEventListener("click", ()=>pickSample(SAMPLE_PATH, "maria_crm_export.csv"));
   $("sampleBtn2").addEventListener("click", ()=>pickSample("/samples/hr_payroll.csv", "hr_payroll.csv"));
+  document.querySelectorAll(".samplelink[tabindex]").forEach(el=>{
+    el.addEventListener("keydown", e=>{
+      if (e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        el.click();
+      }
+    });
+  });
   // hero "watch it run" nudge: load the sample, then point the user at the now-active button
   $("demoSampleBtn").addEventListener("click", async ()=>{
     await pickSample(SAMPLE_PATH, "maria_crm_export.csv");
@@ -593,9 +612,9 @@
   }
 
   // ---- interactive YOUR CALL: STAGE decisions, then apply them all in one re-clean.
-  // pendingPicks key = column   raw -> {col, raw, canon}  (canon null = keep as-is)
+  // pendingPicks key = column + NUL + raw -> {col, raw, canon}  (canon null = keep as-is)
   let pendingPicks = {};
-  const _pk = (col, raw) => col + " " + raw;
+  const _pk = (col, raw) => col + "\u0000" + raw;
 
   $("callCards").addEventListener("click", e=>{
     const btn = e.target.closest("[data-yc]");
@@ -821,11 +840,11 @@
         const cs = (csAll||[]).slice(0,2);
         let opts = cs.map((c,i)=>{
           const idx = ycItems.push({col, raw:v, canon:c.canon}) - 1;
-          return `${i?'<span class="vs">or</span>':''}<button class="opt" data-yc="${idx}">${esc(c.canon)}<span class="sc">${(c.score*100).toFixed(0)}%</span></button>`;
+          return `${i?'<span class="vs">or</span>':''}<button class="opt" data-yc="${idx}" aria-label="Use ${esc(c.canon)} for ${esc(v)}">${esc(c.canon)}<span class="sc">${(c.score*100).toFixed(0)}%</span></button>`;
         }).join("");
         if (!cs.length) opts = `<span class="vs">no close match</span>`;
         const keepIdx = ycItems.push({col, raw:v, canon:null}) - 1;
-        opts += `<button class="keep" data-yc="${keepIdx}">keep “${esc(v)}”</button>`;
+        opts += `<button class="keep" data-yc="${keepIdx}" aria-label="Keep ${esc(v)} as is">keep “${esc(v)}”</button>`;
         return `<div class="src">${esc(v)}</div><div class="opts">${opts}</div>`;
       }).join("");
       card.innerHTML = `
