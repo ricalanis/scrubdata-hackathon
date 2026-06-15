@@ -10,6 +10,7 @@ pinned: true
 license: mit
 tags:
   - track:backyard
+  - sponsor:openai
   - sponsor:modal
   - achievement:offgrid
   - achievement:welltuned
