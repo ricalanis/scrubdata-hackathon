@@ -215,6 +215,6 @@ Everything behind the demo is public:
 - [x] Write-up in this README (idea + tech)
 - [x] **Demo video** link in README: https://www.loom.com/share/2fa868147527496e8097d82dd546d663
 - [x] **Social post** link in README: https://x.com/ric_alanis/status/2066598533738692983
-- [ ] Confirm deadline time/timezone on the hackathon page (June 15 2026)
+- [x] Confirm deadline time/timezone — **June 15 2026, 23:59 UTC** (confirmed on the hackathon page)
 
 Judged (no tag needed, just qualify): Tiny Titan · Off-Brand prize · Best Demo · Best Agent · Bonus Quest Champion.
