@@ -26,9 +26,9 @@ Runs a ≤4B model — a local-runnable GGUF, no third-party AI APIs → also in
 (all six quests claimed above).
 
 <!-- SUBMISSION LINKS (fill before submitting on June 15):
-  Demo video: <YouTube/Space/public URL>
+  Demo video: https://www.loom.com/share/2fa868147527496e8097d82dd546d663  [DONE]
   Social post: <X/LinkedIn URL>
-  These two links + this write-up are required by the build-small-hackathon /submit tool. -->
+  These links + this write-up are required by the build-small-hackathon /submit tool. -->
 
 > **Hosted demo vs. local — read this.** This Space is a **no-install demo** that cleans with
 > the real **Qwen3-4B fine-tune** by default (served on an A100 GPU, ~1 min/clean warm; first
@@ -53,6 +53,7 @@ Runs a ≤4B model — a local-runnable GGUF, no third-party AI APIs → also in
 
 **Live Space:** https://huggingface.co/spaces/build-small-hackathon/scrubdata
 **Code (open source):** https://github.com/ricalanis/scrubdata-hackathon
+**Demo video:** https://www.loom.com/share/2fa868147527496e8097d82dd546d663
 
 ## How it works
 
@@ -211,7 +212,7 @@ Everything behind the demo is public:
 - [x] **Sharing is Caring** (`sharing`) — agent traces on the Hub: `build-small-hackathon/scrubdata-traces`
 - [x] **Field Notes** (`fieldnotes`) — build report: `docs/FIELD_NOTES.md`
 - [x] Write-up in this README (idea + tech)
-- [ ] **Demo video** link in README (record on the bundled `samples/maria_crm_export.csv`, or the live Space)
+- [x] **Demo video** link in README: https://www.loom.com/share/2fa868147527496e8097d82dd546d663
 - [ ] **Social post** link in README
 - [ ] Confirm deadline time/timezone on the hackathon page (June 15 2026)
 
