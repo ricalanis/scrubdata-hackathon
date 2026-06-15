@@ -202,6 +202,15 @@ Everything behind the demo is public:
 - 📓 **Field notes** (the build story, failures included) — `docs/FIELD_NOTES.md`
 - 🛠️ **Tool reference** (the whole system, end to end) — `docs/TOOL_REFERENCE.md`
 
+## Built with Codex
+The final review-and-refine pass used **OpenAI Codex** (gpt-5.5) as a reviewer / last
+refiner — not to write the product, but to harden it. It added the executor's
+never-corrupt-clean-data regression tests, made column sanitization collision-proof,
+did the accessibility pass (ARIA + keyboard + reduced-motion + focus-visible), and wrote
+characterization tests for the reference matcher. Every change was human-reviewed and
+verified green (84 tests, golden behavior unchanged) before commit; the commits are
+attributed to `@codex` in the git history.
+
 ## Submission checklist (verified against the build-small-hackathon `/submit` tool)
 - [x] Public Gradio Space in the `build-small-hackathon` org
 - [x] Every model ≤ 32B (here ≤ 4B → **Tiny Titan**-eligible): `Qwen3-4B-Instruct-2507`
