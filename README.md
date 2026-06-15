@@ -51,6 +51,7 @@ Runs a ≤4B model — a local-runnable GGUF, no third-party AI APIs → also in
 >
 > For the office/ops person trying to do their job while their data is a mess.
 
+**Built by:** [@ricalanis](https://huggingface.co/ricalanis) (solo) · 🤗 Hugging Face: `ricalanis`
 **Live Space:** https://huggingface.co/spaces/build-small-hackathon/scrubdata
 **Code (open source):** https://github.com/ricalanis/scrubdata-hackathon
 **Demo video:** https://www.loom.com/share/2fa868147527496e8097d82dd546d663
