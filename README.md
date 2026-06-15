@@ -25,9 +25,9 @@ Runs a ≤4B model — a local-runnable GGUF, no third-party AI APIs → also in
 **Tiny Titan**, **Off-Brand**, **Best Demo**, **Best Agent**, and **Bonus Quest Champion**
 (all six quests claimed above).
 
-<!-- SUBMISSION LINKS (fill before submitting on June 15):
+<!-- SUBMISSION LINKS (all set for June 15):
   Demo video: https://www.loom.com/share/2fa868147527496e8097d82dd546d663  [DONE]
-  Social post: <X/LinkedIn URL>
+  Social post: https://x.com/ric_alanis/status/2066598533738692983  [DONE]
   These links + this write-up are required by the build-small-hackathon /submit tool. -->
 
 > **Hosted demo vs. local — read this.** This Space is a **no-install demo** that cleans with
@@ -54,6 +54,7 @@ Runs a ≤4B model — a local-runnable GGUF, no third-party AI APIs → also in
 **Live Space:** https://huggingface.co/spaces/build-small-hackathon/scrubdata
 **Code (open source):** https://github.com/ricalanis/scrubdata-hackathon
 **Demo video:** https://www.loom.com/share/2fa868147527496e8097d82dd546d663
+**Write-up / post:** https://x.com/ric_alanis/status/2066598533738692983
 
 ## How it works
 
@@ -213,7 +214,7 @@ Everything behind the demo is public:
 - [x] **Field Notes** (`fieldnotes`) — build report: `docs/FIELD_NOTES.md`
 - [x] Write-up in this README (idea + tech)
 - [x] **Demo video** link in README: https://www.loom.com/share/2fa868147527496e8097d82dd546d663
-- [ ] **Social post** link in README
+- [x] **Social post** link in README: https://x.com/ric_alanis/status/2066598533738692983
 - [ ] Confirm deadline time/timezone on the hackathon page (June 15 2026)
 
 Judged (no tag needed, just qualify): Tiny Titan · Off-Brand prize · Best Demo · Best Agent · Bonus Quest Champion.
