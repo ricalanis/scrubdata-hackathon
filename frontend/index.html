@@ -34,6 +34,15 @@
   /* upload */
   .drop{margin:24px 0;background:var(--card);border:2px dashed var(--line);border-radius:18px;
     padding:42px 24px;text-align:center;cursor:pointer;transition:border-color .15s, background .15s}
+  .drop:focus-visible,
+  .btn:focus-visible,
+  .samplelink:focus-visible,
+  .modeltoggle:focus-within,
+  .tie .opt:focus-visible,
+  .tie .keep:focus-visible{
+    outline:3px solid var(--accent);
+    outline-offset:3px;
+  }
   .drop.drag{border-color:var(--accent);background:var(--accent-soft)}
   .drop h3{margin:0 0 4px;font-size:18px;font-weight:700}
   .drop p{margin:0;color:var(--ink-soft);font-size:14px}
@@ -794,7 +803,11 @@
       doneCards.appendChild(card);
     });
     if (!doneCards.children.length)
-      doneCards.innerHTML = `<div class="card done"><div class="card-body">No column fixes were needed beyond the table-level tidy-up.</div></div>`;
+      doneCards.innerHTML = `<div class="card done"><div class="card-body">${
+        tableOpsSeen.size
+          ? "No column fixes were needed beyond the table-level tidy-up."
+          : "No automatic fixes were needed here."
+      }</div></div>`;
 
     // ---- YOUR CALL (review flags) — the abstention hero
     const callCards = $("callCards"); callCards.innerHTML = "";
