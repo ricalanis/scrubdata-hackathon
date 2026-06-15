@@ -81,6 +81,33 @@ operation. Leak test: 0/360 residual detectable PII after masking. OOD type dete
 5/5 with 0/7 false positives. The privacy ribbon at the top of the app — "nothing
 leaves this machine" — now describes the PII handling too, not just the inference.
 
+## The word that broke the demo
+
+We shipped the engine, then sent the live Space to people who actually have messy
+spreadsheets and aren't data people. The most useful feedback wasn't a bug report — it
+was that the word **"cleaning" didn't mean anything to them**. One tester read "clean my
+Excel" as *deleting* data: *"¿Te refieres a que elimine algo de algún archivo?"* ("you
+mean it removes something from the file?"). Another didn't know where to start: *"¿eso
+del Excel te lo subimos ahí o cómo?"* ("the Excel thing — do we upload it there, or
+how?"). The clearest explanation of the whole product turned out to be a sentence we
+typed by hand in a chat reply — *"it fixes text errors: names, phones, emails, cities"* —
+and that sentence was nowhere in the app.
+
+The engine was fine. The *framing* was the failure. So we changed the product to **show**
+what cleaning is instead of naming it: the hero now opens with a literal before→after
+strip (`nigeia → Nigeria`, `Calfornia → California`) before any upload, the headline is
+the sentence that worked in chat ("Fix the messy text in your spreadsheet"), the copy
+says plainly "I never delete your data," jargon labels are gone ("with PII" → "with
+sensitive data"), and a one-click "watch it run on a sample" path removes the "where do I
+even start" wall. One honesty footnote from the rewrite: our first before→after example
+added a `+52` country code to a phone number — which the executor doesn't actually do — so
+we cut it. The demo strip can only show what the engine truly does.
+
+n was small and informal (~3 people we know), so this isn't a usability study. But you
+only need to watch one person mistake your tool for a delete button to learn the lesson:
+the people who most need the tool don't share your vocabulary, and the demo has to teach
+the concept before it can show the feature.
+
 ## What we'd tell the next person
 
 1. **Planner/executor is the trust unlock.** Auditability isn't a feature you add;
@@ -93,6 +120,9 @@ leaves this machine" — now describes the PII handling too, not just the infere
    ablations we almost didn't run.
 5. **Small models are enough more often than you think** — and roughly $35 of GPU
    credit covers an embarrassing number of mistakes if each one teaches you something.
+6. **Test the framing on someone outside your vocabulary.** The engine can be correct and
+   the product still unusable if the first screen assumes a word — "cleaning" — that your
+   user doesn't have. Show the concept before you name the feature.
 
 — Built with a ≤4B planner, a 44M PII classifier, checksums, and a reference gazetteer.
 Total model weight: under 4.1B parameters. Total cloud spend: about $35.
