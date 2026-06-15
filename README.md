@@ -104,6 +104,39 @@ around the trust story:
   the model path feels responsive and never lies about progress.
 - Drag-and-drop, two bundled sample exports, mobile-responsive layout.
 
+## What real users told us (and what we changed)
+
+Before submission we put the live Space in front of people who **aren't** data folks — the
+exact audience the tool is for — and sent the link with one line: *"if you have a messy
+spreadsheet, try it."* The most useful finding wasn't a bug. It was that the word
+**"cleaning" didn't land**:
+
+- One tester read "clean my Excel" as *deleting* data:
+  *"¿Te refieres a que elimine algo de algún archivo?"* — "You mean it removes something
+  from the file?"
+- Another didn't know where to begin:
+  *"¿eso del Excel te lo subimos ahí o cómo?"* — "the Excel thing, do we upload it there,
+  or how?"
+- The clearest explanation in the whole thread was one we had to type by hand in chat:
+  *"it fixes text errors — names, phones, emails, cities."* That sentence wasn't anywhere
+  in the product.
+
+So we changed the product to **show** what cleaning means instead of naming it:
+
+- the hero now leads with a literal before→after strip
+  (`nigeia → Nigeria`, `Calfornia → California`, `Ana@GMAIL.com → ana@gmail.com`,
+  `415.555.0192 → (415) 555-0192`) so the value is obvious *before* any upload;
+- the headline is the sentence that worked in chat — **"Fix the messy text in your
+  spreadsheet"** — and the copy says plainly **"I never delete your data"** (killing the
+  "does it erase things?" misread);
+- a one-click **"watch it run on a sample file"** path removes the "where do I start?" wall;
+- jargon labels are gone ("HR payroll (with PII)" → "an HR file with sensitive data").
+
+n is small and informal (friends-and-network, ~3 people), so this isn't a usability *study* —
+but the feedback was real, it pointed at a failure of the *framing* rather than the engine,
+and it changed the build. The persona "Maria" below is the controlled walk-through; the
+quotes above are verbatim from people we know.
+
 ## Measured (not vibes)
 
 - **Canonicalization micro-F1 0.90 (best single run; 0.80 ± 0.01 over 3 training seeds)** for the 4B
